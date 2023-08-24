@@ -3,13 +3,15 @@ import { UserId } from "./user.id";
 import { userName } from "./user.username";
 
 export interface UserInterface {
-	id: UserId;
+    id: UserId;
     email: UserEmail;
-	username: userName;
-	password: string;
+    username: userName;
+    password: string;
     bio?: string;
     firstName?: string;
     lastName?: string;
-    avatar?: string; 
+    avatar?: string;
     isPrivate: boolean;
 }
+
+export interface UserInformation extends Omit<UserInterface, 'password'> {}

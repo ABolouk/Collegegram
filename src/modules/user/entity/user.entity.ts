@@ -1,16 +1,19 @@
 import { Column, Entity, PrimaryColumn } from "typeorm";
+import { UserId } from "../model/user.id";
+import { UserEmail } from "../model/user.email";
+import { userName } from "../model/user.username";
 
 
 @Entity("users")
 export class UserEntity {
     @PrimaryColumn()
-    id!: string;
+    id!: UserId;
 
     @Column()
-    email!: string;
+    email!: UserEmail;
 
     @Column()
-    username!: string;
+    username!: userName;
 
     @Column()
     password!: string;
@@ -26,6 +29,9 @@ export class UserEntity {
 
     @Column()
     avatar?: string;
+
+    @Column()
+    isPrivate!: boolean;
 
     @Column()
     createdAt!: Date;
