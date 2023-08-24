@@ -1,4 +1,4 @@
-import { Response, raw } from "express";
+import { Response } from "express";
 import { HttpError } from "./http-errors";
 
 export const handleExpresss = async <A>(
