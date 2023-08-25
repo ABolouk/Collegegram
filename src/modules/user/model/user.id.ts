@@ -1,7 +1,8 @@
 import { z } from "zod";
 import { v4 } from "uuid";
-import { UUID, isUUID } from "../../../data/UUID";
 import { Brand } from "../../../utility/brand";
+import { isUUID } from "../../../data/uuid";
+import { UUID } from "../../../data/uuid";
 
 export type UserId = Brand<UUID, "UserId">;
 

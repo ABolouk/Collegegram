@@ -14,4 +14,6 @@ export interface UserInterface {
     isPrivate: boolean;
 }
 
-export interface UserInformation extends Omit<UserInterface, 'password'> {}
+type tempOmit = 'password' | 'id';
+export interface UserInformation extends Omit<UserInterface, tempOmit> {}
+

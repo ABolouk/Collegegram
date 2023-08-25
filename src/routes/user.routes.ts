@@ -6,11 +6,11 @@ import { UserService } from '../modules/user/userService';
 
 
 
-export const makeUserRouter = (userService : UserService) => {
+export const makeUserRouter = (userService: UserService) => {
 	const app = Router();
 	app.post("/login", (req, res) => {
 		const dto = loginDto.parse(req.body);
-        handleExpresss(res, () => userService.login(dto));
+		handleExpresss(res, () => userService.login(dto));
 	});
 	return app;
 };

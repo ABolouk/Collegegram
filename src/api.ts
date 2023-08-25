@@ -9,7 +9,7 @@ export const makeApp = (dataSource: DataSource) => {
 
     app.use(express.json())
     const userRepo = new UserRepository(dataSource);
-	const userService = new UserService(userRepo);
+    const userService = new UserService(userRepo);
     app.use("/user", makeUserRouter(userService));
     app.use((req, res, next) => {
         next();
