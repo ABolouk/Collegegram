@@ -4,6 +4,14 @@ import { UserInterface } from "./model/user";
 import { UserId } from "./model/user.id";
 import { userName } from "./model/user.username";
 import { UserEmail } from "./model/user.email";
+import { promises } from "dns";
+
+
+export interface createUser{
+		email: string,
+		username: string,
+		password: string				
+}
 
 export class UserRepository {
 	private userRepo: Repository<UserEntity>;
@@ -21,5 +29,9 @@ export class UserRepository {
 
 	findById(id: UserId) {
 		return this.userRepo.findOneBy({ id });
+	}
+
+	async createUser( user: createUser) {
+		await this.userRepo.save(user)	
 	}
 }

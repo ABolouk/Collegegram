@@ -1,9 +1,10 @@
 import { UserRepository } from './userRepository';
 import { isUserName } from './model/user.username';
-import { NotFoundError, UnauthorizedError } from '../../utility/http-errors';
+import { BadRequestError, NotFoundError, UnauthorizedError } from '../../utility/http-errors';
 import { LoginDtoType } from './dto/login.dto';
 import { isUserEmail } from './model/user.email';
 import { UserInformation } from './model/user';
+import { signupDto } from './dto/signup.dto';
 
 
 export class UserService {
@@ -30,5 +31,16 @@ export class UserService {
             }
             return user as UserInformation;
         }
+    }
+    signup(dto : signupDto) {
+        if (dto.password !== dto.confirmPassword) {
+            throw new BadRequestError("پسوردی که وارد کردید یکسان نیست! ");
+        }
+
+        return this.userRepository.createUser({
+            email: dto.email,
+            username: dto.username,
+            password: dto.password
+        })
     }
 }
