@@ -7,6 +7,9 @@ export const handleExpresss = async <A>(
 ) => {
 	try {
 		const data = await fn();
+		if (data === true) {
+			res.status(201).send("ثبت نام شما با موفقیت انجام شد.")
+		}
 		res.status(200).send(data);
 	} catch (e) {
 		if (e instanceof HttpError) {

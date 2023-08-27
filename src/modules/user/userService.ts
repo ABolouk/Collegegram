@@ -1,6 +1,6 @@
 import { UserRepository } from './userRepository';
 import { isUserName } from './model/user.username';
-import { BadRequestError, NotFoundError, UnauthorizedError } from '../../utility/http-errors';
+import { BadRequestError, ConflictError, DuplicateError, NotFoundError, UnauthorizedError } from '../../utility/http-errors';
 import { LoginDtoType } from './dto/login.dto';
 import { isUserEmail } from './model/user.email';
 import { UserInformation } from './model/user';
@@ -35,19 +35,25 @@ export class UserService {
             return outputUser;
         }
     }
-    signup(dto: signupDto) {
-        
-        if
+    async signup(dto: signupDto) {
 
-
-        if (dto.password !== dto.confirmPassword) {
-            throw new BadRequestError("پسوردی که وارد کردید یکسان نیست! ");
+        if (!dto.username || !dto.email || !dto.password || !dto.confirmPassword) {
+            throw new BadRequestError("تمام فیلدهای ثبت نام مورد نیاز است.")
         }
 
-        return this.userRepository.createUser({
-            email: dto.email,
-            username: dto.username,
-            password: dto.password
-        })
+        
+        if (isUserEmail(dto.email)) {
+            throw new ConflictError("ایمیل وارد شده از قبل در کالج‌گرام ثبت شده است")
+        }
+
+        if (isUserName(dto.username)) {
+            throw new ConflictError("یوزرنیم وارد شده از قبل در کالج‌گرام ثبت شده است")
+        }
+
+        if (dto.password !== dto.confirmPassword) {
+            throw new BadRequestError("پسوردهایی که وارد کردید یکسان نیستند.")
+        }
+
+        return true;
     }
 }
