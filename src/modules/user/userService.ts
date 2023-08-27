@@ -5,7 +5,7 @@ import { LoginDtoType } from './dto/login.dto';
 import { isUserEmail } from './model/user.email';
 import { UserInformation } from './model/user';
 import { signupDto } from './dto/signup.dto';
-
+import { FullUserDao, UserDao } from './dao/user.dao';
 
 export class UserService {
     constructor(private userRepository: UserRepository) { }
@@ -13,26 +13,33 @@ export class UserService {
         if (isUserEmail(authenticator)) {
             const user = await this.userRepository.findByEmail(authenticator);
             if (!user) {
-                throw new NotFoundError();
+                throw new NotFoundError('Email');
             }
             if (user.password !== password) {
                 throw new UnauthorizedError();
             }
             // const { password: _, ...rest } = user
-            return user as UserInformation;
+            const outputUser = FullUserDao(user)
+            return outputUser;
+                
         }
         if (isUserName(authenticator)) {
             const user = await this.userRepository.findByUsername(authenticator);
             if (!user) {
-                throw new NotFoundError();
+                throw new NotFoundError('User');
             }
             if (user.password !== password) {
                 throw new UnauthorizedError();
             }
-            return user as UserInformation;
+            const outputUser = FullUserDao(user)
+            return outputUser;
         }
     }
-    signup(dto : signupDto) {
+    signup(dto: signupDto) {
+        
+        if
+
+
         if (dto.password !== dto.confirmPassword) {
             throw new BadRequestError("پسوردی که وارد کردید یکسان نیست! ");
         }

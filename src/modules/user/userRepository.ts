@@ -5,6 +5,7 @@ import { UserId } from "./model/user.id";
 import { userName } from "./model/user.username";
 import { UserEmail } from "./model/user.email";
 import { promises } from "dns";
+import { UserOutput, UserOutputFull } from "./dao/user.dao";
 
 
 export interface createUser{
@@ -19,11 +20,11 @@ export class UserRepository {
 		this.userRepo = appDataSource.getRepository(UserEntity);
 	}
 
-	findByUsername(username: userName): Promise<UserInterface | null> {
+	findByUsername(username: userName): Promise<UserEntity | null> {
 		return this.userRepo.findOneBy({ username });
 	}
 
-    findByEmail(email: UserEmail): Promise<UserInterface | null> {
+  findByEmail(email: UserEmail): Promise<UserEntity | null> {
 		return this.userRepo.findOneBy({ email });
 	}
 
