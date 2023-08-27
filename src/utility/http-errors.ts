@@ -47,3 +47,9 @@ export class DuplicateError extends HttpError{
         super(422, message)
     }
 }
+
+export class ConflictError extends HttpError{
+    constructor(message: string) {
+        super(409, message)
+    }
+}
