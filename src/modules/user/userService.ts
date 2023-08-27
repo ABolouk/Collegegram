@@ -19,6 +19,9 @@ export class UserService {
         if (!user) {
             throw new NotFoundError();
         }
+        if (user.password !== password) {
+            throw new UnauthorizedError();
+        }
         const accessToken = jwt.sign(user.id, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '1h' })
         const refreshToken = randomBytes(64).toString('hex');
         const time = rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;

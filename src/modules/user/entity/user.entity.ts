@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm";
 import { UserId } from "../model/user.id";
 import { UserEmail } from "../model/user.email";
 import { userName } from "../model/user.username";
@@ -33,10 +33,10 @@ export class UserEntity {
     @Column()
     isPrivate!: boolean;
 
-    @Column()
+    @CreateDateColumn()
     createdAt!: Date;
 
-    @Column()
+    @UpdateDateColumn()
     updatedAt!: Date;
 
 }

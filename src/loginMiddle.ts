@@ -19,7 +19,7 @@ export const loginMiddle = (userService: UserService) => {
                 if (!session) {
                     throw new UnauthorizedError();
                 }
-                if (session.expireDate > new Date()) {
+                if (session.expireDate < new Date()) {
                     await userService.deleteToken(refreshToken as string);
                     throw new UnauthorizedError();
                 }
