@@ -6,6 +6,7 @@ import { isUserEmail } from './model/user.email';
 import { UserInformation } from './model/user';
 import { signupDto } from './dto/signup.dto';
 import { FullUserDao, UserDao } from './dao/user.dao';
+import bcrypt from "bcrypt";
 
 export class UserService {
     constructor(private userRepository: UserRepository) { }
@@ -54,6 +55,16 @@ export class UserService {
             throw new BadRequestError("پسوردهایی که وارد کردید یکسان نیستند.")
         }
 
+        const hashedPassword = await bcrypt.hash(dto.password, 10);
+
+        const newUser = {
+            username: dto.username,
+            email: dto.email,
+            password: hashedPassword
+
+        };
+        
+        await this.userRepository.createUser(newUser)
         return true;
     }
 }
