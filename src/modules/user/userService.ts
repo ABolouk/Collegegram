@@ -5,8 +5,8 @@ import { LoginDtoType } from './dto/login.dto';
 import { isUserEmail } from './model/user.email';
 import { UserInformation } from './model/user';
 import { signupDto } from './dto/signup.dto';
-import { FullUserDao, UserDao } from './dao/user.dao';
-import bcrypt from "bcrypt";
+import { FullUserDao } from './dao/user.dao';
+import { hashPassword, comparePasswords } from '../../utility/passwordUtils';
 
 export class UserService {
     constructor(private userRepository: UserRepository) { }
@@ -16,10 +16,18 @@ export class UserService {
             if (!user) {
                 throw new NotFoundError('Email');
             }
-            if (user.password !== password) {
+            // if (user.password !== password) {
+            //     throw new UnauthorizedError();
+            // }
+            // // const { password: _, ...rest } = user
+
+            const passwordsMatch = await comparePasswords(password, user.password);
+            if (passwordsMatch) {
+                // send token
+            } else {
                 throw new UnauthorizedError();
             }
-            // const { password: _, ...rest } = user
+
             const outputUser = FullUserDao(user)
             return outputUser;
                 
@@ -55,7 +63,7 @@ export class UserService {
             throw new BadRequestError("پسوردهایی که وارد کردید یکسان نیستند.")
         }
 
-        const hashedPassword = await bcrypt.hash(dto.password, 10);
+        const hashedPassword = await hashPassword(dto.password);
 
         const newUser = {
             username: dto.username,
