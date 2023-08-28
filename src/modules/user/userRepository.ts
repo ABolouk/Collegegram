@@ -4,8 +4,6 @@ import { UserInterface } from "./model/user";
 import { UserId } from "./model/user.id";
 import { userName } from "./model/user.username";
 import { UserEmail } from "./model/user.email";
-import { promises } from "dns";
-import { UserOutput, UserOutputFull } from "./dao/user.dao";
 
 
 export interface createUser{

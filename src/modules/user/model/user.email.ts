@@ -9,4 +9,3 @@ export const isUserEmail = (value: string): value is UserEmail =>
     emailRegex.test(value);
 
 export const zodUserEmail = z.coerce.string().refine(isUserEmail);
-
