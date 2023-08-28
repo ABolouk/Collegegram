@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "main": "main.ts",
   "scripts": {
-    "start": "ts-node src/main.ts",
-    "test:e2e": "jest --testMatch **/e2e/**/*.spec.ts --runInBand",
+    "start": "NODE_ENV=Test ts-node src/main.ts",
+    "test:e2e": "jest --forceExit --detectOpenHandles --testMatch **/e2e/**/*.spec.ts --runInBand",
     "test": "jest --testMatch **/src/**/*.spec.ts",
     "typeorm": "typeorm-ts-node-commonjs",
-    "typeorm:run": "typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
+    "typeorm:run": "NODE_ENV=Test typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
     "typeorm:generate": "typeorm-ts-node-commonjs migration:generate -d ./src/data-source.ts"
   },
   "license": "MIT",
@@ -33,6 +33,7 @@
     "jalali-moment": "^3.3.11",
     "jsonwebtoken": "^9.0.1",
     "jwt-simple": "^0.5.6",
+    "pg": "^8.11.3",
     "reflect-metadata": "^0.1.13",
     "typeorm": "^0.3.17",
     "uuid": "^9.0.0",
