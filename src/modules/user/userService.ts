@@ -48,10 +48,6 @@ export class UserService {
     }
     async signup(dto: signupDto) {
 
-        if (!dto.username || !dto.email || !dto.password || !dto.confirmPassword) {
-            throw new BadRequestError("تمام فیلدهای ثبت نام مورد نیاز است.")
-        }
-
         const userByEmail = await this.userRepository.findByEmail(dto.email);
         if (userByEmail) {
             throw new ConflictError("ایمیل وارد شده از قبل در کالج‌گرام ثبت شده است")
