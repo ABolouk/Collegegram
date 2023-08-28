@@ -1,12 +1,20 @@
-export class HttpError extends Error {
-	constructor(public status: number, message: string) {
-		super(message);
+export class HttpError {
+	constructor(public status: number, public message: string ) {  // behtare parameter type ezafe shavad
 	}
 }
 
+
+type Fields = 'User' | 'Post' | 'Email'
+const translate = (field: Fields) => {
+    switch (field) {
+        case 'Post': return 'پست'
+        case 'User': return 'کاربر'
+        case 'Email': return 'ایمیل'
+    }
+}
 export class NotFoundError extends HttpError {
-    constructor() {
-        super(404, "موردی یافت نشد.");
+    constructor(field: Fields) {
+        super(404, `${translate(field)} یافت نشد.`);
     }
 }
 
@@ -34,4 +42,14 @@ export class serviceUnavailableError extends HttpError {
     
 }
 
+export class DuplicateError extends HttpError{
+    constructor(message: string) {
+        super(422, message)
+    }
+}
 
+export class ConflictError extends HttpError{
+    constructor(message: string) {
+        super(409, message)
+    }
+}
