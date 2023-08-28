@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm";
 import { UserId } from "../model/user.id";
 import { UserEmail } from "../model/user.email";
 import { userName } from "../model/user.username";
@@ -18,25 +18,25 @@ export class UserEntity {
     @Column()
     password!: string;
 
-    @Column()
+    @Column({ nullable: true })
     firsrName?: string;
 
-    @Column()
+    @Column({ nullable: true })
     lastName?: string;
 
-    @Column()
+    @Column({ nullable: true })
     bio?: string;
 
-    @Column()
+    @Column({ nullable: true })
     avatar?: string;
 
-    @Column()
+    @Column('boolean', {default: false})
     isPrivate!: boolean;
 
-    @Column()
+    @CreateDateColumn()
     createdAt!: Date;
 
-    @Column()
+    @UpdateDateColumn()
     updatedAt!: Date;
 
 }
