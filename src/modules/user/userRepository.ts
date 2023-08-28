@@ -30,7 +30,7 @@ export class UserRepository {
 		return this.userRepo.findOneBy({ id });
 	}
 
-	async createUser( user: createUser) {
-		await this.userRepo.save(user)	
+	async createUser( user: createUser): Promise<UserEntity> {
+		return await this.userRepo.save(user)	
 	}
 }
