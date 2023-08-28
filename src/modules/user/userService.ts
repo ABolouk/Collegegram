@@ -5,7 +5,7 @@ import { LoginDtoType } from './dto/login.dto';
 import { isUserEmail } from './model/user.email';
 import { UserInformation } from './model/user';
 import { signupDto } from './dto/signup.dto';
-import { FullUserDao } from './dao/user.dao';
+import { CreateFullUserDao, CreateUserDao } from './dao/user.dao';
 import { hashPassword, comparePasswords } from '../../utility/passwordUtils';
 
 export class UserService {
@@ -28,7 +28,7 @@ export class UserService {
                 throw new UnauthorizedError();
             }
 
-            const outputUser = FullUserDao(user)
+            const outputUser = CreateFullUserDao(user)
             return outputUser;
                 
         }
@@ -40,7 +40,7 @@ export class UserService {
             if (user.password !== password) {
                 throw new UnauthorizedError();
             }
-            const outputUser = FullUserDao(user)
+            const outputUser = CreateFullUserDao(user)
             return outputUser;
         }
     }
@@ -72,7 +72,8 @@ export class UserService {
 
         };
         
-        await this.userRepository.createUser(newUser)
-        return true;
+        await this.userRepository.createUser(newUser);
+        const outputUser = CreateUserDao(newUser)
+        return outputUser;
     }
 }

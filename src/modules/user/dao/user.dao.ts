@@ -20,12 +20,12 @@ export type UserOutputFull = {
   isPrivate: boolean;
 }
 
-export const UserDao = (userEntity: UserEntity): UserOutput => ({
-  username: userEntity.username,
-  email: userEntity.email
+export const CreateUserDao = (user : {username:string , password: string , email: string}): UserOutput => ({
+  username: user.username,
+  email: user.email
 })
 
-export const FullUserDao = (userEntity: UserEntity): UserOutputFull => ({
+export const CreateFullUserDao = (userEntity: UserEntity): UserOutputFull => ({
   id: userEntity.id,
   username: userEntity.username,
   email: userEntity.email,
