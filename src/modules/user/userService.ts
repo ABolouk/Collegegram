@@ -51,11 +51,11 @@ export class UserService {
         }
 
         
-        if (isUserEmail(dto.email)) {
+        if (this.userRepository.findByEmail(dto.email) !== null) {
             throw new ConflictError("ایمیل وارد شده از قبل در کالج‌گرام ثبت شده است")
         }
 
-        if (isUserName(dto.username)) {
+        if (this.userRepository.findByUsername(dto.username) !== null) {
             throw new ConflictError("یوزرنیم وارد شده از قبل در کالج‌گرام ثبت شده است")
         }
 
