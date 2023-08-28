@@ -1,10 +1,10 @@
 import jwt from "jsonwebtoken";
 import { UserRepository } from './userRepository';
 import { isUserName } from './model/user.username';
-import { ConflictError, BadRequestError, NotFoundError, UnauthorizedError } from '../../utility/http-errors';
+import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from '../../utility/http-errors';
 import { LoginDtoType } from './dto/login.dto';
 import { isUserEmail } from './model/user.email';
-import { UserInformation, UserInterface } from './model/user';
+import { UserInformation } from './model/user';
 import { ForgetPasswordDto } from './dto/forgetPassword.dto';
 import { EmailService } from '../email/email.service';
 import { resetPasswordRoute } from '../../routes/user.routes';
@@ -83,7 +83,6 @@ export class UserService {
         return outputUser;
     }
 
-
     async forgetPassword({ authenticator }: ForgetPasswordDto) {
 
         if (!isUserEmail(authenticator) && !isUserName(authenticator)) {
@@ -93,7 +92,7 @@ export class UserService {
         const user = await (isUserEmail(authenticator) ? this.userRepository.findByEmail(authenticator) : this.userRepository.findByUsername(authenticator));
 
         if (!user) {
-            throw new NotFoundError("User");
+            throw new NotFoundError();
         }
 
         const expiresIn = 15  // minutes
@@ -122,14 +121,13 @@ export class UserService {
         const user = await this.userRepository.findById(userId);
 
         if (!user) {
-            throw new NotFoundError("User");
+            throw new NotFoundError();
         };
 
         return user;
     }
 
-    
-async resetPassword(userId: string, token: string, password1: string, password2: string) {
+    async resetPassword(userId: string, token: string, password1: string, password2: string) {
         if (!isUserId(userId)) {
             throw new UnauthorizedError();
         }
@@ -153,5 +151,6 @@ async resetPassword(userId: string, token: string, password1: string, password2:
 
         return updatedUser;
     }
-}
 
+
+}
