@@ -23,7 +23,8 @@ export const loginMiddle = (userService: UserService) => {
                     await userService.deleteToken(refreshToken as string);
                     throw new UnauthorizedError();
                 }
-                const accessToken = jwt.sign(session.userId, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '1h' });
+                //TODO: payload type
+                const accessToken = jwt.sign({id : session.userId}, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '1h' });
                 res.setHeader('authorization', `Bearer ${accessToken}`);
             }
             else if (err?.name == 'JsonWebTokenError') {

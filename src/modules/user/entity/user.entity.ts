@@ -18,20 +18,21 @@ export class UserEntity {
     @Column()
     password!: string;
 
-    @Column()
+    @Column({ nullable: true })
     firsrName?: string;
 
-    @Column()
+    @Column({ nullable: true })
     lastName?: string;
 
     @Column()
+    isPrivate!: boolean;
+
+    @Column({ nullable: true })
     bio?: string;
 
-    @Column()
+    @Column({ nullable: true })
     avatar?: string;
 
-    @Column()
-    isPrivate!: boolean;
 
     @CreateDateColumn()
     createdAt!: Date;

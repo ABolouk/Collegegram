@@ -1,10 +1,13 @@
-import { Column, Entity, OneToMany, OneToOne } from "typeorm";
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserEntity } from "./user.entity";
 import { UserId } from "../model/user.id";
 
 
 @Entity("session")
 export class SessionEntity {
+    @PrimaryGeneratedColumn()
+    id!: number;
+    
     @Column()
     token!: string;
 

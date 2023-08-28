@@ -4,6 +4,7 @@ import { UserRepository } from "./modules/user/userRepository";
 import { UserService } from "./modules/user/userService";
 import { makeUserRouter } from "./routes/user.routes";
 import { sessionRepository } from "./modules/user/sessionRepository";
+// import { seedUser } from "./seedUser";
 
 export const makeApp = (dataSource: DataSource) => {
     const app = express();

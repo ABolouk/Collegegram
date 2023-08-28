@@ -22,12 +22,13 @@ export class UserService {
         if (user.password !== password) {
             throw new UnauthorizedError();
         }
-        const accessToken = jwt.sign(user.id, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '1h' })
+        const accessToken = jwt.sign({id : user.id}, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn:  "1h"})
         const refreshToken = randomBytes(64).toString('hex');
         const time = rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
         await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
-        const { password: _, id: __, ...userInfo } = user
-        return userInfo as UserInformation, accessToken, refreshToken;
+        const { password: _, id: __, ...userRest } = user
+        const userInfo = userRest as UserInformation;
+        return {userInfo, accessToken, refreshToken};
     }
     async findById(id: UserId) {
         return this.userRepository.findById(id);
