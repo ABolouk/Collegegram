@@ -7,6 +7,8 @@ import { UserInformation } from './model/user';
 import { signupDto } from './dto/signup.dto';
 import { CreateFullUserDao, CreateUserDao } from './dao/user.dao';
 import { hashPassword, comparePasswords } from '../../utility/passwordUtils';
+import { v4 } from 'uuid';
+import { UserId } from './model/user.id';
 
 export class UserService {
     constructor(private userRepository: UserRepository) { }
@@ -50,12 +52,13 @@ export class UserService {
             throw new BadRequestError("تمام فیلدهای ثبت نام مورد نیاز است.")
         }
 
-        
-        if (this.userRepository.findByEmail(dto.email) !== null) {
+        const userByEmail = await this.userRepository.findByEmail(dto.email);
+        if (userByEmail) {
             throw new ConflictError("ایمیل وارد شده از قبل در کالج‌گرام ثبت شده است")
         }
 
-        if (this.userRepository.findByUsername(dto.username) !== null) {
+        const userByUsername = await this.userRepository.findByUsername(dto.username);
+        if (userByUsername) {
             throw new ConflictError("یوزرنیم وارد شده از قبل در کالج‌گرام ثبت شده است")
         }
 
@@ -65,15 +68,16 @@ export class UserService {
 
         const hashedPassword = await hashPassword(dto.password);
 
-        const newUser = {
+        const user = {
+            id: v4() as UserId,
             username: dto.username,
             email: dto.email,
             password: hashedPassword
 
         };
         
-        await this.userRepository.createUser(newUser);
-        const outputUser = CreateUserDao(newUser)
+        const newUser = await this.userRepository.createUser(user);
+        const outputUser = CreateUserDao(newUser);
         return outputUser;
     }
 }
