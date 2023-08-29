@@ -2,6 +2,7 @@ import { UserEntity } from "./modules/user/entity/user.entity";
 import { AppDataSource } from "./data-source";
 import { makeUserId } from "./modules/user/model/user.id";
 import { hashPassword } from "./utility/passwordUtils";
+
 export const seedUser = async () => {
 
     const userRepo = AppDataSource.getRepository(UserEntity);

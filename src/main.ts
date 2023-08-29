@@ -2,9 +2,9 @@ import { makeApp } from "./api";
 import { AppDataSource } from "./data-source"
 import { UserInterface } from "./modules/user/model/user";
 
-declare module "express" { 
+declare module "express" {
 	export interface Request {
-	  user: UserInterface
+		user: UserInterface
 	}
 }
 

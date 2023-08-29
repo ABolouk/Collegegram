@@ -1,7 +1,7 @@
 export class HttpError extends Error {
-	constructor(public status: number, message: string) {
-		super(message);
-	}
+    constructor(public status: number, message: string) {
+        super(message);
+    }
 }
 
 export class NotFoundError extends HttpError {
@@ -11,9 +11,9 @@ export class NotFoundError extends HttpError {
 }
 
 export class ForbiddenError extends HttpError {
-	constructor() {
-		super(403, "شما از سیستم خارج شده اید. لطفا دوباره وارد شوید.");
-	}
+    constructor() {
+        super(403, "شما از سیستم خارج شده اید. لطفا دوباره وارد شوید.");
+    }
 }
 export class UnauthorizedError extends HttpError {
     constructor() {
@@ -31,7 +31,7 @@ export class serviceUnavailableError extends HttpError {
     constructor() {
         super(503, "سرور در دسترس نیست.");
     }
-    
+
 }
 
 

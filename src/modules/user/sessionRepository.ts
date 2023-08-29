@@ -7,10 +7,10 @@ export class sessionRepository {
     constructor(appDataSource: DataSource) {
         this.sessionRepo = appDataSource.getRepository(SessionEntity);
     }
-    async createSession(token: string, userId: UserId, expireDate: Date){
+    async createSession(token: string, userId: UserId, expireDate: Date) {
         return this.sessionRepo.save({ token, userId, expireDate });
     }
-    async findSessionByToken(token: string): Promise<SessionEntity | null>{
+    async findSessionByToken(token: string): Promise<SessionEntity | null> {
         return this.sessionRepo.findOneBy({ token });
     }
     async deleteToken(token: string) {

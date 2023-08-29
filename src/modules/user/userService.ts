@@ -3,7 +3,6 @@ import { isUserName } from './model/user.username';
 import { NotFoundError, UnauthorizedError } from '../../utility/http-errors';
 import { LoginDtoType } from './dto/login.dto';
 import { isUserEmail } from './model/user.email';
-import { UserInformation } from './model/user';
 import jwt from 'jsonwebtoken';
 import { UserId } from './model/user.id';
 import { randomBytes } from 'crypto';
@@ -25,12 +24,12 @@ export class UserService {
         if (!passwordsMatch) {
             throw new UnauthorizedError();
         }
-        const accessToken = jwt.sign({id : user.id}, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn:  "1h"})
+        const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "1h" })
         const refreshToken = randomBytes(64).toString('hex');
         const time = rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
         await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
         const userInfo = CreateFullUserDao(user)
-        return {userInfo, accessToken, refreshToken};
+        return { userInfo, accessToken, refreshToken };
     }
     async findById(id: UserId) {
         return this.userRepository.findById(id);
