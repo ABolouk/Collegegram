@@ -16,7 +16,7 @@ export const makeUserRouter = (userService : UserService) => {
 	
 	app.post("/register", (req, res) => {
 		const dto = signupDto.parse(req.body);
-		handleExpresss(res, () => userService.signup(dto))
+		handleExpresss(res, () => userService.signup(dto), 201)
 	})
 	return app;
 };
