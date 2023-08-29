@@ -1,16 +1,13 @@
 import nodemailer, { Transporter } from "nodemailer";
 import { UserEmail } from "../user/model/user.email";
-import dotenv from "dotenv-flow"
 
-dotenv.config();
-
-const emailServiceConfig = {
-    host: process.env.EMAIL_SERVICE_PROVIDER || "test@gmail.com",
-    port: +(process.env.EMAIL_SERVICE_PORT || "465"),
+export const emailServiceConfig = {
+    host: process.env.EMAIL_SERVICE_PROVIDER,
+    port: 465,
     secure: true,
     auth: {
-        user: process.env.EMAIL_SERVICE_USER || "test",
-        pass: process.env.EMAIL_SERVICE_PASS || "test",
+        user: process.env.EMAIL_SERVICE_USER,
+        pass: process.env.EMAIL_SERVICE_PASS,
     },
 };
 
