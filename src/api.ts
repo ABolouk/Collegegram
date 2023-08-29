@@ -17,6 +17,7 @@ export const makeApp = (dataSource: DataSource) => {
     app.use((req, res, next) => {
         next();
     })
+
     const zodErrorHanlder: ErrorRequestHandler = (
         error,
         req,

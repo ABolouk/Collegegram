@@ -42,4 +42,34 @@ export class UserService {
     async deleteToken(token: string) {
         return this.sessionRepo.deleteToken(token);
     }
+    async signup(dto: signupDto) {
+
+        const userByEmail = await this.userRepository.findByEmail(dto.email);
+        if (userByEmail) {
+            throw new ConflictError("ایمیل وارد شده از قبل در کالج‌گرام ثبت شده است")
+        }
+
+        const userByUsername = await this.userRepository.findByUsername(dto.username);
+        if (userByUsername) {
+            throw new ConflictError("یوزرنیم وارد شده از قبل در کالج‌گرام ثبت شده است")
+        }
+
+        if (dto.password !== dto.confirmPassword) {
+            throw new BadRequestError("پسوردهایی که وارد کردید یکسان نیستند.")
+        }
+
+        const hashedPassword = await hashPassword(dto.password);
+
+        const user = {
+            id: v4() as UserId,
+            username: dto.username,
+            email: dto.email,
+            password: hashedPassword
+
+        };
+        
+        const newUser = await this.userRepository.createUser(user);
+        const outputUser = CreateUserDao(newUser);
+        return outputUser;
+    }
 }
