@@ -92,7 +92,7 @@ export class UserService {
         const user = await (isUserEmail(authenticator) ? this.userRepository.findByEmail(authenticator) : this.userRepository.findByUsername(authenticator));
 
         if (!user) {
-            throw new NotFoundError();
+            throw new NotFoundError('User');
         }
 
         const expiresIn = 15  // minutes
@@ -121,7 +121,7 @@ export class UserService {
         const user = await this.userRepository.findById(userId);
 
         if (!user) {
-            throw new NotFoundError();
+            throw new NotFoundError('User');
         };
 
         return user;
