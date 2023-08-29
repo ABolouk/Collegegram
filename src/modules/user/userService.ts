@@ -1,6 +1,6 @@
 import { UserRepository } from './userRepository';
 import { isUserName } from './model/user.username';
-import { BadRequestError, ConflictError, DuplicateError, NotFoundError, UnauthorizedError } from '../../utility/http-errors';
+import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from '../../utility/http-errors';
 import { LoginDtoType } from './dto/login.dto';
 import { isUserEmail } from './model/user.email';
 import { UserInformation } from './model/user';
@@ -47,10 +47,6 @@ export class UserService {
         }
     }
     async signup(dto: signupDto) {
-
-        if (!dto.username || !dto.email || !dto.password || !dto.confirmPassword) {
-            throw new BadRequestError("تمام فیلدهای ثبت نام مورد نیاز است.")
-        }
 
         const userByEmail = await this.userRepository.findByEmail(dto.email);
         if (userByEmail) {

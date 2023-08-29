@@ -26,7 +26,7 @@ export class UserRepository {
 		return this.userRepo.findOneBy({ email });
 	}
 
-	findById(id: UserId) {
+	findById(id: UserId): Promise<UserEntity | null> {
 		return this.userRepo.findOneBy({ id });
 	}
 
