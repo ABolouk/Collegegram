@@ -2,9 +2,8 @@ import { Express } from "express";
 import { AppDataSource } from "../../data-source";
 import { makeApp } from "../../api";
 import request from "supertest";
-import { userName } from './model/user.username';
 import { NotFoundError, UnauthorizedError } from "../../utility/http-errors";
-// jest.useFakeTimers()
+
 
 describe("User Module", () => {
 	let app: Express;
@@ -12,7 +11,6 @@ describe("User Module", () => {
 		const dataSource = await AppDataSource.initialize();
 		app = makeApp(dataSource);
 	});
-
 	afterAll(async () => {
 		await AppDataSource.destroy();
 	});
@@ -21,7 +19,7 @@ describe("User Module", () => {
 		const res = await request(app)
 		.post("/user/login")
 		.send({
-			authenticator: "asgar",
+			authenticator: "testasger",
 			password: "A112345!a",
 		})
 		.expect(200).expect("Content-Type", /json/);

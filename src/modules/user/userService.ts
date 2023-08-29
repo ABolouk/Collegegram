@@ -8,6 +8,8 @@ import jwt from 'jsonwebtoken';
 import { UserId } from './model/user.id';
 import { randomBytes } from 'crypto';
 import { sessionRepository } from './sessionRepository';
+import { comparePasswords } from '../../utility/passwordUtils';
+import { CreateFullUserDao } from './dao/user.dao';
 
 export class UserService {
     constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository) { }
@@ -19,15 +21,15 @@ export class UserService {
         if (!user) {
             throw new NotFoundError();
         }
-        if (user.password !== password) {
+        const passwordsMatch = await comparePasswords(password, user.password);
+        if (!passwordsMatch) {
             throw new UnauthorizedError();
         }
         const accessToken = jwt.sign({id : user.id}, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn:  "1h"})
         const refreshToken = randomBytes(64).toString('hex');
         const time = rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
         await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
-        const { password: _, id: __, ...userRest } = user
-        const userInfo = userRest as UserInformation;
+        const userInfo = CreateFullUserDao(user)
         return {userInfo, accessToken, refreshToken};
     }
     async findById(id: UserId) {
