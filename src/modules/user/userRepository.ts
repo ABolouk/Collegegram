@@ -4,12 +4,7 @@ import { UserId } from "./model/user.id";
 import { userName } from "./model/user.username";
 import { UserEmail } from "./model/user.email";
 import { seedUser } from "../../seedUser";
-
-export interface createUser{
-	email: UserEmail,
-	username: UserId,
-	password: string				
-}
+import { createUserDto } from "./dto/createUserDto";
 
 export class UserRepository {
 	private userRepo: Repository<UserEntity>;
@@ -30,7 +25,7 @@ export class UserRepository {
 		return this.userRepo.findOneBy({ id });
 	}
 
-	createUser( user: createUser): Promise<UserEntity> {
+	createUser( user: createUserDto): Promise<UserEntity> {
 		return this.userRepo.save(user)	
 	}
 }

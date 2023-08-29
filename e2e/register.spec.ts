@@ -21,10 +21,10 @@ describe("registerUser", () => {
       .post('/user/register')
       .send(
         {
-          username: "salam",
-          email: "jsalam_aa@yahoo.com",
-          password: "12345678_Am",
-          confirmPassword: "12345678_Am"
+          username: "abti1n",
+          email: "abtin_mansuri@gmail1.com",
+          password: "12345678_Abtin",
+          confirmPassword: "12345678_Abtin"
         }
       )
       .expect(201);

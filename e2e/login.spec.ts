@@ -1,8 +1,8 @@
 import { Express } from "express";
-import { AppDataSource } from "../../data-source";
-import { makeApp } from "../../api";
+import { AppDataSource } from "../src/data-source";
+import { makeApp } from "../src/api";
 import request from "supertest";
-import { NotFoundError, UnauthorizedError } from "../../utility/http-errors";
+import { NotFoundError, UnauthorizedError } from "../src/utility/http-errors";
 
 
 describe("User Module", () => {

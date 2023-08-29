@@ -25,7 +25,7 @@ export const makeApp = (dataSource: DataSource) => {
         next,
     ) => {
         if (error instanceof ZodError) {
-            res.status(400).send(error.issues);
+            res.status(400).send({ message: error.issues});
         }
         res.status(500).send({ message: "خطایی رخ داده است. لطفا دوباره تلاش کنید." });
     };

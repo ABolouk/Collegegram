@@ -1,14 +1,15 @@
 import { UserRepository } from './userRepository';
 import { isUserName } from './model/user.username';
-import { NotFoundError, UnauthorizedError } from '../../utility/http-errors';
+import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from '../../utility/http-errors';
 import { LoginDtoType } from './dto/login.dto';
 import { isUserEmail } from './model/user.email';
 import jwt from 'jsonwebtoken';
-import { UserId } from './model/user.id';
+import { UserId, makeUserId } from './model/user.id';
 import { randomBytes } from 'crypto';
 import { sessionRepository } from './sessionRepository';
-import { comparePasswords } from '../../utility/passwordUtils';
-import { CreateFullUserDao } from './dao/user.dao';
+import { comparePasswords, hashPassword } from '../../utility/passwordUtils';
+import { CreateFullUserDao, CreateUserDao } from './dao/user.dao';
+import { signupDto } from './dto/signup.dto';
 
 export class UserService {
     constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository) { }
@@ -18,7 +19,7 @@ export class UserService {
         }
         const user = await (isUserEmail(authenticator) ? this.userRepository.findByEmail(authenticator) : this.userRepository.findByUsername(authenticator));
         if (!user) {
-            throw new NotFoundError();
+            throw new NotFoundError("User");
         }
         const passwordsMatch = await comparePasswords(password, user.password);
         if (!passwordsMatch) {
@@ -61,13 +62,13 @@ export class UserService {
         const hashedPassword = await hashPassword(dto.password);
 
         const user = {
-            id: v4() as UserId,
+            id: makeUserId(),
             username: dto.username,
             email: dto.email,
             password: hashedPassword
 
         };
-        
+
         const newUser = await this.userRepository.createUser(user);
         const outputUser = CreateUserDao(newUser);
         return outputUser;

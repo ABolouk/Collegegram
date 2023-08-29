@@ -28,10 +28,10 @@ export class UserEntity {
     @Column({ nullable: true })
     bio?: string;
 
-    @Column('boolean', { default: false })
+    @Column({ nullable: true })
     avatar?: string;
 
-    @Column()
+    @Column('boolean', { default: false })
     isPrivate!: boolean;
 
     @CreateDateColumn()
