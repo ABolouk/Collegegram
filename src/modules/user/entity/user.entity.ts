@@ -33,7 +33,6 @@ export class UserEntity {
     @Column({ nullable: true })
     avatar?: string;
 
-
     @CreateDateColumn()
     createdAt!: Date;
 
