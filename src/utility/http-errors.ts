@@ -42,12 +42,6 @@ export class serviceUnavailableError extends HttpError {
     
 }
 
-export class DuplicateError extends HttpError{
-    constructor(message: string) {
-        super(422, message)
-    }
-}
-
 export class ConflictError extends HttpError{
     constructor(message: string) {
         super(409, message)
