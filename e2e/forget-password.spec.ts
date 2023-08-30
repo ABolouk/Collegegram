@@ -21,16 +21,65 @@ describe("Forget Password", () => {
                 authenticator: "asgar",
             })
             .expect(404);
-            
-            console.log('00927178-c77e-4908-8ae5-07cfd90d763e')
     })
 
-    it("should find the user and send an email", async () => {
+    it("should find the user with username", async () => {
         await request(app)
             .post('/user/login/forget')
             .send({
                 authenticator: "mainblock",
             })
             .expect(200);
+    })
+
+    it("should find the user with email", async () => {
+        await request(app)
+            .post('/user/login/forget')
+            .send({
+                authenticator: "amirhosseinbolouk@gmail.com",
+            })
+            .expect(200);
+    })
+
+    it.skip("should send a oneTimeLink and not change password", async () => {
+        const { body } = await request(app)
+            .post('/user/login/forget')
+            .send({
+                authenticator: "mainblock",
+            })
+            .expect(200);
+        const { success, oneTimeLink } = body;
+
+        expect(success).toBe(true);
+        console.log(oneTimeLink)
+        await request(app)
+            .post(`${oneTimeLink}`)
+            .send({
+                password1: "A112345!a",
+                password2: "A112345!b"
+            })
+            .expect(400);
+
+    })
+
+    it.skip("should send a oneTimeLink and change password", async () => {
+        const { body } = await request(app)
+            .post('/user/login/forget')
+            .send({
+                authenticator: "mainblock",
+            })
+            .expect(200);
+        const { success, oneTimeLink } = body;
+
+        expect(success).toBe(true);
+        console.log(oneTimeLink)
+        await request(app)
+            .post(`${oneTimeLink}`)
+            .send({
+                password1: "A112345!b",
+                password2: "A112345!b"
+            })
+            .expect(400);
+
     })
 })
