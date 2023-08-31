@@ -8,7 +8,7 @@ import { ForgetPasswordDto } from './dto/forgetPassword.dto';
 import { EmailService } from '../email/email.service';
 import { resetPasswordRoute } from '../../routes/user.routes';
 import { isUserId } from './model/user.id';
-import { PayloadType, createOneTimeLink, createOneTimeLinkSecret } from '../../utility/one-time-link';
+import { PayloadType, createMessageForOneTimeLink, createOneTimeLink, createOneTimeLinkSecret } from '../../utility/one-time-link';
 import { sessionRepository } from './sessionRepository';
 import { signupDto } from './dto/signup.dto';
 import { CreateFullUserDao, CreateUserDao } from './dao/user.dao';
@@ -98,8 +98,7 @@ export class UserService {
         const expiresIn = 15  // minutes
         const subject = "CollegeGram: Reset Password"
         const oneTimeLink = createOneTimeLink(`${process.env.HOST_NAME}/user/${resetPasswordRoute}`, user, expiresIn)
-        const description =
-            `To reset your password please click on the link below (Expires in ${expiresIn} minutes):\n${oneTimeLink}`;
+        const description = createMessageForOneTimeLink(oneTimeLink, expiresIn);
         const fromEmail = process.env.EMAIL_SERVICE_USER;
         if (fromEmail === undefined) {
             throw new BadRequestError("service email not valid");
