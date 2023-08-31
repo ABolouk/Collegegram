@@ -1,9 +1,15 @@
+import jwt from "jsonwebtoken";
 import { UserRepository } from './userRepository';
 import { isUserName } from './model/user.username';
 import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from '../../utility/http-errors';
 import { LoginDtoType } from './dto/login.dto';
 import { isUserEmail } from './model/user.email';
 import { UserInformation } from './model/user';
+import { ForgetPasswordDto } from './dto/forgetPassword.dto';
+import { EmailService } from '../email/email.service';
+import { resetPasswordRoute } from '../../routes/user.routes';
+import { isUserId } from './model/user.id';
+import { PayloadType, createOneTimeLink, createOneTimeLinkSecret } from '../../utility/one-time-link';
 import { signupDto } from './dto/signup.dto';
 import { CreateFullUserDao, CreateUserDao } from './dao/user.dao';
 import { hashPassword, comparePasswords } from '../../utility/passwordUtils';
@@ -11,8 +17,8 @@ import { v4 } from 'uuid';
 import { UserId } from './model/user.id';
 
 export class UserService {
-    constructor(private userRepository: UserRepository) { }
-    async login({ authenticator, password }: LoginDtoType){
+    constructor(private userRepository: UserRepository, private emailService: EmailService) { }
+    async login({ authenticator, password }: LoginDtoType) {
         if (isUserEmail(authenticator)) {
             const user = await this.userRepository.findByEmail(authenticator);
             if (!user) {
@@ -32,7 +38,7 @@ export class UserService {
 
             const outputUser = CreateFullUserDao(user)
             return outputUser;
-                
+
         }
         if (isUserName(authenticator)) {
             const user = await this.userRepository.findByUsername(authenticator);
@@ -71,9 +77,80 @@ export class UserService {
             password: hashedPassword
 
         };
-        
+
         const newUser = await this.userRepository.createUser(user);
         const outputUser = CreateUserDao(newUser);
         return outputUser;
     }
+
+    async forgetPassword({ authenticator }: ForgetPasswordDto) {
+
+        if (!isUserEmail(authenticator) && !isUserName(authenticator)) {
+            throw new UnauthorizedError();
+        }
+
+        const user = await (isUserEmail(authenticator) ? this.userRepository.findByEmail(authenticator) : this.userRepository.findByUsername(authenticator));
+
+        if (!user) {
+            throw new NotFoundError('User');
+        }
+
+        const expiresIn = 15  // minutes
+        const subject = "CollegeGram: Reset Password"
+        const oneTimeLink = createOneTimeLink(`${process.env.HOST_NAME}/user/${resetPasswordRoute}`, user, expiresIn)
+        const description =
+            `To reset your password please click on the link below (Expires in ${expiresIn} minutes):\n${oneTimeLink}`;
+        const fromEmail = process.env.EMAIL_SERVICE_USER;
+        if (fromEmail === undefined) {
+            throw new BadRequestError("service email not valid");
+        }
+
+        // TODO: we should check if the email has been recieved or not.
+        this.emailService.sendEmail(fromEmail, user.email, subject, description)
+        return {
+            success: true,
+        };
+    }
+
+    async getUserById(userId: string) {
+
+        if (!isUserId(userId)) {
+            throw new BadRequestError("Invalid userId");
+        };
+
+        const user = await this.userRepository.findById(userId);
+
+        if (!user) {
+            throw new NotFoundError('User');
+        };
+
+        return user;
+    }
+
+    async resetPassword(userId: string, token: string, password1: string, password2: string) {
+        if (!isUserId(userId)) {
+            throw new UnauthorizedError();
+        }
+
+        const user = await this.getUserById(userId);
+
+        const secret = createOneTimeLinkSecret(user)
+        const payload = jwt.verify(token, secret) as PayloadType
+
+        if (payload.userId !== user.id) {
+            throw new UnauthorizedError()
+        }
+
+        if (password1 !== password2) {
+            throw new BadRequestError("password1 and password2 are not equal")
+        }
+
+        user.password = password1;
+
+        this.userRepository.updatePasswordById(user.id, password1);
+
+        return { success: true };
+    }
+
+
 }

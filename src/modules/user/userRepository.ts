@@ -30,6 +30,13 @@ export class UserRepository {
 		return this.userRepo.findOneBy({ id });
 	}
 
+	updatePasswordById(id: UserId, password: string) {
+		this.userRepo.update(
+			{ id: id },
+			{ password: password },
+		)
+	}
+
 	async createUser( user: createUser): Promise<UserEntity> {
 		return await this.userRepo.save(user)	
 	}
