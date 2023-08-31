@@ -68,8 +68,12 @@ export class UserService {
         };
 
         const newUser = await this.userRepository.createUser(user);
-        const outputUser = CreateUserDao(newUser);
-        return outputUser;
+        const loginDto = {
+            authenticator: newUser.username,
+            password: newUser.password,
+            rememberMe: false
+        }
+        this.login(loginDto)
     }
 
     async forgetPassword({ authenticator }: ForgetPasswordDto) {
