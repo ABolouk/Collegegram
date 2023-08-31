@@ -21,7 +21,7 @@ export const makeApp = (dataSource: DataSource) => {
     app.use("/user", makeUserRouter(userService));
 
     const postRepo = new PostRepository(dataSource);
-    const postService = new PostService(postRepo);
+    const postService = new PostService(postRepo, userRepo);
     app.use("/post", makePostRouter(userService, postService));
 
     app.use((req, res, next) => {

@@ -1,28 +1,38 @@
-import { BadRequestError } from "../../utility/http-errors";
+import { BadRequestError, NotFoundError, UnauthorizedError } from "../../utility/http-errors";
 import { UserId, isUserId } from "../user/model/user.id";
+import { UserRepository } from "../user/userRepository";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { PostId, isPostId } from "./model/post-id";
 import { PostRepository } from "./post.repository";
 
 export class PostService {
-    constructor(private postRepository: PostRepository) {}
+    constructor(private postRepository: PostRepository, private userRepository: UserRepository) { }
 
-    createPost(dto: CreatePostDto) {
+    async createPost(dto: CreatePostDto) {
         // TODO: maybe some validations
-        return this.postRepository.createPost(dto)
+        // TODO: also how to save images
+        return await this.postRepository.createPost(dto);
     }
 
-    getPostById(postId: PostId) {
-        if(!isPostId(postId)) {
+    async getPostById(postId: PostId) {
+        if (!isPostId(postId)) {
             throw new BadRequestError('invalid postId');
         }
-        return this.postRepository.getPostById(postId);
+        const post = await this.postRepository.getPostById(postId)
+        if (!post) {
+            throw new NotFoundError('Post');
+        }
+        return post;
     }
 
-    getPostsByUserId(userId: UserId) {
-        if(!isUserId(userId)) {
+    async getPostsByUserId(userId: UserId, perPage: number, pageNumber: number) {
+        if (!isUserId(userId)) {
             throw new BadRequestError('invalid userId');
         }
-        return this.postRepository.getPostsByUserId(userId);
+        const user = await this.userRepository.findById(userId);
+        if (!user) {
+            throw new UnauthorizedError()
+        }
+        return await this.postRepository.getPostsByUserId(userId, perPage, pageNumber);
     }
 }
