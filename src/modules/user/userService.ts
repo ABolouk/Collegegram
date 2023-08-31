@@ -143,11 +143,8 @@ export class UserService {
         if (password1 !== password2) {
             throw new BadRequestError("password1 and password2 are not equal")
         }
-
-        user.password = password1;
-
-        this.userRepository.updatePasswordById(user.id, password1);
-
+        
+        this.userRepository.updatePasswordById(user.id, await hashPassword(password1));
         return { success: true };
     }
 }
