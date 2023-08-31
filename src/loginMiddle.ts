@@ -21,7 +21,7 @@ export const loginMiddle = (userService: UserService) =>
             async (err) => {
                 if (err) {
                     if (err.name === 'TokenExpiredError') {
-                        const session = await userService.findSessionByRefreshToken(refreshToken as string);
+                        const session = await userService.findSessionByToken(refreshToken as string);
                         if (!session) {
                             res.status(401).send({ message: "شما اجازه دسترسی به این صفحه را ندارید." });
                             return;
