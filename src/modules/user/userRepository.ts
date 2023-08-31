@@ -6,10 +6,10 @@ import { userName } from "./model/user.username";
 import { UserEmail } from "./model/user.email";
 
 
-export interface createUser{
-		email: string,
-		username: string,
-		password: string				
+export interface createUser {
+	email: string,
+	username: string,
+	password: string
 }
 
 export class UserRepository {
@@ -22,14 +22,14 @@ export class UserRepository {
 		return this.userRepo.findOneBy({ username });
 	}
 
-  findByEmail(email: UserEmail): Promise<UserEntity | null> {
+	findByEmail(email: UserEmail): Promise<UserEntity | null> {
 		return this.userRepo.findOneBy({ email });
 	}
 
 	findById(id: UserId): Promise<UserEntity | null> {
 		return this.userRepo.findOneBy({ id });
 	}
-
+	//FIXME: check async
 	updatePasswordById(id: UserId, password: string) {
 		this.userRepo.update(
 			{ id: id },
@@ -37,7 +37,7 @@ export class UserRepository {
 		)
 	}
 
-	async createUser( user: createUser): Promise<UserEntity> {
-		return await this.userRepo.save(user)	
+	async createUser(user: createUser): Promise<UserEntity> {
+		return await this.userRepo.save(user)
 	}
 }

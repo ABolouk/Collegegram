@@ -24,13 +24,14 @@ export class UserEntity {
     @Column({ nullable: true })
     lastName?: string;
 
+
     @Column({ nullable: true })
     bio?: string;
 
     @Column({ nullable: true })
     avatar?: string;
 
-    @Column('boolean', {default: false})
+    @Column('boolean', { default: false })
     isPrivate!: boolean;
 
     @CreateDateColumn()
