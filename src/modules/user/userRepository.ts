@@ -1,6 +1,6 @@
 import { DataSource, Repository } from "typeorm";
 import { UserEntity } from "./entity/user.entity";
-import { UserInterface } from "./model/user";
+import { UserInterface, updateUser } from "./model/user";
 import { UserId } from "./model/user.id";
 import { userName } from "./model/user.username";
 import { UserEmail } from "./model/user.email";
@@ -29,12 +29,16 @@ export class UserRepository {
 	findById(id: UserId): Promise<UserEntity | null> {
 		return this.userRepo.findOneBy({ id });
 	}
-	//FIXME: check async
+
 	updatePasswordById(id: UserId, password: string) {
 		this.userRepo.update(
 			{ id: id },
 			{ password: password },
 		)
+	}
+
+	updateUser(userId:UserId,user: updateUser) {
+		this.userRepo.update({id : userId },user)
 	}
 
 	async createUser(user: createUser): Promise<UserEntity> {

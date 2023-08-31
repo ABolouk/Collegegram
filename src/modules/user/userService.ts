@@ -33,12 +33,23 @@ export class UserService {
         if (!passwordsMatch) {
             throw new UnauthorizedError();
         }
-        const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "1h" })
-        const refreshToken = randomBytes(64).toString('hex');
+        const accessToken = jwt.sign({ id: user.id }, "1ca79d5317ef09fc6e528fe79b02aecffc720b6e65658d5d7c5b18786a37129099fbb8ec40e5f848b39d986143452fab94fcdc0b2b3e7d60277c580e11411174", { expiresIn: "1h" })
+        const refreshToken = randomBytes(64).toString('hex')
         const time = rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
         await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
         const userInfo = CreateFullUserDao(user)
         return { userInfo, accessToken, refreshToken };
+    }
+    async findById(id: UserId) {
+        return this.userRepository.findById(id);
+    }
+
+    async findSessionByRefreshToken(token: string) {
+        return this.sessionRepo.findSessionByRefreshToken(token);
+    }
+
+    async deleteToken(token: string) {
+        return this.sessionRepo.deleteToken(token);
     }
     async signup(dto: signupDto) {
 

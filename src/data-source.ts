@@ -4,15 +4,16 @@ import dotenv from "dotenv-flow"
 import { UserEntity } from "./modules/user/entity/user.entity";
 import { SessionEntity } from "./modules/user/entity/session.entity";
 
-dotenv.config();
+// dotenv.config();
 
 export const AppDataSource = new DataSource({
+    url: "postgresql://root:FoM5MrpsWuwhzFkrygNZbhml@aberama.iran.liara.ir:34561/postgres",
     type: "postgres",
-    host: "127.0.0.1",
-    port: 5432,
-    username: process.env.DB_USER,
-    password: process.env.DB_PASS,
-    database: process.env.DB_NAME,
+    // host: "aberama.iran.liara.ir",
+    port: 34561,
+    // username: "",
+    // password: "FoM5MrpsWuwhzFkrygNZbhml",
+    // database: "collegegram-db",
     logging: false,
     entities: [UserEntity, SessionEntity],
     migrations: ["./src/migrations/*.ts"],
