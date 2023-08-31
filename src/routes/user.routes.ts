@@ -46,7 +46,7 @@ export const makeUserRouter = (userService: UserService) => {
 	const upload = multer({ storage: storage })
 	app.post("/editProfile", loginMiddle(userService), upload.single('avatar'), (req, res) => {
 		const dto = editProfile.parse(req.body);
-		handleExpresss
+		handleExpresss(res, () => userService.updateUserInfo(req.user.id, dto, req.file));
 	});
 	return app;
 };

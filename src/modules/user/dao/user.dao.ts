@@ -27,7 +27,7 @@ export const CreateFullUserDao = (userEntity: UserEntity): UserOutputFull => ({
   username: userEntity.username,
   email: userEntity.email,
   bio: userEntity.bio,
-  firstName: userEntity.firsrName,
+  firstName: userEntity.firstName,
   lastName: userEntity.lastName,
   avatar: userEntity.avatar,
   isPrivate: userEntity.isPrivate

@@ -4,8 +4,6 @@ import { isUserName } from './model/user.username';
 import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from '../../utility/http-errors';
 import { LoginDtoType } from './dto/login.dto';
 import { isUserEmail } from './model/user.email';
-
-import { UserInformation } from './model/user';
 import { ForgetPasswordDto } from './dto/forgetPassword.dto';
 import { EmailService } from '../email/email.service';
 import { resetPasswordRoute } from '../../routes/user.routes';
@@ -18,24 +16,25 @@ import { hashPassword, comparePasswords } from '../../utility/passwordUtils';
 import { randomBytes } from 'crypto';
 import { v4 } from 'uuid';
 import { UserId } from './model/user.id';
+import { EditProfileType } from "./dto/editProfile.dto";
 
 export class UserService {
-    constructor(private userRepository: UserRepository,private sessionRepo: sessionRepository , private emailService: EmailService) { }
-    async login({ authenticator, password, rememberMe }: LoginDtoType) {
-        if (!isUserEmail(authenticator) && !isUserName(authenticator)) {
+    constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService) { }
+    async login(loginDto: LoginDtoType) {
+        if (!isUserEmail(loginDto.authenticator) && !isUserName(loginDto.authenticator)) {
             throw new UnauthorizedError();
         }
-        const user = await (isUserEmail(authenticator) ? this.userRepository.findByEmail(authenticator) : this.userRepository.findByUsername(authenticator));
+        const user = await (isUserEmail(loginDto.authenticator) ? this.userRepository.findByEmail(loginDto.authenticator) : this.userRepository.findByUsername(loginDto.authenticator));
         if (!user) {
             throw new NotFoundError("User");
         }
-        const passwordsMatch = await comparePasswords(password, user.password);
+        const passwordsMatch = await comparePasswords(loginDto.password, user.password);
         if (!passwordsMatch) {
             throw new UnauthorizedError();
         }
         const accessToken = jwt.sign({ id: user.id }, "1ca79d5317ef09fc6e528fe79b02aecffc720b6e65658d5d7c5b18786a37129099fbb8ec40e5f848b39d986143452fab94fcdc0b2b3e7d60277c580e11411174", { expiresIn: "1h" })
         const refreshToken = randomBytes(64).toString('hex')
-        const time = rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
+        const time = loginDto.rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
         await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
         const userInfo = CreateFullUserDao(user)
         return { userInfo, accessToken, refreshToken };
@@ -151,5 +150,20 @@ export class UserService {
         return { success: true };
     }
 
+    async updateUserInfo(userId: UserId, editInfo: EditProfileType, file?: Express.Multer.File) {
+        if (editInfo.password !== editInfo.confirmPassword) {
+            throw new BadRequestError("رمز عبور و تکرار آن یکسان نیستند");
+        }
+        const editPass = hashPassword(editInfo.password)
+        const user = await this.getUserById(userId);
+
+        if (!user) {
+            throw new NotFoundError('User');
+        };
+        const { confirmPassword, ...updateUserInfo } = {...editInfo, avatar: file ? file.path : "/Users/abtin/Desktop/collegegram/collegegram-backend/media/1693476819808-testasger-binary (3).png",password: await editPass};
+
+        this.userRepository.updateUser(user.id, updateUserInfo);
+        return true;
+    }
 
 }

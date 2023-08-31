@@ -2,6 +2,8 @@ import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } fro
 import { UserId } from "../model/user.id";
 import { UserEmail } from "../model/user.email";
 import { userName } from "../model/user.username";
+import { firstName } from "../model/user.firstName";
+import { lastName } from "../model/user.lastName";
 
 
 @Entity("users")
@@ -19,11 +21,10 @@ export class UserEntity {
     password!: string;
 
     @Column({ nullable: true })
-    firsrName?: string;
+    firstName?: firstName;
 
     @Column({ nullable: true })
-    lastName?: string;
-
+    lastName?: lastName;
 
     @Column({ nullable: true })
     bio?: string;
