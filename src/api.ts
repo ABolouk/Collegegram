@@ -6,6 +6,9 @@ import { makeUserRouter } from "./routes/user.routes";
 import { sessionRepository } from "./modules/user/sessionRepository";
 import { ZodError } from "zod";
 import { EmailService } from "./modules/email/email.service";
+import { makePostRouter } from "./routes/post.routes";
+import { PostRepository } from "./modules/post/post.repository";
+import { PostService } from "./modules/post/post.service";
 
 export const makeApp = (dataSource: DataSource) => {
     const app = express();
@@ -14,8 +17,13 @@ export const makeApp = (dataSource: DataSource) => {
     const userRepo = new UserRepository(dataSource);
     const sessionRepo = new sessionRepository(dataSource);
     const emailService = new EmailService()
-    const userService = new UserService(userRepo, sessionRepo,emailService);
+    const userService = new UserService(userRepo, sessionRepo, emailService);
     app.use("/user", makeUserRouter(userService));
+
+    const postRepo = new PostRepository(dataSource);
+    const postService = new PostService(postRepo);
+    app.use("/post", makePostRouter(userService, postService));
+
     app.use((req, res, next) => {
         next();
     })
@@ -27,7 +35,7 @@ export const makeApp = (dataSource: DataSource) => {
         next,
     ) => {
         if (error instanceof ZodError) {
-            res.status(400).send({ message: error.issues});
+            res.status(400).send({ message: error.issues });
         }
         res.status(500).send({ message: "خطایی رخ داده است. لطفا دوباره تلاش کنید." });
     };
