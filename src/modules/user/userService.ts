@@ -39,6 +39,19 @@ export class UserService {
         const userInfo = CreateFullUserDao(user)
         return { userInfo, accessToken, refreshToken };
     }
+
+    async findById(id: UserId) {
+        return this.userRepository.findById(id);
+    }
+
+    async findSessionByToken(token: string) {
+        return this.sessionRepo.findSessionByToken(token);
+    }
+
+    async deleteToken(token: string) {
+        return this.sessionRepo.deleteToken(token);
+    }
+
     async signup(dto: signupDto) {
 
         const userByEmail = await this.userRepository.findByEmail(dto.email);
