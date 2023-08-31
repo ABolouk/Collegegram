@@ -2,17 +2,7 @@ import { DataSource, Repository } from "typeorm";
 import { PostEntity } from "./entity/post.entity";
 import { PostId } from "./model/post-id";
 import { UserId } from "../user/model/user.id";
-import { CommentEntity } from "./comment/entity/comment.entity";
-import { CreateTagInterface } from "./tag/model/tsg";
-
-export interface CreatePost {
-    userId: UserId;
-    photos: string[];
-    description?: string;
-    comments?: CommentEntity[];
-    tags?: CreateTagInterface[];
-    closeFriends: boolean;
-};
+import { PostDao } from "./dao/post.dao";
 
 export class PostRepository {
     private postRepo: Repository<PostEntity>;
@@ -33,7 +23,7 @@ export class PostRepository {
         });
     }
 
-    createPost(post: CreatePost): Promise<PostEntity> {
+    createPost(post: PostDao): Promise<PostEntity> {
         return this.postRepo.save(post);
     }
 }
