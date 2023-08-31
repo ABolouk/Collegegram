@@ -147,9 +147,9 @@ export class UserService {
 
         user.password = password1;
 
-        const updatedUser = this.userRepository.updatePasswordById(user.id, password1);
+        this.userRepository.updatePasswordById(user.id, password1);
 
-        return updatedUser;
+        return { success: true };
     }
 
 
