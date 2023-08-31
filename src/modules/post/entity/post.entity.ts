@@ -30,7 +30,7 @@ export class PostEntity {
   closeFriends!: boolean;
 
   @CreateDateColumn()
-  createAt!: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
   updatedAt!: Date;
