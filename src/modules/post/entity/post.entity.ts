@@ -2,6 +2,7 @@ import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, One
 import { UserEntity } from "../../user/entity/user.entity";
 import { CommentEntity } from "../comment/entity/comment.entity";
 import { TagEntity } from "../tag/entity/tag.entity";
+import { UserId } from "../../user/model/user.id";
 
 
 
@@ -9,6 +10,9 @@ import { TagEntity } from "../tag/entity/tag.entity";
 export class PostEntity {
   @PrimaryGeneratedColumn()
   id!: number;
+
+  @Column()
+  userId!: UserId;
 
   @ManyToOne(() => UserEntity)
   user!: UserEntity
@@ -30,7 +34,7 @@ export class PostEntity {
   closeFriends!: boolean;
 
   @CreateDateColumn()
-  createAt!: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
   updatedAt!: Date;
