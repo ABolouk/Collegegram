@@ -4,8 +4,6 @@ import { isUserName } from './model/user.username';
 import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from '../../utility/http-errors';
 import { LoginDtoType } from './dto/login.dto';
 import { isUserEmail } from './model/user.email';
-
-import { UserInformation } from './model/user';
 import { ForgetPasswordDto } from './dto/forgetPassword.dto';
 import { EmailService } from '../email/email.service';
 import { resetPasswordRoute } from '../../routes/user.routes';
@@ -18,9 +16,10 @@ import { hashPassword, comparePasswords } from '../../utility/passwordUtils';
 import { randomBytes } from 'crypto';
 import { v4 } from 'uuid';
 import { UserId } from './model/user.id';
+import 'dotenv-flow/config';
 
 export class UserService {
-    constructor(private userRepository: UserRepository,private sessionRepo: sessionRepository , private emailService: EmailService) { }
+    constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService) { }
     async login({ authenticator, password, rememberMe }: LoginDtoType) {
         if (!isUserEmail(authenticator) && !isUserName(authenticator)) {
             throw new UnauthorizedError();
@@ -139,6 +138,4 @@ export class UserService {
 
         return { success: true };
     }
-
-
 }

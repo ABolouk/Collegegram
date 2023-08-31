@@ -3,6 +3,7 @@ import { UserInterface } from "../modules/user/model/user";
 import { UserId } from "../modules/user/model/user.id";
 import { userName } from "../modules/user/model/user.username";
 import { UserEmail } from "../modules/user/model/user.email";
+import 'dotenv-flow/config';
 
 export type PayloadType = {
     userId: UserId,
