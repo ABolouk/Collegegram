@@ -27,7 +27,7 @@ export class CommentEntity {
   content!: string
   
   @CreateDateColumn()
-  createAt!: Date;
+  createdAt!: Date;
 
   @UpdateDateColumn()
   updatedAt!: Date;
