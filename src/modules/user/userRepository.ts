@@ -1,6 +1,6 @@
 import { DataSource, Repository } from "typeorm";
 import { UserEntity } from "./entity/user.entity";
-import { UserInterface } from "./model/user";
+import { CreateUserInterface } from "./model/user";
 import { UserId } from "./model/user.id";
 import { userName } from "./model/user.username";
 import { UserEmail } from "./model/user.email";
@@ -37,7 +37,7 @@ export class UserRepository {
 		)
 	}
 
-	createUser(user: UserInterface): Promise<UserEntity> {
+	createUser(user: CreateUserInterface): Promise<UserEntity> {
 		return this.userRepo.save(user)
 	}
 }

@@ -4,8 +4,6 @@ import { isUserName } from './model/user.username';
 import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from '../../utility/http-errors';
 import { LoginDtoType } from './dto/login.dto';
 import { isUserEmail } from './model/user.email';
-
-import { UserInformation } from './model/user';
 import { ForgetPasswordDto } from './dto/forgetPassword.dto';
 import { EmailService } from '../email/email.service';
 import { resetPasswordRoute } from '../../routes/user.routes';
@@ -13,11 +11,10 @@ import { isUserId, makeUserId } from './model/user.id';
 import { PayloadType, createOneTimeLink, createOneTimeLinkSecret } from '../../utility/one-time-link';
 import { sessionRepository } from './sessionRepository';
 import { signupDto } from './dto/signup.dto';
-import { CreateFullUserDao, CreateUserDao } from './dao/user.dao';
+import { CreateFullUserDao } from './dao/user.dao';
 import { hashPassword, comparePasswords } from '../../utility/passwordUtils';
 import { randomBytes } from 'crypto';
-import { v4 } from 'uuid';
-import { UserId } from './model/user.id';
+
 
 export class UserService {
     constructor(private userRepository: UserRepository,private sessionRepo: sessionRepository , private emailService: EmailService) { }

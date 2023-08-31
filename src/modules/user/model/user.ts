@@ -14,6 +14,15 @@ export interface UserInterface {
     isPrivate: boolean;
 }
 
+
+export interface CreateUserInterface{
+    id: UserId;
+    email: UserEmail;
+    username: userName;
+    password: string;
+    isPrivate: boolean;
+}
+
 type tempOmit = 'password' | 'id';
 export interface UserInformation extends Omit<UserInterface, tempOmit> {}
 
