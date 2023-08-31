@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "main": "main.ts",
   "scripts": {
-    "start": "NODE_ENV=Test ts-node src/main.ts",
+    "start": "ts-node src/main.ts", 
     "test:e2e": "jest --forceExit --detectOpenHandles --testMatch **/e2e/**/*.spec.ts --runInBand",
     "test": "jest --testMatch **/src/**/*.spec.ts",
     "typeorm": "typeorm-ts-node-commonjs",
-    "typeorm:run": "NODE_ENV=Test typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
+    "typeorm:run": "typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
     "typeorm:generate": "typeorm-ts-node-commonjs migration:generate -d ./src/data-source.ts"
   },
   "license": "MIT",
