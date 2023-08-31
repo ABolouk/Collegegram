@@ -1,3 +1,6 @@
 node_modules
 .env.*local
 .log
+*.sql
+/media/*
+/.vscode/*
