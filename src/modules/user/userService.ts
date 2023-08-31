@@ -9,7 +9,7 @@ import { UserInformation } from './model/user';
 import { ForgetPasswordDto } from './dto/forgetPassword.dto';
 import { EmailService } from '../email/email.service';
 import { resetPasswordRoute } from '../../routes/user.routes';
-import { isUserId } from './model/user.id';
+import { isUserId, makeUserId } from './model/user.id';
 import { PayloadType, createOneTimeLink, createOneTimeLinkSecret } from '../../utility/one-time-link';
 import { sessionRepository } from './sessionRepository';
 import { signupDto } from './dto/signup.dto';
@@ -59,10 +59,11 @@ export class UserService {
         const hashedPassword = await hashPassword(dto.password);
 
         const user = {
-            id: v4() as UserId,
+            id: makeUserId(),
             username: dto.username,
             email: dto.email,
-            password: hashedPassword
+            password: hashedPassword,
+            isPrivate: false
 
         };
 

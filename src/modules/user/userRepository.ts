@@ -37,7 +37,7 @@ export class UserRepository {
 		)
 	}
 
-	async createUser(user: createUser): Promise<UserEntity> {
-		return await this.userRepo.save(user)
+	createUser(user: UserInterface): Promise<UserEntity> {
+		return this.userRepo.save(user)
 	}
 }
