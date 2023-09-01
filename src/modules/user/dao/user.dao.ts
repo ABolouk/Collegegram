@@ -1,19 +1,16 @@
 import { User } from "../model/user";
-import { UserEmail } from "../model/user.email";
-import { userName } from "../model/user.username";
-
-
+import { Email } from "../model/user.email";
+import { Username } from "../model/user.username";
 
 export type UserOutputFull = {
-  email: UserEmail;
-  username: userName;
+  email: Email;
+  username: Username;
   bio?: string;
   firstName?: string;
   lastName?: string;
   avatar?: string;
   isPrivate: boolean;
-}
-
+};
 
 export const CreateFullUserDao = (user: User): UserOutputFull => ({
   username: user.username,
@@ -22,6 +19,5 @@ export const CreateFullUserDao = (user: User): UserOutputFull => ({
   firstName: user.firstName,
   lastName: user.lastName,
   avatar: user.avatar,
-  isPrivate: user.isPrivate
-
-})
+  isPrivate: user.isPrivate,
+});

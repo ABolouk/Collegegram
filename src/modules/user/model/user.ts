@@ -1,38 +1,35 @@
-import { UserEmail } from './user.email';
+import { Email } from "./user.email";
 import { UserId } from "./user.id";
-import { userName } from "./user.username";
-import { firstName } from './user.firstName';
-import { lastName } from './user.lastName';
+import { Username } from "./user.username";
+import { FirstName } from "./user.firstName";
+import { lastName } from "./user.lastName";
+import { Password } from "./password";
 
 export interface User {
-    id: UserId;
-    email: UserEmail;
-    username: userName;
-    password: string;
-    bio?: string;
-    firstName?: string;
-    lastName?: string;
-    avatar?: string;
-    isPrivate: boolean;
+  id: UserId;
+  email: Email;
+  username: Username;
+  bio?: string;
+  firstName?: string;
+  lastName?: string;
+  avatar?: string;
+  isPrivate: boolean;
 }
 
-
-export interface CreateUserInterface{
-    id: UserId;
-    email: UserEmail;
-    username: userName;
-    password: string;
-    isPrivate: boolean;
+export interface CreateUserInterface {
+  id: UserId;
+  email: Email.Unique;
+  username: Username.Unique;
+  password: Password.Hashed;
+  isPrivate: false;
 }
-
 
 export interface updateUser {
-    email: UserEmail;
-    password: string;
-    firstName: firstName;
-    lastName: lastName;
-    avatar: string;
-    bio: string;
-    isPrivate: boolean;
+  email: Email;
+  password: string;
+  firstName: FirstName;
+  lastName: lastName;
+  avatar: string;
+  bio: string;
+  isPrivate: boolean;
 }
-
