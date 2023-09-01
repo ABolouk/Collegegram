@@ -4,7 +4,8 @@ import { CommentRepository } from "./comment.repository";
 import { CommentDao } from "./dao/create-comment.dao";
 import { createCommentDto } from "./dto/create-comment.dto";
 
-export class CommentService{
+
+ export class CommentService{
   constructor(
     private commentRepo: CommentRepository,
     private postService: PostService
