@@ -11,34 +11,34 @@ import { createCommentDto } from "../modules/post/comment/dto/create-comment.dto
 import { getPostsDto } from "../modules/post/dto/get-post-dto";
 
 export const makePostRouter = (userService: UserService, postService: PostService, commentService: CommentService) => {
-  const app = Router();
-  app.post("/", loginMiddle(userService), async (req, res) => {
-    const data = createPostDto.parse(req.body);
-    handleExpresss(res, () => postService.createPost(data));
-  });
+	const app = Router();
+	app.post("/", loginMiddle(userService), async (req, res) => {
+		const data = createPostDto.parse(req.body);
+		handleExpresss(res, () => postService.createPost(data));
+	});
 
-  app.get("/:id", loginMiddle(userService), async (req, res) => {
-    const { id } = req.params;
-    if (!Number.isInteger(id)) {
-      throw new BadRequestError('not a valid postId');
-    }
-    const postId = +(id);
-    if (!isPostId(postId)) {
-      throw new BadRequestError('not a valid postId');
-    }
-    handleExpresss(res, () => postService.getPostById(postId));
-  });
+	app.get("/:id", loginMiddle(userService), async (req, res) => {
+		const { id } = req.params;
+		if (!Number.isInteger(id)) {
+			throw new BadRequestError('not a valid postId');
+		}
+		const postId = +(id);
+		if (!isPostId(postId)) {
+			throw new BadRequestError('not a valid postId');
+		}
+		handleExpresss(res, () => postService.getPostById(postId));
+	});
 
-  app.post("/user", loginMiddle(userService), (req, res) => {
-    const user = req.user;
-    const { perPage, pageNumber } = getPostsDto.parse(req.body)
-    handleExpresss(res, () => postService.getPostsByUserId(user.id, perPage, pageNumber));
-  });
+	app.post("/user", loginMiddle(userService), (req, res) => {
+		const user = req.user;
+		const { perPage, pageNumber } = getPostsDto.parse(req.body)
+		handleExpresss(res, () => postService.getPostsByUserId(user.id, perPage, pageNumber));
+	});
 
   app.post("/:id/comment", loginMiddle(userService), (req, res) => {
     const dto = createCommentDto.parse({ ...req.body, postId: req.params.id })
     handleExpresss(res, () => commentService.comment(dto))
-
   })
-  return app;
+
+	return app;
 };

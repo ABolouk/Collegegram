@@ -1,35 +1,38 @@
-import { promises } from "dns";
-import { BadRequestError, NotFoundError } from "../../utility/http-errors";
+import { BadRequestError, NotFoundError, UnauthorizedError } from "../../utility/http-errors";
 import { UserId, isUserId } from "../user/model/user.id";
-import { CommentRepository } from "./comment/comment.repository";
-import { createCommentDto } from "./comment/dto/create-comment.dto";
-import { CreateCommentInterface } from "./comment/model/comment";
+import { UserRepository } from "../user/userRepository";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { PostId, isPostId } from "./model/post-id";
 import { PostRepository } from "./post.repository";
-import { CommentDao } from "./comment/dao/create-comment.dao";
 
 export class PostService {
-  constructor(private postRepository: PostRepository,
-  private commentRepository: CommentRepository
-  ) { }
+    constructor(private postRepository: PostRepository, private userRepository: UserRepository) { }
 
-  createPost(dto: CreatePostDto) {
-    // TODO: maybe some validations
-   // return this.postRepository.createPost(dto)
-  }
-
-  getPostById(postId: PostId) {
-    if (!isPostId(postId)) {
-      throw new BadRequestError('invalid postId');
+    async createPost(dto: CreatePostDto) {
+        // TODO: maybe some validations
+        // TODO: also how to save images
+        return await this.postRepository.createPost(dto);
     }
-    return this.postRepository.getPostById(postId);
-  }
 
-  getPostsByUserId(userId: UserId) {
-    if (!isUserId(userId)) {
-      throw new BadRequestError('invalid userId');
+    async getPostById(postId: PostId) {
+        if (!isPostId(postId)) {
+            throw new BadRequestError('invalid postId');
+        }
+        const post = await this.postRepository.getPostById(postId)
+        if (!post) {
+            throw new NotFoundError('Post');
+        }
+        return post;
     }
-    return this.postRepository.getPostsByUserId(userId);
-  }
+
+    async getPostsByUserId(userId: UserId, perPage: number, pageNumber: number) {
+        if (!isUserId(userId)) {
+            throw new BadRequestError('invalid userId');
+        }
+        const user = await this.userRepository.findById(userId);
+        if (!user) {
+            throw new UnauthorizedError()
+        }
+        return await this.postRepository.getPostsByUserId(userId, perPage, pageNumber);
+    }
 }

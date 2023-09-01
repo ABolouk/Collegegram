@@ -2,37 +2,28 @@ import { DataSource, Repository } from "typeorm";
 import { PostEntity } from "./entity/post.entity";
 import { PostId } from "./model/post-id";
 import { UserId } from "../user/model/user.id";
-import { CommentEntity } from "./comment/entity/comment.entity";
-import { CreateTagInterface } from "./tag/model/tag";
-
-export interface CreatePost {
-  userId: UserId;
-  photos: string[];
-  description?: string;
-  comments?: CommentEntity[];
-  tags?: CreateTagInterface[];
-  closeFriends: boolean;
-};
+import { PostDao } from "./dao/post.dao";
 
 export class PostRepository {
-  private postRepo: Repository<PostEntity>;
-  constructor(appDataSourece: DataSource) {
-    this.postRepo = appDataSourece.getRepository(PostEntity);
-  }
+    private postRepo: Repository<PostEntity>;
+    constructor(appDataSourece: DataSource) {
+        this.postRepo = appDataSourece.getRepository(PostEntity);
+    }
 
-  getPostById(id: PostId) {
-    return this.postRepo.findOneBy({ id })
-  }
+    getPostById(id: PostId): Promise<PostEntity | null> {
+        return this.postRepo.findOneBy({ id });
+    }
 
-  getPostsByUserId(userId: UserId): Promise<PostEntity[]> {
-    return this.postRepo.find({
-      where: {
-        //userId
-      }
-    })
-  }
+    getPostsByUserId(userId: UserId, perPage: number, pageNumber: number): Promise<PostEntity[]> {
+        return this.postRepo.find({
+            where: { userId: userId },
+            order: { createdAt: 'ASC', id: 'ASC' },
+            skip: perPage * (pageNumber - 1),
+            take: perPage,
+        });
+    }
 
-  createPost(post: CreatePost) {
-    return this.postRepo.save(post)
-  }
+    createPost(post: PostDao): Promise<PostEntity> {
+        return this.postRepo.save(post);
+    }
 }
