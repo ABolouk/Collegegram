@@ -1,10 +1,8 @@
 import "reflect-metadata";
 import { DataSource } from "typeorm";
-import dotenv from "dotenv-flow"
 import { UserEntity } from "./modules/user/entity/user.entity";
 import { SessionEntity } from "./modules/user/entity/session.entity";
-
-dotenv.config();
+import 'dotenv-flow/config';
 
 export const AppDataSource = new DataSource({
     type: "postgres",

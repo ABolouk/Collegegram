@@ -1,5 +1,6 @@
 import nodemailer, { Transporter } from "nodemailer";
 import { UserEmail } from "../user/model/user.email";
+import 'dotenv-flow/config';
 
 export const emailServiceConfig = {
     host: process.env.EMAIL_SERVICE_PROVIDER,

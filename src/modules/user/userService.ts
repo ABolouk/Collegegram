@@ -7,6 +7,8 @@ import { isUserEmail } from './model/user.email';
 import { ForgetPasswordDto } from './dto/forgetPassword.dto';
 import { EmailService } from '../email/email.service';
 import { resetPasswordRoute } from '../../routes/user.routes';
+import { isUserId } from './model/user.id';
+import { PayloadType, createMessageForOneTimeLink, createOneTimeLink, createOneTimeLinkSecret } from '../../utility/one-time-link';
 import { isUserId, makeUserId } from './model/user.id';
 import { PayloadType, createOneTimeLink, createOneTimeLinkSecret } from '../../utility/one-time-link';
 import { sessionRepository } from './sessionRepository';
@@ -14,10 +16,12 @@ import { signupDto } from './dto/signup.dto';
 import { CreateFullUserDao } from './dao/user.dao';
 import { hashPassword, comparePasswords } from '../../utility/passwordUtils';
 import { randomBytes } from 'crypto';
-
+import { v4 } from 'uuid';
+import { UserId } from './model/user.id';
+import 'dotenv-flow/config';
 
 export class UserService {
-    constructor(private userRepository: UserRepository,private sessionRepo: sessionRepository , private emailService: EmailService) { }
+    constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService) { }
     async login({ authenticator, password, rememberMe }: LoginDtoType) {
         if (!isUserEmail(authenticator) && !isUserName(authenticator)) {
             throw new UnauthorizedError();
@@ -37,6 +41,19 @@ export class UserService {
         const userInfo = CreateFullUserDao(user)
         return { userInfo, accessToken, refreshToken };
     }
+
+    async findById(id: UserId) {
+        return this.userRepository.findById(id);
+    }
+
+    async findSessionByToken(token: string) {
+        return this.sessionRepo.findSessionByToken(token);
+    }
+
+    async deleteToken(token: string) {
+        return this.sessionRepo.deleteToken(token);
+    }
+
     async signup(dto: signupDto) {
 
         const userByEmail = await this.userRepository.findByEmail(dto.email);
@@ -88,8 +105,7 @@ export class UserService {
         const expiresIn = 15  // minutes
         const subject = "CollegeGram: Reset Password"
         const oneTimeLink = createOneTimeLink(`${process.env.HOST_NAME}/user/${resetPasswordRoute}`, user, expiresIn)
-        const description =
-            `To reset your password please click on the link below (Expires in ${expiresIn} minutes):\n${oneTimeLink}`;
+        const description = createMessageForOneTimeLink(oneTimeLink, expiresIn);
         const fromEmail = process.env.EMAIL_SERVICE_USER;
         if (fromEmail === undefined) {
             throw new BadRequestError("service email not valid");
@@ -134,13 +150,8 @@ export class UserService {
         if (password1 !== password2) {
             throw new BadRequestError("password1 and password2 are not equal")
         }
-
-        user.password = password1;
-
-        this.userRepository.updatePasswordById(user.id, password1);
-
+        
+        this.userRepository.updatePasswordById(user.id, await hashPassword(password1));
         return { success: true };
     }
-
-
 }
