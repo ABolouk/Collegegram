@@ -4,7 +4,7 @@ import { userName } from "./user.username";
 import { firstName } from './user.firstName';
 import { lastName } from './user.lastName';
 
-export interface UserInterface {
+export interface User {
     id: UserId;
     email: UserEmail;
     username: userName;
@@ -15,6 +15,16 @@ export interface UserInterface {
     avatar?: string;
     isPrivate: boolean;
 }
+
+
+export interface CreateUserInterface{
+    id: UserId;
+    email: UserEmail;
+    username: userName;
+    password: string;
+    isPrivate: boolean;
+}
+
 
 export interface updateUser {
     email: UserEmail;

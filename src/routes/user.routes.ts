@@ -14,7 +14,6 @@ export const resetPasswordRoute = "reset_password"
 export const makeUserRouter = (userService: UserService) => {
 	const app = Router();
 	app.post("/login", (req, res) => {
-		console.log(req.body);
 		const dto = loginDto.parse(req.body);
 		handleExpresss(res, () => userService.login(dto));
 	});

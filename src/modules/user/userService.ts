@@ -7,11 +7,11 @@ import { isUserEmail } from './model/user.email';
 import { ForgetPasswordDto } from './dto/forgetPassword.dto';
 import { EmailService } from '../email/email.service';
 import { resetPasswordRoute } from '../../routes/user.routes';
-import { isUserId } from './model/user.id';
-import { PayloadType, createOneTimeLink, createOneTimeLinkSecret } from '../../utility/one-time-link';
+import { PayloadType, createMessageForOneTimeLink, createOneTimeLink, createOneTimeLinkSecret } from '../../utility/one-time-link';
+import { isUserId, makeUserId } from './model/user.id';
 import { sessionRepository } from './sessionRepository';
 import { signupDto } from './dto/signup.dto';
-import { CreateFullUserDao, CreateUserDao } from './dao/user.dao';
+import { CreateFullUserDao } from './dao/user.dao';
 import { hashPassword, comparePasswords } from '../../utility/passwordUtils';
 import { randomBytes } from 'crypto';
 import { v4 } from 'uuid';
@@ -29,7 +29,7 @@ export class UserService {
         if (!passwordsMatch) {
             throw new UnauthorizedError();
         }
-        const accessToken = jwt.sign({ id: user.id }, "1ca79d5317ef09fc6e528fe79b02aecffc720b6e65658d5d7c5b18786a37129099fbb8ec40e5f848b39d986143452fab94fcdc0b2b3e7d60277c580e11411174", { expiresIn: "1h" })
+        const accessToken = jwt.sign({ id: user.id },process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "1h" })
         const refreshToken = randomBytes(64).toString('hex')
         const time = loginDto.rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
         await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
@@ -66,16 +66,21 @@ export class UserService {
         const hashedPassword = await hashPassword(dto.password);
 
         const user = {
-            id: v4() as UserId,
+            id: makeUserId(),
             username: dto.username,
             email: dto.email,
-            password: hashedPassword
+            password: hashedPassword,
+            isPrivate: false
 
         };
 
         const newUser = await this.userRepository.createUser(user);
-        const outputUser = CreateUserDao(newUser);
-        return outputUser;
+        const loginDto = {
+            authenticator: newUser.username,
+            password: newUser.password,
+            rememberMe: false
+        }
+        this.login(loginDto)
     }
 
     async forgetPassword({ authenticator }: ForgetPasswordDto) {
@@ -93,8 +98,7 @@ export class UserService {
         const expiresIn = 15  // minutes
         const subject = "CollegeGram: Reset Password"
         const oneTimeLink = createOneTimeLink(`${process.env.HOST_NAME}/user/${resetPasswordRoute}`, user, expiresIn)
-        const description =
-            `To reset your password please click on the link below (Expires in ${expiresIn} minutes):\n${oneTimeLink}`;
+        const description = createMessageForOneTimeLink(oneTimeLink, expiresIn);
         const fromEmail = process.env.EMAIL_SERVICE_USER;
         if (fromEmail === undefined) {
             throw new BadRequestError("service email not valid");
@@ -139,11 +143,8 @@ export class UserService {
         if (password1 !== password2) {
             throw new BadRequestError("password1 and password2 are not equal")
         }
-
-        user.password = password1;
-
-        this.userRepository.updatePasswordById(user.id, password1);
-
+        
+        this.userRepository.updatePasswordById(user.id, await hashPassword(password1));
         return { success: true };
     }
 

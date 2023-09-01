@@ -1,5 +1,5 @@
-import { Express } from "express";
 import request from "supertest";
+import { Express } from "express";
 import { makeApp } from "../src/api";
 import { AppDataSource } from "../src/data-source";
 
@@ -51,7 +51,7 @@ describe("Forget Password", () => {
         const { success, oneTimeLink } = body;
 
         expect(success).toBe(true);
-        console.log(oneTimeLink)
+
         await request(app)
             .post(`${oneTimeLink}`)
             .send({
@@ -72,7 +72,7 @@ describe("Forget Password", () => {
         const { success, oneTimeLink } = body;
 
         expect(success).toBe(true);
-        console.log(oneTimeLink)
+
         await request(app)
             .post(`${oneTimeLink}`)
             .send({
