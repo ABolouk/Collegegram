@@ -10,4 +10,4 @@ export const isUserId = (value: string): value is UserId => isUUID(value);
 
 export const zodUserId = z.string().refine(isUserId);
 
-export const makeUserId = () => v4() as UserId;
+export const makeUserId = () => new Date().getTime() + v4() as UserId;

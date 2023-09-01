@@ -9,9 +9,11 @@ import { EmailService } from '../email/email.service';
 import { resetPasswordRoute } from '../../routes/user.routes';
 import { isUserId } from './model/user.id';
 import { PayloadType, createMessageForOneTimeLink, createOneTimeLink, createOneTimeLinkSecret } from '../../utility/one-time-link';
+import { isUserId, makeUserId } from './model/user.id';
+import { PayloadType, createOneTimeLink, createOneTimeLinkSecret } from '../../utility/one-time-link';
 import { sessionRepository } from './sessionRepository';
 import { signupDto } from './dto/signup.dto';
-import { CreateFullUserDao, CreateUserDao } from './dao/user.dao';
+import { CreateFullUserDao } from './dao/user.dao';
 import { hashPassword, comparePasswords } from '../../utility/passwordUtils';
 import { randomBytes } from 'crypto';
 import { v4 } from 'uuid';
@@ -71,16 +73,21 @@ export class UserService {
         const hashedPassword = await hashPassword(dto.password);
 
         const user = {
-            id: v4() as UserId,
+            id: makeUserId(),
             username: dto.username,
             email: dto.email,
-            password: hashedPassword
+            password: hashedPassword,
+            isPrivate: false
 
         };
 
         const newUser = await this.userRepository.createUser(user);
-        const outputUser = CreateUserDao(newUser);
-        return outputUser;
+        const loginDto = {
+            authenticator: newUser.username,
+            password: newUser.password,
+            rememberMe: false
+        }
+        this.login(loginDto)
     }
 
     async forgetPassword({ authenticator }: ForgetPasswordDto) {

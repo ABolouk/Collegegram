@@ -2,7 +2,7 @@ import { UserEmail } from "./user.email";
 import { UserId } from "./user.id";
 import { userName } from "./user.username";
 
-export interface UserInterface {
+export interface User {
     id: UserId;
     email: UserEmail;
     username: userName;
@@ -14,6 +14,15 @@ export interface UserInterface {
     isPrivate: boolean;
 }
 
+
+export interface CreateUserInterface{
+    id: UserId;
+    email: UserEmail;
+    username: userName;
+    password: string;
+    isPrivate: boolean;
+}
+
 type tempOmit = 'password' | 'id';
-export interface UserInformation extends Omit<UserInterface, tempOmit> {}
+export interface UserInformation extends Omit<User, tempOmit> {}
 
