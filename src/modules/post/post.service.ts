@@ -32,27 +32,4 @@ export class PostService {
     }
     return this.postRepository.getPostsByUserId(userId);
   }
-
-  async createComment(dto: createCommentDto): Promise<CommentDao> {
-    const post = await this.postRepository.getPostById(dto.postId)
-
-    if (!post) {
-      throw new NotFoundError("Post");
-    }
-
-    const createdComment = {
-      autherId: post.userId,
-      postId: dto.postId,
-      content: dto.content
-    }
-
-    return await this.commentRepository.create(createdComment)
-
-  }
-
-  async getCommentsWithPostId(id: PostId){ // ????
-    const post = await this.postRepository.getPostById(id)
-    const comments = post?.comments
-    return comments
-  }
 }

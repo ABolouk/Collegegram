@@ -13,17 +13,3 @@ export const createCommentDao = (comment: CommentEntity): CommentDao => ({
   postId: comment.postId,
   content: comment.content
 })
-
-
-export const getCommentDao = (comment: CommentEntity | null) => {
-  if (comment) {
-    return {
-      autherId: comment.userId,
-      postId: comment.postId,
-      content: comment.content
-    }
-  }
-  else {
-    return null
-  }
-}

@@ -1,7 +1,7 @@
 import { Repository, DataSource } from "typeorm";
 import { CommentEntity } from "./entity/comment.entity";
 import { CreateCommentInterface } from "./model/comment";
-import { CommentDao, createCommentDao, getCommentDao } from "./dao/create-comment.dao";
+import { CommentDao, createCommentDao} from "./dao/create-comment.dao";
 import { PostId } from "../model/post-id";
 
 
@@ -16,8 +16,4 @@ export class CommentRepository {
     return createCommentDao(savedComment)
   }
 
-  async findByPostId(id: PostId): Promise<CommentDao | null> {
-    const outputComment = await this.commentRepo.findOneBy({id})
-    return getCommentDao(outputComment)
-  }
 }
