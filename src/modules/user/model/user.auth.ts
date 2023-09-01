@@ -1,9 +1,9 @@
 import { z } from 'zod';
 import { Brand } from '../../../utility/brand';
-import { isUserEmail } from './user.email';
-import { isUserName } from './user.username';
+import { UserEmail, isUserEmail } from './user.email';
+import { isUserName, userName } from './user.username';
 
-export type UserAuth = Brand<string, 'UserAuth'>;
+export type UserAuth = UserEmail | userName;
 
 export const isUserAuth = (value: string): value is UserAuth =>
     isUserEmail(value) || isUserName(value);
