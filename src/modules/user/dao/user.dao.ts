@@ -1,13 +1,8 @@
-import { UserEntity } from "../entity/user.entity";
 import { User } from "../model/user";
 import { UserEmail } from "../model/user.email";
 import { userName } from "../model/user.username";
 
 
-export type UserOutput = {
-  username: string
-  email: string
-}
 
 export type UserOutputFull = {
   email: UserEmail;

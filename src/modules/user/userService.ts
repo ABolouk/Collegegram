@@ -7,10 +7,8 @@ import { isUserEmail } from './model/user.email';
 import { ForgetPasswordDto } from './dto/forgetPassword.dto';
 import { EmailService } from '../email/email.service';
 import { resetPasswordRoute } from '../../routes/user.routes';
-import { isUserId } from './model/user.id';
 import { PayloadType, createMessageForOneTimeLink, createOneTimeLink, createOneTimeLinkSecret } from '../../utility/one-time-link';
 import { isUserId, makeUserId } from './model/user.id';
-import { PayloadType, createOneTimeLink, createOneTimeLinkSecret } from '../../utility/one-time-link';
 import { sessionRepository } from './sessionRepository';
 import { signupDto } from './dto/signup.dto';
 import { CreateFullUserDao } from './dao/user.dao';
@@ -18,42 +16,37 @@ import { hashPassword, comparePasswords } from '../../utility/passwordUtils';
 import { randomBytes } from 'crypto';
 import { v4 } from 'uuid';
 import { UserId } from './model/user.id';
-import 'dotenv-flow/config';
+import { EditProfileType } from "./dto/editProfile.dto";
 
 export class UserService {
     constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService) { }
-    async login({ authenticator, password, rememberMe }: LoginDtoType) {
-        if (!isUserEmail(authenticator) && !isUserName(authenticator)) {
-            throw new UnauthorizedError();
-        }
-        const user = await (isUserEmail(authenticator) ? this.userRepository.findByEmail(authenticator) : this.userRepository.findByUsername(authenticator));
+    async login(loginDto: LoginDtoType) {
+        const user = await (isUserEmail(loginDto.authenticator) ? this.userRepository.findByEmail(loginDto.authenticator) : this.userRepository.findByUsername(loginDto.authenticator));
         if (!user) {
             throw new NotFoundError("User");
         }
-        const passwordsMatch = await comparePasswords(password, user.password);
+        const passwordsMatch = await comparePasswords(loginDto.password, user.password);
         if (!passwordsMatch) {
             throw new UnauthorizedError();
         }
-        const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "1h" })
-        const refreshToken = randomBytes(64).toString('hex');
-        const time = rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
+        const accessToken = jwt.sign({ id: user.id },process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "1h" })
+        const refreshToken = randomBytes(64).toString('hex')
+        const time = loginDto.rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
         await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
         const userInfo = CreateFullUserDao(user)
         return { userInfo, accessToken, refreshToken };
     }
-
     async findById(id: UserId) {
         return this.userRepository.findById(id);
     }
 
-    async findSessionByToken(token: string) {
-        return this.sessionRepo.findSessionByToken(token);
+    async findSessionByRefreshToken(token: string) {
+        return this.sessionRepo.findSessionByRefreshToken(token);
     }
 
     async deleteToken(token: string) {
         return this.sessionRepo.deleteToken(token);
     }
-
     async signup(dto: signupDto) {
 
         const userByEmail = await this.userRepository.findByEmail(dto.email);
@@ -154,4 +147,21 @@ export class UserService {
         this.userRepository.updatePasswordById(user.id, await hashPassword(password1));
         return { success: true };
     }
+
+    async updateUserInfo(userId: UserId, editInfo: EditProfileType, file?: Express.Multer.File) {
+        if (editInfo.password !== editInfo.confirmPassword) {
+            throw new BadRequestError("رمز عبور و تکرار آن یکسان نیستند");
+        }
+        const editPass = hashPassword(editInfo.password)
+        const user = await this.getUserById(userId);
+
+        if (!user) {
+            throw new NotFoundError('User');
+        };
+        const { confirmPassword, ...updateUserInfo } = { ...editInfo, avatar: file ? file.path : "/Users/abtin/Desktop/collegegram/collegegram-backend/media/1693476819808-testasger-binary (3).png", password: await editPass };
+
+        this.userRepository.updateUser(user.id, updateUserInfo);
+        return true;
+    }
+
 }
