@@ -21,9 +21,6 @@ import { EditProfileType } from "./dto/editProfile.dto";
 export class UserService {
     constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService) { }
     async login(loginDto: LoginDtoType) {
-        if (!isUserEmail(loginDto.authenticator) && !isUserName(loginDto.authenticator)) {
-            throw new UnauthorizedError();
-        }
         const user = await (isUserEmail(loginDto.authenticator) ? this.userRepository.findByEmail(loginDto.authenticator) : this.userRepository.findByUsername(loginDto.authenticator));
         if (!user) {
             throw new NotFoundError("User");
@@ -160,7 +157,7 @@ export class UserService {
         if (!user) {
             throw new NotFoundError('User');
         };
-        const { confirmPassword, ...updateUserInfo } = {...editInfo, avatar: file ? file.path : "/Users/abtin/Desktop/collegegram/collegegram-backend/media/1693476819808-testasger-binary (3).png",password: await editPass};
+        const { confirmPassword, ...updateUserInfo } = { ...editInfo, avatar: file ? file.path : "/Users/abtin/Desktop/collegegram/collegegram-backend/media/1693476819808-testasger-binary (3).png", password: await editPass };
 
         this.userRepository.updateUser(user.id, updateUserInfo);
         return true;

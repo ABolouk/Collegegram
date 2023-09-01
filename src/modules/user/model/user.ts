@@ -25,6 +25,4 @@ export interface updateUser {
     bio: string;
     isPrivate: boolean;
 }
-type tempOmit = 'password' | 'id';
-export interface UserInformation extends Omit<UserInterface, tempOmit> { }
 
