@@ -6,8 +6,8 @@ import { forgetPasswordDto } from "../modules/user/dto/forgetPassword.dto";
 import { BadRequestError } from "../utility/http-errors";
 import { signupDto } from "../modules/user/dto/signup.dto";
 import { loginMiddle } from "../loginMiddle";
-import multer from 'multer';
 import { editProfile } from "../modules/user/dto/editProfile.dto";
+import { upload } from "../utility/multer";
 export const resetPasswordRoute = "reset_password"
 
 
@@ -33,16 +33,6 @@ export const makeUserRouter = (userService: UserService) => {
 
 		handleExpresss(res, () => userService.resetPassword(userId, token, password1, password2));
 	})
-
-	const storage = multer.diskStorage({
-		destination: (req, file, cb) => {
-			cb(null, './media')
-		},
-		filename: (req, file, cb) => {
-			cb(null, Date.now() + "-" + req.user.username + "-" + file.originalname)
-		}
-	})
-	const upload = multer({ storage: storage })
 	app.post("/editProfile", loginMiddle(userService), upload.single('avatar'), (req, res) => {
 		const dto = editProfile.parse(req.body);
 		handleExpresss(res, () => userService.updateUserInfo(req.user.id, dto, req.file));
