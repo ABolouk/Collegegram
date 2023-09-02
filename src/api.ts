@@ -1,9 +1,9 @@
 import express, { ErrorRequestHandler } from "express";
 import { DataSource } from "typeorm";
-import { UserRepository } from "./modules/user/userRepository";
-import { UserService } from "./modules/user/userService";
+import { UserRepository } from "./modules/user/user.repository";
+import { UserService } from "./modules/user/user.service";
 import { makeUserRouter } from "./routes/user.routes";
-import { sessionRepository } from "./modules/user/sessionRepository";
+import { sessionRepository } from "./modules/user/session.repository";
 import { ZodError } from "zod";
 import { EmailService } from "./modules/email/email.service";
 import { makePostRouter } from "./routes/post.routes";

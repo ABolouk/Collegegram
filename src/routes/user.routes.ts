@@ -1,13 +1,13 @@
 import { Router } from "express";
 import { loginDto } from '../modules/user/dto/login.dto';
-import { handleExpresss } from "../utility/handleExpress";
-import { UserService } from '../modules/user/userService';
-import { forgetPasswordDto } from "../modules/user/dto/forgetPassword.dto";
+import { handleExpresss } from "../utility/handle-express";
+import { UserService } from '../modules/user/user.service';
+import { forgetPasswordDto } from "../modules/user/dto/forget-password.dto";
 import { BadRequestError } from "../utility/http-errors";
 import { signupDto } from "../modules/user/dto/signup.dto";
-import { loginMiddle } from "../loginMiddle";
-import { editProfile } from "../modules/user/dto/editProfile.dto";
+import { loginMiddle } from "../login.middleware";
 import { upload } from "../utility/multer";
+import { editProfile } from "../modules/user/dto/edit-profile.dto";
 export const resetPasswordRoute = "reset_password"
 
 
