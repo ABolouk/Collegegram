@@ -9,6 +9,8 @@ import { EmailService } from "./modules/email/email.service";
 import { makePostRouter } from "./routes/post.routes";
 import { PostRepository } from "./modules/post/post.repository";
 import { PostService } from "./modules/post/post.service";
+import { CommentService } from "./modules/post/comment/comment.service";
+import { CommentRepository } from "./modules/post/comment/comment.repository";
 
 export const makeApp = (dataSource: DataSource) => {
     const app = express();
@@ -21,8 +23,10 @@ export const makeApp = (dataSource: DataSource) => {
     app.use("/user", makeUserRouter(userService));
 
     const postRepo = new PostRepository(dataSource);
-    const postService = new PostService(postRepo, userRepo);
-    app.use("/post", makePostRouter(userService, postService));
+    const postService = new PostService(postRepo);
+    const commentRepo = new CommentRepository(dataSource);
+    const commentService = new CommentService(commentRepo, postService);
+    app.use("/post", makePostRouter(userService, postService, commentService));
 
     app.use((req, res, next) => {
         next();
