@@ -1,6 +1,6 @@
 import { BadRequestError, NotFoundError, UnauthorizedError } from "../../utility/http-errors";
 import { UserId, isUserId } from "../user/model/user.id";
-import { UserRepository } from "../user/userRepository";
+import { UserRepository } from "../user/user.repository";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { PostId, isPostId } from "./model/post-id";
 import { PostRepository } from "./post.repository";

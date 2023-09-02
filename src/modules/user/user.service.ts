@@ -1,22 +1,22 @@
 import jwt from "jsonwebtoken";
-import { UserRepository } from './userRepository';
+import { UserRepository } from './user.repository';
 import { isUserName } from './model/user.username';
 import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from '../../utility/http-errors';
 import { LoginDtoType } from './dto/login.dto';
 import { isUserEmail } from './model/user.email';
-import { ForgetPasswordDto } from './dto/forgetPassword.dto';
+import { ForgetPasswordDto } from './dto/forget-password.dto';
 import { EmailService } from '../email/email.service';
 import { resetPasswordRoute } from '../../routes/user.routes';
 import { PayloadType, createMessageForOneTimeLink, createOneTimeLink, createOneTimeLinkSecret } from '../../utility/one-time-link';
 import { isUserId, makeUserId } from './model/user.id';
-import { sessionRepository } from './sessionRepository';
+import { sessionRepository } from './session.repository';
 import { signupDto } from './dto/signup.dto';
 import { CreateFullUserDao } from './dao/user.dao';
-import { hashPassword, comparePasswords } from '../../utility/passwordUtils';
+import { hashPassword, comparePasswords } from '../../utility/password-utils';
 import { randomBytes } from 'crypto';
 import { v4 } from 'uuid';
 import { UserId } from './model/user.id';
-import { EditProfileType } from "./dto/editProfile.dto";
+import { EditProfileType } from "./dto/edit-profile.dto";
 
 export class UserService {
     constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService) { }

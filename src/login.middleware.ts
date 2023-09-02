@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { NextFunction, Request, Response } from "express";
-import { UserService } from "./modules/user/userService";
+import { UserService } from "./modules/user/user.service";
 import { UnauthorizedError } from './utility/http-errors';
 import { isUserId } from './modules/user/model/user.id';
 import 'dotenv-flow/config';
