@@ -1,12 +1,11 @@
-import { BadRequestError, NotFoundError, UnauthorizedError } from "../../utility/http-errors";
-import { UserId, isUserId } from "../user/model/user.id";
-import { UserRepository } from "../user/user.repository";
+import { NotFoundError } from "../../utility/http-errors";
+import { UserId } from "../user/model/user.id";
 import { CreatePostDto } from "./dto/create-post.dto";
-import { PostId, isPostId } from "./model/post-id";
+import { PostId } from "./model/post-id";
 import { PostRepository } from "./post.repository";
 
 export class PostService {
-    constructor(private postRepository: PostRepository, private userRepository: UserRepository) { }
+    constructor(private postRepository: PostRepository) { }
 
     async createPost(dto: CreatePostDto) {
         // TODO: maybe some validations
@@ -15,9 +14,6 @@ export class PostService {
     }
 
     async getPostById(postId: PostId) {
-        if (!isPostId(postId)) {
-            throw new BadRequestError('invalid postId');
-        }
         const post = await this.postRepository.getPostById(postId)
         if (!post) {
             throw new NotFoundError('Post');
@@ -25,14 +21,7 @@ export class PostService {
         return post;
     }
 
-    async getPostsByUserId(userId: UserId, perPage: number, pageNumber: number) {
-        if (!isUserId(userId)) {
-            throw new BadRequestError('invalid userId');
-        }
-        const user = await this.userRepository.findById(userId);
-        if (!user) {
-            throw new UnauthorizedError()
-        }
-        return await this.postRepository.getPostsByUserId(userId, perPage, pageNumber);
+    async getPostsByUserId(userId: UserId, limit: number, page: number) {
+        return await this.postRepository.getPostsByUserId(userId, limit, page);
     }
 }

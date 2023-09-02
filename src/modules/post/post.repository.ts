@@ -14,12 +14,12 @@ export class PostRepository {
         return this.postRepo.findOneBy({ id });
     }
 
-    getPostsByUserId(userId: UserId, perPage: number, pageNumber: number): Promise<PostEntity[]> {
+    getPostsByUserId(userId: UserId, limit: number, page: number): Promise<PostEntity[]> {
         return this.postRepo.find({
             where: { userId: userId },
             order: { createdAt: 'ASC', id: 'ASC' },
-            skip: perPage * (pageNumber - 1),
-            take: perPage,
+            skip: limit * (page - 1),
+            take: limit,
         });
     }
 
