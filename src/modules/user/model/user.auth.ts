@@ -1,11 +1,17 @@
-import { z } from 'zod';
+import { BRAND, z } from 'zod';
 import { Brand } from '../../../utility/brand';
-import { UserEmail, isUserEmail } from './user.email';
-import { isUserName, userName } from './user.username';
+import { Email } from './user.email';
+import { UserName } from './user.username';
+import { type } from 'os';
 
-export type UserAuth = UserEmail | userName;
 
-export const isUserAuth = (value: string): value is UserAuth =>
-    isUserEmail(value) || isUserName(value);
+export type UserAuth = Brand<string, "UserAuth">
 
-export const zodUserAuth = z.coerce.string().refine(isUserAuth);
+export module UserAuth {
+    export const is = (value: string): value is UserAuth =>
+        Email.is(value) || UserName.is(value)
+    
+    export const zod = z.coerce.string().refine(is);
+
+    export type Unique = Brand<UserAuth, "UserAuthUnique">;
+}
