@@ -5,13 +5,12 @@ import { SessionEntity } from "./modules/user/entity/session.entity";
 import 'dotenv-flow/config';
 
 export const AppDataSource = new DataSource({
-    url: "postgresql://root:FoM5MrpsWuwhzFkrygNZbhml@aberama.iran.liara.ir:34561/postgres",
+    url: process.env.DB_URL,
     type: "postgres",
-    // host: "aberama.iran.liara.ir",
     port: 34561,
-    // username: "",
-    // password: "FoM5MrpsWuwhzFkrygNZbhml",
-    // database: "collegegram-db",
+    username: process.env.DB_USERNAME,
+    password: process.env.DB_PASSWORD,
+    database: process.env.DB_NAME,
     logging: false,
     entities: [UserEntity, SessionEntity],
     migrations: ["./src/migrations/*.ts"],

@@ -75,12 +75,8 @@ export class UserService {
         };
 
         const newUser = await this.userRepository.createUser(user);
-        const loginDto = {
-            authenticator: newUser.username,
-            password: newUser.password,
-            rememberMe: false
-        }
-        this.login(loginDto)
+        
+        return {success: true};
     }
 
     async forgetPassword({ authenticator }: ForgetPasswordDto) {
@@ -158,7 +154,7 @@ export class UserService {
         if (!user) {
             throw new NotFoundError('User');
         };
-        const { confirmPassword, ...updateUserInfo } = { ...editInfo, avatar: file ? file.path : "/Users/abtin/Desktop/collegegram/collegegram-backend/media/1693476819808-testasger-binary (3).png", password: await editPass };
+        const { confirmPassword, ...updateUserInfo } = { ...editInfo, avatar: file ? file.path : "default path", password: await editPass };
 
         this.userRepository.updateUser(user.id, updateUserInfo);
         return true;
