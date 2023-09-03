@@ -14,5 +14,5 @@ export module UserId {
 
   export type Unique = Brand<UserId, "UserIdUnique">;
 
-  export const make = () => new Date().getTime() + v4() as UserId;
+  export const make = () => v4() as UserId;
 }

@@ -1,14 +1,16 @@
-import { UserEmail } from './user.email';
+import { Email } from './user.email';
 import { UserId } from "./user.id";
-import { userName } from "./user.username";
+import { UserName } from "./user.username";
 import { firstName } from './user.firstName';
 import { lastName } from './user.lastName';
+import { HashedPassword, Password } from '../../../utility/password-utils';
 
+
+// User Interface type:??????
 export interface User {
     id: UserId;
-    email: UserEmail;
-    username: userName;
-    password: string;
+    email: string;
+    username: string;
     bio?: string;
     firstName?: string;
     lastName?: string;
@@ -16,18 +18,25 @@ export interface User {
     isPrivate: boolean;
 }
 
-
-export interface CreateUserInterface{
+export interface loginUserInterface{
     id: UserId;
-    email: UserEmail;
-    username: userName;
+    username: UserName;
+    email: Email;
+    password: HashedPassword,
+    isPrivate: boolean;
+}
+
+export interface createUserInterface{
+    id: UserId;
+    email: Email;
+    username: UserName;
     password: string;
     isPrivate: boolean;
 }
 
 
 export interface updateUser {
-    email: UserEmail;
+    email: Email;
     password: string;
     firstName: firstName;
     lastName: lastName;
