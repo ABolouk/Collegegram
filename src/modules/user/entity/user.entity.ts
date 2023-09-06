@@ -1,10 +1,5 @@
 import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm";
 import { UserId } from "../model/user.id";
-import { UserEmail } from "../model/user.email";
-import { userName } from "../model/user.username";
-import { firstName } from "../model/user.firstName";
-import { lastName } from "../model/user.lastName";
-
 
 @Entity("users")
 export class UserEntity {
@@ -12,19 +7,19 @@ export class UserEntity {
     id!: UserId;
 
     @Column()
-    email!: UserEmail;
+    email!: string;
 
     @Column()
-    username!: userName;
+    username!: string;
 
     @Column()
     password!: string;
 
     @Column({ nullable: true })
-    firstName?: firstName;
+    firstName?: string;
 
     @Column({ nullable: true })
-    lastName?: lastName;
+    lastName?: string;
 
     @Column({ nullable: true })
     bio?: string;

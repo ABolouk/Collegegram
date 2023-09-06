@@ -1,9 +1,12 @@
 import { z } from 'zod';
-import { isUserAuth } from '../model/user.auth';
+import { UserAuth } from '../model/user.auth';
+import { Password } from '../../../utility/password-utils';
+import { UserName } from '../model/user.username';
+import { Email } from '../model/user.email';
 
 export const loginDto = z.object({
-    authenticator: z.string().min(4).refine(isUserAuth),
-    password: z.string().min(8).max(32).regex(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/),
+    authenticator: z.union([Email.zod, UserName.zod]),
+    password: Password.zod,
     rememberMe: z.boolean().optional(),
 });
 

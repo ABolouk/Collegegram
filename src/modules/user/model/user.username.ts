@@ -1,11 +1,14 @@
 import {z} from 'zod';
 import { Brand } from '../../../utility/brand';
 
-export type userName = Brand<string, 'userName'>;
+export type UserName = Brand<string, 'UserName'>;
 
 const userNameRegex = new RegExp(/^[a-zA-Z0-9][a-zA-Z0-9\_]*$/)
 
-export const isUserName = (value: string): value is userName => 
-    userNameRegex.test(value);
+export module UserName {
+    export const is = (value: string): value is UserName => userNameRegex.test(value)
+    
+    export const zod = z.coerce.string().refine(is);
 
-export const zodUserName = z.coerce.string().refine(isUserName);
+    export type Unique = Brand<UserName, "UserNameUnique">;
+}
