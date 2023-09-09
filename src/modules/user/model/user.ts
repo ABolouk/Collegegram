@@ -18,7 +18,7 @@ export interface User {
     isPrivate: boolean;
 }
 
-export interface loginUserInterface{
+export interface loginUserInterface {
     id: UserId;
     username: UserName;
     email: Email;
@@ -26,7 +26,7 @@ export interface loginUserInterface{
     isPrivate: boolean;
 }
 
-export interface createUserInterface{
+export interface createUserInterface {
     id: UserId;
     email: Email;
     username: UserName;

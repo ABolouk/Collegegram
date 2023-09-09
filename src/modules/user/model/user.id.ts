@@ -12,5 +12,7 @@ export module UserId {
 
   export const zod = z.string().refine(is);
 
+  export type Unique = Brand<UserId, "UserIdUnique">;
+
   export const make = () => v4() as UserId;
 }

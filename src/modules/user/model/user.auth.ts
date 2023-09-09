@@ -3,7 +3,6 @@ import { Brand } from '../../../utility/brand';
 import { Email } from './user.email';
 import { UserName } from './user.username';
 
-
 export type UserAuth = Brand<string, "UserAuth">
 
 export module UserAuth {
@@ -11,7 +10,7 @@ export module UserAuth {
         Email.is(value)
     export const isUserName = (value: string): value is UserName =>
         UserName.is(value)
-    export const is = (value: string): value is UserAuth => 
+    export const is = (value: string): value is UserAuth =>
         isEmail(value) || isUserName(value);
 
     export const zod = z.coerce.string().refine(is);
