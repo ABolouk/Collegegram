@@ -1,7 +1,6 @@
 import { NotFoundError } from "../../../utility/http-errors";
 import { PostService } from "../post.service";
 import { CommentRepository } from "./comment.repository";
-import { CommentDao } from "./dao/create-comment.dao";
 import { createCommentDto } from "./dto/create-comment.dto";
 
 
@@ -11,7 +10,7 @@ import { createCommentDto } from "./dto/create-comment.dto";
     private postService: PostService
   ) { }
   
-  async comment(dto: createCommentDto): Promise<CommentDao> {
+  async comment(dto: createCommentDto) {
     const post = await this.postService.getPostById(dto.postId)
 
     if (!post) {

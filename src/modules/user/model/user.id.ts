@@ -11,8 +11,11 @@ export module UserId {
     isUUID(value)
   
   export const zod = z.string().refine(is);
+export module UserId {
+  export const is = (value: string): value is UserId =>
+    isUUID(value)
 
-  export type Unique = Brand<UserId, "UserIdUnique">;
+  export const zod = z.string().refine(is);
 
   export const make = () => v4() as UserId;
 }
