@@ -2,7 +2,7 @@ import jwt, { JwtPayload } from 'jsonwebtoken';
 import { NextFunction, Request, Response } from "express";
 import { UserService } from "./modules/user/user.service";
 import { UnauthorizedError } from './utility/http-errors';
-import { isUserId } from './modules/user/model/user.id';
+import { UserId } from './modules/user/model/user.id';
 import 'dotenv-flow/config';
 
 
@@ -42,7 +42,7 @@ export const loginMiddle = (userService: UserService) =>
                 }
                 const decode = jwt.verify(token, accessKey);
                 const { id } = decode as JwtPayload;
-                if (!isUserId(id)) {
+                if (!UserId.is(id)) {
                     throw new UnauthorizedError();
                 }
                 const loggedInUser = await userService.findById(id);
