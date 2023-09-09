@@ -10,11 +10,6 @@ export const editProfile = z.object({
     lastName: zodLastName,
     password: Password.zod,
     confirmPassword: Password.zod,
-    email: Email.zod,
-    firstName: zodFirstName,
-    lastName: zodLastName,
-    password: Password.zod,
-    confirmPassword: Password.zod,
     isPrivate: z.coerce.boolean(),
     bio: z.string().max(256),
 });
