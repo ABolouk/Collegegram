@@ -1,5 +1,5 @@
 import nodemailer, { Transporter } from "nodemailer";
-import { Email } from "../user/model/user.email";
+import { UserEmail } from "../user/model/user.email";
 import 'dotenv-flow/config';
 
 export const emailServiceConfig = {
@@ -17,7 +17,7 @@ export class EmailService {
     constructor() {
         this.transporter = nodemailer.createTransport(emailServiceConfig);
     }
-    async sendEmail(fromEmail: string, toEmail: Email, subject: string, description: string) {
+    async sendEmail(fromEmail: string, toEmail: UserEmail, subject: string, description: string) {
         await this.transporter.sendMail({
             from: fromEmail,
             to: toEmail,

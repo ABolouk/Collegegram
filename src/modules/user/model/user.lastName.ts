@@ -8,4 +8,4 @@ const lastNameRegex = new RegExp(/^[\u0600-\u06FF]{3,64}$/);
 export const isLastName = (value: string): value is lastName =>
     lastNameRegex.test(value);
 
-export const zodLastName = z.coerce.string().refine(isLastName);
+export const zodFirstName = z.coerce.string().refine(isLastName);

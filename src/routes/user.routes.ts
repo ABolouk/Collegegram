@@ -1,15 +1,13 @@
 import { Router } from "express";
 import { loginDto } from '../modules/user/dto/login.dto';
-import { handleExpresss } from "../utility/handle-express";
-import { UserService } from '../modules/user/user.service';
-import { forgetPasswordDto } from "../modules/user/dto/forget-password.dto";
+import { handleExpresss } from "../utility/handleExpress";
+import { UserService } from '../modules/user/userService';
+import { forgetPasswordDto } from "../modules/user/dto/forgetPassword.dto";
 import { BadRequestError } from "../utility/http-errors";
 import { signupDto } from "../modules/user/dto/signup.dto";
-import { loginMiddle } from "../login.middleware";
-import { upload } from "../utility/multer";
-import { editProfile } from "../modules/user/dto/edit-profile.dto";
-export const resetPasswordRoute = "reset_password"
 
+
+export const resetPasswordRoute = "reset_password"
 
 export const makeUserRouter = (userService: UserService) => {
 	const app = Router();
@@ -22,6 +20,7 @@ export const makeUserRouter = (userService: UserService) => {
 		const dto = signupDto.parse(req.body);
 		handleExpresss(res, () => userService.signup(dto), 201)
 	})
+
 	app.post("/login/forget", (req, res) => {
 		const dto = forgetPasswordDto.parse(req.body);
 		handleExpresss(res, () => userService.forgetPassword(dto));
@@ -33,9 +32,6 @@ export const makeUserRouter = (userService: UserService) => {
 
 		handleExpresss(res, () => userService.resetPassword(userId, token, password1, password2));
 	})
-	app.post("/editProfile", loginMiddle(userService), upload.single('avatar'), (req, res) => {
-		const dto = editProfile.parse(req.body);
-		handleExpresss(res, () => userService.updateUserInfo(req.user.id, dto, req.file));
-	});
+
 	return app;
 };

@@ -1,12 +1,12 @@
 import { createConnection } from "net";
 import { makeApp } from "./api";
 import { AppDataSource } from "./data-source"
-import { User } from "./modules/user/model/user";
+import { UserInterface } from "./modules/user/model/user";
 
 declare global {
 	namespace Express {
 		interface Request {
-			user: User;
+			user: UserInterface;
 		}
 	}
 }

@@ -3,10 +3,7 @@ import { Brand } from "../../../../utility/brand";
 
 export type CommentId = Brand<number, "CommentId">;
 
+export const isCommentId = (value: number): value is CommentId =>
+  Number.isInteger(value) && value > 0
 
-export module CommentId {
-  export const is = (value: number): value is CommentId =>
-    Number.isInteger(value) && value > 0
-  
-  export const zod = z.coerce.number().refine(is);
-}
+export const zodCommentId = z.coerce.number().refine(isCommentId)

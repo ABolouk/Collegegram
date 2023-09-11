@@ -1,29 +1,32 @@
-import { User, loginUserInterface } from "../model/user";
-import { Email } from "../model/user.email";
-import { UserId } from "../model/user.id";
-import { UserName } from "../model/user.username";
-import { z } from "zod";
-import { hash } from "bcrypt";
-import { HashedPassword } from "../../../utility/password-utils";
-
-// Zod Dao:
-
-export const zodUserDao = z
-  .object({
-    id: UserId.zod,
-    username: UserName.zod,
-    email: Email.zod,
-    isPrivate: z.boolean()
-
-  }).transform((x): User => x)
+import { UserEntity } from "../entity/user.entity";
+import { User } from "../model/user";
+import { UserEmail } from "../model/user.email";
+import { userName } from "../model/user.username";
 
 
-export const zodLogginUserDao = z
-  .object({
-    id: UserId.zod,
-    username: UserName.zod,
-    email: Email.zod,
-    password: HashedPassword.zod,
-    isPrivate: z.boolean()
+export type UserOutput = {
+  username: string
+  email: string
+}
 
-  }).transform((x): loginUserInterface => x)
+export type UserOutputFull = {
+  email: UserEmail;
+  username: userName;
+  bio?: string;
+  firstName?: string;
+  lastName?: string;
+  avatar?: string;
+  isPrivate: boolean;
+}
+
+
+export const CreateFullUserDao = (user: User): UserOutputFull => ({
+  username: user.username,
+  email: user.email,
+  bio: user.bio,
+  firstName: user.firstName,
+  lastName: user.lastName,
+  avatar: user.avatar,
+  isPrivate: user.isPrivate
+
+})

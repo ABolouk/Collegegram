@@ -1,16 +1,12 @@
-import { Email } from './user.email';
+import { UserEmail } from "./user.email";
 import { UserId } from "./user.id";
-import { UserName } from "./user.username";
-import { firstName } from './user.firstName';
-import { lastName } from './user.lastName';
-import { HashedPassword, Password } from '../../../utility/password-utils';
+import { userName } from "./user.username";
 
-
-// User Interface type:??????
 export interface User {
     id: UserId;
-    email: string;
-    username: string;
+    email: UserEmail;
+    username: userName;
+    password: string;
     bio?: string;
     firstName?: string;
     lastName?: string;
@@ -18,30 +14,15 @@ export interface User {
     isPrivate: boolean;
 }
 
-export interface loginUserInterface {
-    id: UserId;
-    username: UserName;
-    email: Email;
-    password: HashedPassword,
-    isPrivate: boolean;
-}
 
-export interface createUserInterface {
+export interface CreateUserInterface{
     id: UserId;
-    email: Email;
-    username: UserName;
+    email: UserEmail;
+    username: userName;
     password: string;
     isPrivate: boolean;
 }
 
-
-export interface updateUser {
-    email: Email;
-    password: string;
-    firstName: firstName;
-    lastName: lastName;
-    avatar: string;
-    bio: string;
-    isPrivate: boolean;
-}
+type tempOmit = 'password' | 'id';
+export interface UserInformation extends Omit<User, tempOmit> {}
 
