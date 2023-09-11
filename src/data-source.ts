@@ -5,11 +5,11 @@ import { SessionEntity } from "./modules/user/entity/session.entity";
 import 'dotenv-flow/config';
 
 export const AppDataSource = new DataSource({
-    url: process.env.DB_URL,
     type: "postgres",
-    port: 34561,
-    username: process.env.DB_USERNAME,
-    password: process.env.DB_PASSWORD,
+    host: "127.0.0.1",
+    port: 5432,
+    username: process.env.DB_USER,
+    password: process.env.DB_PASS,
     database: process.env.DB_NAME,
     logging: false,
     entities: [UserEntity, SessionEntity],

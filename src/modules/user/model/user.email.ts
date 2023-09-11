@@ -1,16 +1,11 @@
-import { z } from "zod";
-import { Brand } from "../../../utility/brand";
+import { z } from 'zod';
+import { Brand } from '../../../utility/brand';
 
-export type Email = Brand<string, "UserEmail">;
+export type UserEmail = Brand<string, 'UserEmail'>;
 
-const emailRegex = new RegExp(
-    /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-);
+const emailRegex = new RegExp(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/)
 
-export module Email {
-    export const is = (value: string): value is Email => emailRegex.test(value);
+export const isUserEmail = (value: string): value is UserEmail =>
+    emailRegex.test(value);
 
-    export const zod = z.coerce.string().refine(is);
-
-    export type Unique = Brand<Email, "EmailUnique">;
-}
+export const zodUserEmail = z.coerce.string().refine(isUserEmail);

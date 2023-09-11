@@ -10,7 +10,7 @@ export class sessionRepository {
     async createSession(token: string, userId: UserId, expireDate: Date) {
         return this.sessionRepo.save({ token, userId, expireDate });
     }
-    async findSessionByRefreshToken(token: string): Promise<SessionEntity | null> {
+    async findSessionByToken(token: string): Promise<SessionEntity | null> {
         return this.sessionRepo.findOneBy({ token });
     }
     async deleteToken(token: string) {

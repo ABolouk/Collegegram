@@ -1,9 +1,8 @@
-import { Column, CreateDateColumn, Entity, Unique, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 
 
 
 @Entity("tags")
-@Unique(['title'])
 export class TagEntity {
   @PrimaryGeneratedColumn()
   id!: number;
@@ -15,7 +14,7 @@ export class TagEntity {
   color!: string
 
   @CreateDateColumn()
-  createdAt!: Date;
+  createAt!: Date;
 
   @UpdateDateColumn()
   updatedAt!: Date;

@@ -1,6 +1,6 @@
 import { UserId } from "../../user/model/user.id";
 import { CommentInterface, CreateCommentInterface } from "../comment/model/comment";
-import { TagInterface } from "../tag/model/tag";
+import { TagInterface } from "../tag/model/tsg";
 import { PostId } from "./post-id";
 
 export interface PostInterface {

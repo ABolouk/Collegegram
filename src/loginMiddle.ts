@@ -1,6 +1,6 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { NextFunction, Request, Response } from "express";
-import { UserService } from "./modules/user/user.service";
+import { UserService } from "./modules/user/userService";
 import { UnauthorizedError } from './utility/http-errors';
 import { isUserId } from './modules/user/model/user.id';
 import 'dotenv-flow/config';
@@ -15,12 +15,13 @@ export const loginMiddle = (userService: UserService) =>
             res.status(401).send({ message: "شما اجازه دسترسی به این صفحه را ندارید." });
             return;
         }
-        const accessKey= process.env.ACCESS_TOKEN_SECRET as string;
-        jwt.verify(token, accessKey,
+
+        const marg = "1ca79d5317ef09fc6e528fe79b02aecffc720b6e65658d5d7c5b18786a37129099fbb8ec40e5f848b39d986143452fab94fcdc0b2b3e7d60277c580e11411174";
+        jwt.verify(token, marg,
             async (err) => {
                 if (err) {
                     if (err.name === 'TokenExpiredError') {
-                        const session = await userService.findSessionByRefreshToken(refreshToken as string);
+                        const session = await userService.findSessionByToken(refreshToken as string);
                         if (!session) {
                             res.status(401).send({ message: "شما اجازه دسترسی به این صفحه را ندارید." });
                             return;
@@ -40,7 +41,7 @@ export const loginMiddle = (userService: UserService) =>
                         return;
                     }
                 }
-                const decode = jwt.verify(token, accessKey);
+                const decode = jwt.verify(token, marg);
                 const { id } = decode as JwtPayload;
                 if (!isUserId(id)) {
                     throw new UnauthorizedError();
