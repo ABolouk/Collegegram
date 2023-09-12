@@ -14,9 +14,12 @@ import { UserId } from './model/user.id';
 import { EditProfileType } from "./dto/edit-profile.dto";
 import { UserAuth } from "./model/user.auth"
 import { loginUserInterface } from "./model/user";
+import { followDtoType } from '../follow/dto/follow.dto';
+import { FollowRequestRepository } from "../follow/follow-request.repository";
+import { FollowRepository } from "../follow/follow.repository";
 
 export class UserService {
-    constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService) { }
+    constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService, private followReqRepo: FollowRequestRepository, private followRepo: FollowRepository) { }
     async login(loginDto: LoginDtoType) {
         const user = await this.userRepository.findByEmailOrUsername(loginDto.authenticator)
         if (user === null) {
@@ -157,7 +160,20 @@ export class UserService {
         const { confirmPassword, ...updateUserInfo } = { ...editInfo, avatar: file ? file.path : "default path", password: await editPass };
 
         this.userRepository.updateUser(user.id, updateUserInfo);
-        return true;
+        const updatedUser = await this.getUserById(userId);
+        return updatedUser;
+    }
+
+    
+
+    async follow(dto: followDtoType, userId: UserId) {
+        const user = await this.getUserById(userId);
+        if (user.isPrivate === true) {
+            this.followReqRepo.createFollowRequest({ intractionId: 1, followerId: userId, followingId: user.id })
+            return { status: "panding" }
+        }
+        this.followRepo.createFollowRelation({ intractionId: 1, followerId: userId, followingId: user.id })
+        return { status: "accepted" }
     }
 
 }

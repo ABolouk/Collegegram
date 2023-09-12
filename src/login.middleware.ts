@@ -15,7 +15,7 @@ export const loginMiddle = (userService: UserService) =>
             res.status(401).send({ message: "شما اجازه دسترسی به این صفحه را ندارید." });
             return;
         }
-        const accessKey= process.env.ACCESS_TOKEN_SECRET as string;
+        const accessKey = process.env.ACCESS_TOKEN_SECRET as string;
         jwt.verify(token, accessKey,
             async (err) => {
                 if (err) {

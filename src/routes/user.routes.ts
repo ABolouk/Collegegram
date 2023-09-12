@@ -8,6 +8,7 @@ import { signupDto } from "../modules/user/dto/signup.dto";
 import { loginMiddle } from "../login.middleware";
 import { upload } from "../utility/multer";
 import { editProfile } from "../modules/user/dto/edit-profile.dto";
+import { followDto } from '../modules/follow/dto/follow.dto';
 export const resetPasswordRoute = "reset_password"
 
 
@@ -36,6 +37,10 @@ export const makeUserRouter = (userService: UserService) => {
 	app.post("/editProfile", loginMiddle(userService), upload.single('avatar'), (req, res) => {
 		const dto = editProfile.parse(req.body);
 		handleExpresss(res, () => userService.updateUserInfo(req.user.id, dto, req.file));
+	});
+	app.post("/follow", loginMiddle(userService), (req, res) => {
+		const dto = followDto.parse(req.body);
+		handleExpresss(res, () => userService.follow(dto, req.user.id));
 	});
 	return app;
 };
