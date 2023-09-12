@@ -164,15 +164,15 @@ export class UserService {
         return updatedUser;
     }
 
-    
+
 
     async follow(dto: followDtoType, userId: UserId) {
         const user = await this.getUserById(userId);
         if (user.isPrivate === true) {
-            this.followReqRepo.createFollowRequest({ intractionId: 1, followerId: userId, followingId: user.id })
+            this.followReqRepo.createFollowRequest({ interactionId: 1, followerId: userId, followingId: user.id })
             return { status: "panding" }
         }
-        this.followRepo.createFollowRelation({ intractionId: 1, followerId: userId, followingId: user.id })
+        this.followRepo.createFollowRelation({ interactionId: 1, followerId: userId, followingId: user.id })
         return { status: "accepted" }
     }
 

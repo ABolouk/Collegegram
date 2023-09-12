@@ -7,7 +7,7 @@ export interface FollowRequest {
 }
 
 export interface createFollowRequest {
-    intractionId: number;
+    interactionId: number;
     followerId: UserId;
     followingId: UserId;
 }

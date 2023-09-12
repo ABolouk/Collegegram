@@ -8,7 +8,7 @@ export class FollowEntity {
     id!: number;
 
     @Column()
-    intractionId!: number;
+    interactionId!: number;
 
     @Column()
     followerId!: UserId;
