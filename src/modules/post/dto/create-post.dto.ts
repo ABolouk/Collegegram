@@ -1,4 +1,5 @@
 import { z } from "zod"
+import { UserId } from "../../user/model/user.id";
 
 
 const tag = z.object({
@@ -6,12 +7,11 @@ const tag = z.object({
   color: z.string().nonempty().regex(/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/)
 })
 
-const photo = z.object({
-  url: z.string()
-})
+// const photo = z.string()
 
 export const createPostDto = z.object({
-  photos: z.array(photo).min(1).max(10),
+  userId: z.string().nonempty().refine(UserId.is),
+  photos: z.array(z.string()).min(1).max(10),
   description: z.string().max(255),
   tags: z.array(tag),
   closeFriends: z.boolean()

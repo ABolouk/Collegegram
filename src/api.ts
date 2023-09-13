@@ -1,11 +1,16 @@
 import express, { ErrorRequestHandler } from "express";
 import { DataSource } from "typeorm";
-import { UserRepository } from "./modules/user/userRepository";
-import { UserService } from "./modules/user/userService";
+import { UserRepository } from "./modules/user/user.repository";
+import { UserService } from "./modules/user/user.service";
 import { makeUserRouter } from "./routes/user.routes";
-import { sessionRepository } from "./modules/user/sessionRepository";
+import { sessionRepository } from "./modules/user/session.repository";
 import { ZodError } from "zod";
 import { EmailService } from "./modules/email/email.service";
+import { makePostRouter } from "./routes/post.routes";
+import { PostRepository } from "./modules/post/post.repository";
+import { PostService } from "./modules/post/post.service";
+import { CommentService } from "./modules/post/comment/comment.service";
+import { CommentRepository } from "./modules/post/comment/comment.repository";
 
 export const makeApp = (dataSource: DataSource) => {
     const app = express();
@@ -14,8 +19,15 @@ export const makeApp = (dataSource: DataSource) => {
     const userRepo = new UserRepository(dataSource);
     const sessionRepo = new sessionRepository(dataSource);
     const emailService = new EmailService()
-    const userService = new UserService(userRepo, sessionRepo,emailService);
+    const userService = new UserService(userRepo, sessionRepo, emailService);
     app.use("/user", makeUserRouter(userService));
+
+    const postRepo = new PostRepository(dataSource);
+    const postService = new PostService(postRepo);
+    const commentRepo = new CommentRepository(dataSource);
+    const commentService = new CommentService(commentRepo, postService);
+    app.use("/post", makePostRouter(userService, postService, commentService));
+
     app.use((req, res, next) => {
         next();
     })
@@ -27,7 +39,7 @@ export const makeApp = (dataSource: DataSource) => {
         next,
     ) => {
         if (error instanceof ZodError) {
-            res.status(400).send({ message: error.issues});
+            res.status(400).send({ message: error.issues });
         }
         res.status(500).send({ message: "خطایی رخ داده است. لطفا دوباره تلاش کنید." });
     };

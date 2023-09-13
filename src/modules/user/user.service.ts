@@ -1,102 +1,90 @@
 import jwt from "jsonwebtoken";
-import { UserRepository } from './userRepository';
-import { isUserName } from './model/user.username';
+import { UserRepository } from './user.repository';
 import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from '../../utility/http-errors';
 import { LoginDtoType } from './dto/login.dto';
-import { isUserEmail } from './model/user.email';
-import { ForgetPasswordDto } from './dto/forgetPassword.dto';
+import { ForgetPasswordDto } from './dto/forget-password.dto';
 import { EmailService } from '../email/email.service';
 import { resetPasswordRoute } from '../../routes/user.routes';
-import { isUserId } from './model/user.id';
 import { PayloadType, createMessageForOneTimeLink, createOneTimeLink, createOneTimeLinkSecret } from '../../utility/one-time-link';
-import { isUserId, makeUserId } from './model/user.id';
-import { PayloadType, createOneTimeLink, createOneTimeLinkSecret } from '../../utility/one-time-link';
-import { sessionRepository } from './sessionRepository';
+import { sessionRepository } from './session.repository';
 import { signupDto } from './dto/signup.dto';
-import { CreateFullUserDao } from './dao/user.dao';
-import { hashPassword, comparePasswords } from '../../utility/passwordUtils';
+import { Password } from '../../utility/password-utils';
 import { randomBytes } from 'crypto';
-import { v4 } from 'uuid';
 import { UserId } from './model/user.id';
-import 'dotenv-flow/config';
+import { EditProfileType } from "./dto/edit-profile.dto";
+import { UserAuth } from "./model/user.auth"
+import { loginUserInterface } from "./model/user";
 
 export class UserService {
     constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService) { }
-    async login({ authenticator, password, rememberMe }: LoginDtoType) {
-        if (!isUserEmail(authenticator) && !isUserName(authenticator)) {
-            throw new UnauthorizedError();
-        }
-        const user = await (isUserEmail(authenticator) ? this.userRepository.findByEmail(authenticator) : this.userRepository.findByUsername(authenticator));
-        if (!user) {
+    async login(loginDto: LoginDtoType) {
+        const user = await this.userRepository.findByEmailOrUsername(loginDto.authenticator)
+        if (user === null) {
             throw new NotFoundError("User");
         }
-        const passwordsMatch = await comparePasswords(password, user.password);
+        user
+        const passwordsMatch = await Password.comparePasswords(loginDto.password, user.password)
         if (!passwordsMatch) {
             throw new UnauthorizedError();
         }
-        const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "1h" })
-        const refreshToken = randomBytes(64).toString('hex');
-        const time = rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
-        await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
-        const userInfo = CreateFullUserDao(user)
+        const accessToken = jwt.sign({ id: UserId }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "1h" })
+        const refreshToken = randomBytes(64).toString('hex')
+        const time = loginDto.rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
+        const userInfo = await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
         return { userInfo, accessToken, refreshToken };
     }
-
     async findById(id: UserId) {
         return this.userRepository.findById(id);
     }
 
-    async findSessionByToken(token: string) {
-        return this.sessionRepo.findSessionByToken(token);
+    async findSessionByRefreshToken(token: string) {
+        return this.sessionRepo.findSessionByRefreshToken(token);
     }
 
     async deleteToken(token: string) {
         return this.sessionRepo.deleteToken(token);
     }
-
     async signup(dto: signupDto) {
-
-        const userByEmail = await this.userRepository.findByEmail(dto.email);
-        if (userByEmail) {
+        const uniqueEmail = await this.userRepository.isUniqueEmail(dto.email);
+        if (!uniqueEmail) {
             throw new ConflictError("ایمیل وارد شده از قبل در کالج‌گرام ثبت شده است")
         }
 
-        const userByUsername = await this.userRepository.findByUsername(dto.username);
-        if (userByUsername) {
-            throw new ConflictError("یوزرنیم وارد شده از قبل در کالج‌گرام ثبت شده است")
+        const uniqueUsername = await this.userRepository.isUniqueUserName(
+            dto.username
+        );
+        if (!uniqueUsername) {
+            throw new ConflictError(
+                "یوزرنیم وارد شده از قبل در کالج‌گرام ثبت شده است"
+            );
         }
+
 
         if (dto.password !== dto.confirmPassword) {
             throw new BadRequestError("پسوردهایی که وارد کردید یکسان نیستند.")
         }
 
-        const hashedPassword = await hashPassword(dto.password);
+        const hashedPassword = await Password.makeHashed(dto.password);
 
         const user = {
-            id: makeUserId(),
+            id: UserId.make(),
             username: dto.username,
             email: dto.email,
             password: hashedPassword,
             isPrivate: false
-
         };
 
-        const newUser = await this.userRepository.createUser(user);
-        const loginDto = {
-            authenticator: newUser.username,
-            password: newUser.password,
-            rememberMe: false
-        }
-        this.login(loginDto)
+        await this.userRepository.createUser(user);
+
+        return { success: true };
     }
 
     async forgetPassword({ authenticator }: ForgetPasswordDto) {
-
-        if (!isUserEmail(authenticator) && !isUserName(authenticator)) {
+        if (!UserAuth.is(authenticator)) {
             throw new UnauthorizedError();
         }
 
-        const user = await (isUserEmail(authenticator) ? this.userRepository.findByEmail(authenticator) : this.userRepository.findByUsername(authenticator));
+        const user = await this.userRepository.findByEmailOrUsername(authenticator);
 
         if (!user) {
             throw new NotFoundError('User');
@@ -120,7 +108,7 @@ export class UserService {
 
     async getUserById(userId: string) {
 
-        if (!isUserId(userId)) {
+        if (!UserId.is(userId)) {
             throw new BadRequestError("Invalid userId");
         };
 
@@ -133,14 +121,15 @@ export class UserService {
         return user;
     }
 
-    async resetPassword(userId: string, token: string, password1: string, password2: string) {
-        if (!isUserId(userId)) {
+    async resetPassword(userId: string, token: string, password1: Password, password2: Password) { //DTO behtar nist??
+
+        if (!UserId.is(userId)) {
             throw new UnauthorizedError();
         }
 
         const user = await this.getUserById(userId);
-
-        const secret = createOneTimeLinkSecret(user)
+        
+        const secret = createOneTimeLinkSecret(user as loginUserInterface) //????
         const payload = jwt.verify(token, secret) as PayloadType
 
         if (payload.userId !== user.id) {
@@ -150,8 +139,25 @@ export class UserService {
         if (password1 !== password2) {
             throw new BadRequestError("password1 and password2 are not equal")
         }
-        
-        this.userRepository.updatePasswordById(user.id, await hashPassword(password1));
+
+        this.userRepository.updatePasswordById(user.id, await Password.makeHashed(password1)); //???
         return { success: true };
     }
+
+    async updateUserInfo(userId: UserId, editInfo: EditProfileType, file?: Express.Multer.File) {
+        if (editInfo.password !== editInfo.confirmPassword) {
+            throw new BadRequestError("رمز عبور و تکرار آن یکسان نیستند");
+        }
+        const editPass = Password.makeHashed(editInfo.password)
+        const user = await this.getUserById(userId);
+
+        if (!user) {
+            throw new NotFoundError('User');
+        };
+        const { confirmPassword, ...updateUserInfo } = { ...editInfo, avatar: file ? file.path : "default path", password: await editPass };
+
+        this.userRepository.updateUser(user.id, updateUserInfo);
+        return true;
+    }
+
 }

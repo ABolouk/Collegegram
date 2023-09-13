@@ -1,9 +1,12 @@
 import { z } from "zod"
-import { zodPostId } from "../../model/post-id"
+import { PostId } from "../../model/post-id"
+import { Content } from "../model/comment-content"
+import { UserId } from "../../../user/model/user.id"
 
 export const createCommentDto = z.object({
-  postId: zodPostId,
-  content: z.string().nonempty().max(255)
+  autherId: UserId.zod,
+  postId: PostId.zod,
+  content: Content.zod
 })
 
 export interface createCommentDto extends z.infer<typeof createCommentDto> { };
