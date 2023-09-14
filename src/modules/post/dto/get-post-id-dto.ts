@@ -1,8 +1,8 @@
 import { z } from "zod";
-import { isPostId } from "../model/post-id";
+import { PostId } from "../model/post-id";
 
 export const getPostIdDto = z.object({
-    postId: z.number().refine(isPostId),
+    postId: z.number().refine(PostId.is),
 })
 
 export type GetPostIdDto = z.infer<typeof getPostIdDto>;

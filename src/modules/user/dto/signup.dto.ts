@@ -1,7 +1,6 @@
-import {z} from 'zod';
+import { z } from 'zod';
 import { Email } from '../model/user.email';
 import { UserName } from '../model/user.username';
-import { resetPasswordRoute } from '../../../routes/user.routes';
 import { Password } from '../../../utility/password-utils';
 
 export const signupDto = z.object({

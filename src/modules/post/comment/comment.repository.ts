@@ -1,9 +1,7 @@
 import { Repository, DataSource } from "typeorm";
 import { CommentEntity } from "./entity/comment.entity";
-import { CreateCommentInterface } from "./model/comment";
-import { CommentDao, createCommentDao} from "./dao/create-comment.dao";
-import { PostId } from "../model/post-id";
-
+import { CommentInterface } from "./model/comment";
+import { zodCommentDao } from "./dao/create-comment.dao";
 
 export class CommentRepository {
   private commentRepo: Repository<CommentEntity>;
@@ -11,9 +9,9 @@ export class CommentRepository {
     this.commentRepo = appDataSource.getRepository(CommentEntity);
   }
 
-  async create(comment: CreateCommentInterface): Promise<CommentDao> {
-    const savedComment = await this.commentRepo.save(comment)
-    return createCommentDao(savedComment)
+  async create(comment: CommentInterface): Promise<CommentInterface> {
+    return this.commentRepo.save(comment).then((x) => zodCommentDao.parse(x))
+    
   }
 
 }

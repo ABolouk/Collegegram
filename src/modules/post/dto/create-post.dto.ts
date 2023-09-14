@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { isUserId } from "../../user/model/user.id";
+import { UserId } from "../../user/model/user.id";
 
 
 const tag = z.object({
@@ -10,7 +10,7 @@ const tag = z.object({
 // const photo = z.string()
 
 export const createPostDto = z.object({
-  userId: z.string().nonempty().refine(isUserId),
+  userId: z.string().nonempty().refine(UserId.is),
   photos: z.array(z.string()).min(1).max(10),
   description: z.string().max(255),
   tags: z.array(tag),

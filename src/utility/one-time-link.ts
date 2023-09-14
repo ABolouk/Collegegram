@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import {  User } from "../modules/user/model/user";
+import { User } from "../modules/user/model/user";
 import { UserId } from "../modules/user/model/user.id";
 import { UserName } from "../modules/user/model/user.username";
 import { Email } from "../modules/user/model/user.email";

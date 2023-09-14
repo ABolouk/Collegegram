@@ -1,5 +1,4 @@
 import { z } from 'zod';
-import { UserAuth } from '../model/user.auth';
 import { Password } from '../../../utility/password-utils';
 import { UserName } from '../model/user.username';
 import { Email } from '../model/user.email';
