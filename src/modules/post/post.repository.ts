@@ -3,10 +3,11 @@ import { PostEntity } from "./entity/post.entity";
 import { PostId } from "./model/post-id";
 import { UserId } from "../user/model/user.id";
 import { PostDao } from "./dao/post.dao";
+import { UserEntity } from "../user/entity/user.entity";
 
 export class PostRepository {
     private postRepo: Repository<PostEntity>;
-    constructor(appDataSourece: DataSource) {
+    constructor(private appDataSourece: DataSource) { // FIXME: wrong spelling
         this.postRepo = appDataSourece.getRepository(PostEntity);
     }
 
@@ -23,7 +24,16 @@ export class PostRepository {
         });
     }
 
-    createPost(post: PostDao): Promise<PostEntity> {
-        return this.postRepo.save(post);
+    async createPost(post: PostDao): Promise<PostEntity> {
+        return await this.appDataSourece.manager.transaction(async (manager) => {
+            const postRepo = manager.getRepository(PostEntity);
+            const userRepo = manager.getRepository(UserEntity);
+            const newPost = await postRepo.save(post)
+            await userRepo.update(
+                { id: post.userId },
+                { postCount: () => "postCount + 1" }
+            )
+            return newPost
+        })
     }
 }
