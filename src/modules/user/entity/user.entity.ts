@@ -1,6 +1,6 @@
 import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm";
 import { UserId } from "../model/user.id";
-import { WholeNumber } from "../../../data/int";
+import { WholeNumber } from "../../../data/whole-number";
 
 @Entity("users")
 export class UserEntity {
