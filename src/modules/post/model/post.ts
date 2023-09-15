@@ -1,6 +1,6 @@
 import { UserId } from "../../user/model/user.id";
-import { CommentInterface, CreateCommentInterface } from "../comment/model/comment";
-import { TagInterface } from "../tag/model/tag";
+import { CommentInterface } from "../comment/model/comment";
+import { SplittedTag, TagInterface } from "../tag/model/tag";
 import { PostId } from "./post-id";
 
 export interface PostInterface {
@@ -15,9 +15,9 @@ export interface PostInterface {
 
 
 export interface CreatePostInterface {
+  userId: UserId;
   photos: string[];
   description?: string;
-  comments?: CreateCommentInterface[];
-  tags?: TagInterface[];
+  tags?: SplittedTag[];
   closeFriends: boolean
 }
