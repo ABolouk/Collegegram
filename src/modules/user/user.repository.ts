@@ -40,10 +40,9 @@ export class UserRepository {
 	}
 
 	async findByEmailOrUsername(data: Email | UserName): Promise<loginUserInterface | null> {
-		const user = await this.userRepo
+		return this.userRepo
 			.findOneBy([{ email: data }, { username: data }])
 			.then((x) => zodLogginUserDao.parse(x));
-		return user as loginUserInterface
 	}
 
 
