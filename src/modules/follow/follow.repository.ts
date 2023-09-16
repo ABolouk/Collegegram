@@ -15,6 +15,10 @@ export class FollowRepository {
     }
 
     async getFollowRelation(followRelation: Follow): Promise<followDao | null> {
-        return this.followRepo.find({where :{followerId : followRelation.followerId, followingId: followRelation.followingId }}).then((x) => x ? zodFollowRellDao.parse(x) : null);
+        return this.followRepo.find({ where: { followerId: followRelation.followerId, followingId: followRelation.followingId } }).then((x) => x ? zodFollowRellDao.parse(x) : null);
+    }
+
+    async deleteFollowRelation(followRelation: Follow) {
+        await this.followRepo.delete({ followerId: followRelation.followerId, followingId: followRelation.followingId })
     }
 }
