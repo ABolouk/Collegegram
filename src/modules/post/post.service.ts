@@ -7,10 +7,10 @@ import { PostRepository } from "./post.repository";
 export class PostService {
     constructor(private postRepository: PostRepository) { }
 
-    async createPost(dto: CreatePostDto) {
+    async createPost(dto: CreatePostDto, photos: Express.Multer.File[]) {
         // TODO: maybe some validations
-        // TODO: also how to save images
-        return await this.postRepository.createPost(dto);
+        const photosPath: string[] = photos.length !== 0 ? photos.map(x => x.path) : []
+        return await this.postRepository.createPost({ ...dto, photos: photosPath });
     }
 
     async getPostById(postId: PostId) {

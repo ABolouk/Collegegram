@@ -8,12 +8,17 @@ import { UserService } from "../modules/user/user.service";
 import { createCommentDto } from "../modules/post/comment/dto/create-comment.dto";
 import { getPostsDto } from "../modules/post/dto/get-posts-dto";
 import { getPostIdDto } from "../modules/post/dto/get-post-id-dto";
+import { uploadMultiple } from "../utility/multer";
+import { BadRequestError } from "../utility/http-errors";
 
 export const makePostRouter = (userService: UserService, postService: PostService, commentService: CommentService) => {
 	const app = Router();
-	app.post("/", loginMiddle(userService), async (req, res) => {
+	app.post("/", loginMiddle(userService), uploadMultiple.array('post-photos'), async (req, res) => {
 		const data = createPostDto.parse(req.body);
-		handleExpresss(res, () => postService.createPost(data));
+		if (!req.files) {
+			return new BadRequestError("post has no images")
+		}
+		handleExpresss(res, () => postService.createPost(data, req.files as Express.Multer.File[]));
 	});
 
 	app.get("/:id", loginMiddle(userService), async (req, res) => {
