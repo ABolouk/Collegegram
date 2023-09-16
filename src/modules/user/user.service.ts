@@ -177,7 +177,7 @@ export class UserService {
 
         if (followingUser.isPrivate === true) {
             await this.followReqRepo.createFollowRequest({ interactionId: 1, followerId: userId, followingId: followingUser.id, status: FollowReqStatus.status.pending })
-            return { status: "panding" }
+            return { status: "pending" }
         }
 
         await this.followRepo.createFollowRelation({ interactionId: 1, followerId: userId, followingId: followingUser.id })
