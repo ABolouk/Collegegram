@@ -17,6 +17,7 @@ import { loginUserInterface } from "./model/user";
 import { followDtoType } from '../follow/dto/follow.dto';
 import { FollowRequestRepository } from "../follow/follow-request.repository";
 import { FollowRepository } from "../follow/follow.repository";
+import { FollowReqStatus } from '../follow/model/follow.req.status';
 
 export class UserService {
     constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService, private followReqRepo: FollowRequestRepository, private followRepo: FollowRepository) { }
@@ -30,7 +31,7 @@ export class UserService {
         if (!passwordsMatch) {
             throw new UnauthorizedError();
         }
-        const accessToken = jwt.sign({ id: UserId }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "1h" })
+        const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "1h" })
         const refreshToken = randomBytes(64).toString('hex')
         const time = loginDto.rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
         const userInfo = await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
@@ -131,7 +132,7 @@ export class UserService {
         }
 
         const user = await this.getUserById(userId);
-        
+
         const secret = createOneTimeLinkSecret(user as loginUserInterface) //????
         const payload = jwt.verify(token, secret) as PayloadType
 
@@ -159,21 +160,42 @@ export class UserService {
         };
         const { confirmPassword, ...updateUserInfo } = { ...editInfo, avatar: file ? file.path : "default path", password: await editPass };
 
-        this.userRepository.updateUser(user.id, updateUserInfo);
+        await this.userRepository.updateUser(user.id, updateUserInfo);
         const updatedUser = await this.getUserById(userId);
         return updatedUser;
     }
 
-
-
     async follow(dto: followDtoType, userId: UserId) {
-        const user = await this.getUserById(userId);
-        if (user.isPrivate === true) {
-            this.followReqRepo.createFollowRequest({ interactionId: 1, followerId: userId, followingId: user.id })
+        const followingUser = await this.userRepository.findByUsername(dto.UserName);
+        if (!followingUser) {
+            throw new NotFoundError("User")
+        }
+
+        if (await this.followRepo.getFollowRelation({ followerId: userId, followingId: followingUser.id })) {
+            throw new ConflictError("You are already following this user")
+        }
+
+        if (followingUser.isPrivate === true) {
+            await this.followReqRepo.createFollowRequest({ interactionId: 1, followerId: userId, followingId: followingUser.id, status: FollowReqStatus.status.pending })
             return { status: "panding" }
         }
-        this.followRepo.createFollowRelation({ interactionId: 1, followerId: userId, followingId: user.id })
+
+        await this.followRepo.createFollowRelation({ interactionId: 1, followerId: userId, followingId: followingUser.id })
         return { status: "accepted" }
+    }
+
+    async unfollow(dto: followDtoType, userId: UserId) {
+        const followingUser = await this.userRepository.findByUsername(dto.UserName);
+        if (!followingUser) {
+            throw new NotFoundError("User")
+        }
+
+        if (!(await this.followRepo.getFollowRelation({ followerId: userId, followingId: followingUser.id }))) {
+            throw new ConflictError("You are not following this user")
+        }
+
+        await this.followRepo.deleteFollowRelation({ followerId: userId, followingId: followingUser.id })
+        return { status: "unfollowed" }
     }
 
 }
