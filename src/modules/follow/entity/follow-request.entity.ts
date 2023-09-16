@@ -1,10 +1,12 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { UserId } from "../../user/model/user.id";
+import { FollowReqId } from "../model/follow.req.id";
+import { FollowReqStatus } from "../model/follow.req.status";
 
 @Entity("follow requset")
 export class FollowRequestEntity {
     @PrimaryGeneratedColumn()
-    id!: number;
+    id!: FollowReqId;
 
     @Column()
     interactionId!: number;
@@ -15,9 +17,8 @@ export class FollowRequestEntity {
     @Column()
     followingId!: UserId;
 
-    //FIXME: status should be enum 
     @Column()
-    status!: string;
+    status!: FollowReqStatus.status;
 
     @CreateDateColumn()
     createdAt!: Date;

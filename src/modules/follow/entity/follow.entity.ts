@@ -1,11 +1,12 @@
 import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
 import { UserId } from "../../user/model/user.id";
 import { User } from "../../user/model/user";
+import { FollowId } from "../model/follow.id";
 
 @Entity("follow")
 export class FollowEntity {
     @PrimaryGeneratedColumn()
-    id!: number;
+    id!: FollowId;
 
     @Column()
     interactionId!: number;
