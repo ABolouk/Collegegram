@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { UserId } from "../user/model/user.id";
 import { sessionRepository } from "../user/session.repository";
-import { JwtLoginPayload, verifedToken } from "./model/jwt-payload";
+import { JwtLoginPayload } from "./model/jwt-payload";
 import { randomBytes } from 'crypto';
 import { jwtDto } from "./dto/jwt.dto";
 import { jwtError } from "../../utility/http-errors";
@@ -20,7 +20,7 @@ export class JwtService {
   }
 
 
-  async verify(dto : jwtDto): Promise<verifedToken | undefined> { // ASK : T?? <T extends verifedToken> Promise<T>?
+  async verify(dto : jwtDto) { // ASK : T?? <T extends verifedToken> Promise<T>?
     if (typeof dto.token !== 'string') {
       throw new jwtError() // NOTE: new JsonWebTokenError('jwt must be a string')
     }
@@ -31,30 +31,32 @@ export class JwtService {
       throw new jwtError() //NOTE: new JsonWebTokenError('jwt malformed')
     }
     const accessKey = process.env.ACCESS_TOKEN_SECRET as string;
-    jwt.verify(dto.token, accessKey, async (err, decoded) => {
+    jwt.verify(dto.token, accessKey, (err, decoded) => {
       if (err) {
         if (err.name === "TokenExpiredError" || err.name === "JsonWebTokenError" || err.name === "NotBeforeError") {
           throw new jwtError()
         }
+      } else {
+        let payload = decoded as jwt.JwtPayload
+        if (!decoded) {
+          throw new jwtError()
+        }
+        if (typeof payload === 'string') {
+          try {
+            var obj = JSON.parse(payload);
+            if (obj !== null && typeof obj === 'object') {
+              payload = obj;
+            }
+          } catch (e) { throw new jwtError() }
+        }
+        const id = payload.id
+        if (!UserId.is(id)) {
+          throw new jwtError()
+        }
       }
-      let payload = decoded as jwt.JwtPayload
-      if (!decoded) {
-        throw new jwtError()
-      }
-      if (typeof payload === 'string') {
-        try {
-          var obj = JSON.parse(payload);
-          if (obj !== null && typeof obj === 'object') {
-            payload = obj;
-          }
-        } catch (e) { throw new jwtError() }
-      }
-      const id = payload.id
-      if (!UserId.is(id)) {
-        throw new jwtError()
-      }
+      
     })
-
     return "valid"
+
   }
 }
