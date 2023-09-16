@@ -11,6 +11,7 @@ import { PostRepository } from "./modules/post/post.repository";
 import { PostService } from "./modules/post/post.service";
 import { CommentService } from "./modules/post/comment/comment.service";
 import { CommentRepository } from "./modules/post/comment/comment.repository";
+import { JwtService } from "./modules/jwt/jwt.service";
 
 export const makeApp = (dataSource: DataSource) => {
     const app = express();
@@ -18,9 +19,10 @@ export const makeApp = (dataSource: DataSource) => {
     app.use(express.json())
     const userRepo = new UserRepository(dataSource);
     const sessionRepo = new sessionRepository(dataSource);
+    const jwtService = new JwtService(sessionRepo)
     const emailService = new EmailService()
     const userService = new UserService(userRepo, sessionRepo, emailService);
-    app.use("/user", makeUserRouter(userService));
+    app.use("/user", makeUserRouter(userService, jwtService));
 
     const postRepo = new PostRepository(dataSource);
     const postService = new PostService(postRepo);
