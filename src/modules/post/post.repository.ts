@@ -4,11 +4,14 @@ import { PostId } from "./model/post-id";
 import { UserId } from "../user/model/user.id";
 import { PostDao } from "./dao/post.dao";
 import { UserEntity } from "../user/entity/user.entity";
+import { CreatePostInterface } from "./model/post";
+import { TagEntity } from "./tag/entity/tag.entity";
+import { CreateTagInterface } from "./tag/model/tag";
 
 export class PostRepository {
     private postRepo: Repository<PostEntity>;
-    constructor(private appDataSourece: DataSource) { // FIXME: wrong spelling
-        this.postRepo = appDataSourece.getRepository(PostEntity);
+    constructor(private appDataSource: DataSource) {
+        this.postRepo = appDataSource.getRepository(PostEntity);
     }
 
     getPostById(id: PostId): Promise<PostEntity | null> {
@@ -24,15 +27,34 @@ export class PostRepository {
         });
     }
 
-    async createPost(post: PostDao): Promise<PostEntity> {
-        return await this.appDataSourece.manager.transaction(async (manager) => {
+    async createPost(post: CreatePostInterface): Promise<PostDao> {
+        return await this.appDataSource.manager.transaction(async (manager) => {
             const postRepo = manager.getRepository(PostEntity);
             const userRepo = manager.getRepository(UserEntity);
-            const newPost = await postRepo.save(post)
+            const tagRepo = manager.getRepository(TagEntity);
+            const createNewTag = async (element: CreateTagInterface) => {
+                const existingTag = await tagRepo.findOneBy({ title: element.title });
+                if (!existingTag) {
+                    return await tagRepo.save({
+                        title: element.title,
+                        color: element.color,
+                    }) as TagEntity
+                } else {
+                    return existingTag
+                }               
+            }
+            const createdTags = post.tags ? post.tags.map(createNewTag) : []
+            const newPost = await postRepo.save({
+                userId: post.userId,
+                photos: post.photos,
+                description: post.description,
+                closeFriends: post.closeFriends,
+            }) as PostEntity
             await userRepo.update(
                 { id: post.userId },
                 { postCount: () => "postCount + 1" }
             )
+            newPost.tags = createdTags
             return newPost
         })
     }
