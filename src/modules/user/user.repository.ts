@@ -54,6 +54,7 @@ export class UserRepository {
 		)
 	}
 
+	//FIXME: this is not a good way to do this
 	updatePasswordById(id: UserId, password: string) {
 		this.userRepo.update(
 			{ id: id },
@@ -61,7 +62,8 @@ export class UserRepository {
 		)
 	}
 
-	updateUser(userId: UserId, user: updateUser) {
+	//FIXME: this is not a good way to do this
+	async updateUser(userId: UserId, user: updateUser) {
 		this.userRepo.update({ id: userId }, user)
 	}
 
