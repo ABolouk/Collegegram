@@ -1,6 +1,7 @@
 import { DataSource, Repository } from "typeorm";
 import { FollowRequestEntity } from "./entity/follow-request.entity";
-import { FollowRequest, createFollowRequest } from "./model/follow-request";
+import { createFollowRequest, followReqDao } from "./model/follow.request";
+import { zodFollowReqDao } from "./dao/follow.req.dao";
 
 export class FollowRequestRepository {
     private followRequestRepo: Repository<FollowRequestEntity>;
@@ -8,8 +9,8 @@ export class FollowRequestRepository {
         this.followRequestRepo = appDataSource.getRepository(FollowRequestEntity);
     }
 
-    createFollowRequest(followRequest: createFollowRequest) {
-        return this.followRequestRepo.save(followRequest)
+    async createFollowRequest(followRequest: createFollowRequest): Promise<followReqDao> {
+        return this.followRequestRepo.save(followRequest).then((x) => zodFollowReqDao.parse(x));
     }
 
 }
