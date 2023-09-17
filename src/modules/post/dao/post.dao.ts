@@ -2,6 +2,7 @@ import { UserId } from "../../user/model/user.id";
 import { CommentEntity } from "../comment/entity/comment.entity";
 import { PostEntity } from "../entity/post.entity";
 import { TagInterface } from "../tag/model/tag";
+import { zodTagDao } from "../tag/dao/tag.dao";
 
 export type PostDao = {
     userId: UserId;
@@ -13,10 +14,10 @@ export type PostDao = {
 };
 
 export const CreatePostDao = (post: PostEntity): PostDao => ({
-    userId: post.userId,
-    photos: post.photos,
-    description: post.description,
-    comments: post.comments, // FIXME: add commentDao and use here.
-    tags: post.tags,
-    closeFriends: post.closeFriends,
+        userId: post.userId,
+        photos: post.photos,
+        description: post.description,
+        comments: post.comments, // FIXME: add commentDao and use here.
+        tags: post.tags?.map(x => zodTagDao.parse(x)) || [],
+        closeFriends: post.closeFriends,
 })
