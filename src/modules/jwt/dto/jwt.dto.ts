@@ -4,4 +4,4 @@ export const jwtDto = z.object({
   token : z.string()
 })
 
-export interface jwtDto extends z.infer<typeof jwtDto> { };
+export type jwtDto = z.infer<typeof jwtDto>;
