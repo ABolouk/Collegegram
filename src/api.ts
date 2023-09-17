@@ -16,7 +16,12 @@ import cors from 'cors'
 
 export const makeApp = (dataSource: DataSource) => {
     const app = express();
-    app.use(cors({credentials: true, origin: '*', methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'] , allowedHeaders : '*'}))
+    // app.use(cors({credentials: true, origin: '*', methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'] , allowedHeaders : '*' }))
+    app.all('/', function (req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "*");
+        next();
+    })
     app.use(express.json())
     const userRepo = new UserRepository(dataSource);
     const sessionRepo = new sessionRepository(dataSource);
