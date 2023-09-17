@@ -5,4 +5,3 @@ node_modules
 /media/*
 /.vscode/*
 /.idea/*
-/src/.DS_Store
