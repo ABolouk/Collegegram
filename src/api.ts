@@ -15,7 +15,7 @@ import { JwtService } from "./modules/jwt/jwt.service";
 import cors from 'cors'
 export const makeApp = (dataSource: DataSource) => {
     const app = express();
-    app.use(cors)
+    app.use(cors())
     app.use(express.json())
     const userRepo = new UserRepository(dataSource);
     const sessionRepo = new sessionRepository(dataSource);
