@@ -4,9 +4,9 @@ import { Content } from "../model/comment-content"
 import { UserId } from "../../../user/model/user.id"
 
 export const createCommentDto = z.object({
-  autherId: UserId.zod,
+  userId: UserId.zod,
   postId: PostId.zod,
   content: Content.zod
 })
 
-export interface createCommentDto extends z.infer<typeof createCommentDto> { };
+export type createCommentDto = z.infer<typeof createCommentDto>;

@@ -18,7 +18,7 @@ import { createCommentDto } from "./dto/create-comment.dto";
     }
 
     const createdComment = {
-      autherId: dto.autherId,
+      userId: dto.userId,
       postId: dto.postId,
       content: dto.content
     }
