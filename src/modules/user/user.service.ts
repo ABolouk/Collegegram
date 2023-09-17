@@ -27,11 +27,11 @@ export class UserService {
         if (!passwordsMatch) {
             throw new UnauthorizedError();
         }
-        const accessToken = jwt.sign({ id: UserId }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "1h" })
+        const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "1h" })
         const refreshToken = randomBytes(64).toString('hex')
         const time = loginDto.rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
-        const userInfo = await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
-        return { userInfo, accessToken, refreshToken };
+        await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
+        return { user, accessToken, refreshToken };
     }
     async findById(id: UserId) {
         return this.userRepository.findById(id);

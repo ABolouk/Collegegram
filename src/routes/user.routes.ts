@@ -8,10 +8,12 @@ import { signupDto } from "../modules/user/dto/signup.dto";
 import { loginMiddle } from "../login.middleware";
 import { upload } from "../utility/multer";
 import { editProfile } from "../modules/user/dto/edit-profile.dto";
+import { JwtService } from "../modules/jwt/jwt.service";
+import { jwtDto } from "../modules/jwt/dto/jwt.dto";
 export const resetPasswordRoute = "reset_password"
 
 
-export const makeUserRouter = (userService: UserService) => {
+export const makeUserRouter = (userService: UserService, jwtService: JwtService) => {
 	const app = Router();
 	app.post("/login", (req, res) => {
 		const dto = loginDto.parse(req.body);
@@ -37,5 +39,10 @@ export const makeUserRouter = (userService: UserService) => {
 		const dto = editProfile.parse(req.body);
 		handleExpresss(res, () => userService.updateUserInfo(req.user.id, dto, req.file));
 	});
+
+	app.post("/verifyToken", async (req, res) => {
+		const dto = jwtDto.parse(req.body)
+		handleExpresss(res, () => jwtService.verify(dto))
+	})
 	return app;
 };

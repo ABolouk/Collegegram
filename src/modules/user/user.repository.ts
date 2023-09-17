@@ -27,8 +27,7 @@ export class UserRepository {
 	}
 
 	async findByEmail(email: Email): Promise<User | null> {
-		const user = await this.userRepo.findOneBy({ email })
-		return user as User
+		return this.userRepo.findOneBy({ email }).then((x) => z.nullable(zodUserDao).parse(x))
 	}
 
 	async isUniqueEmail(email: Email): Promise<Email.Unique | null> {
@@ -40,10 +39,9 @@ export class UserRepository {
 	}
 
 	async findByEmailOrUsername(data: Email | UserName): Promise<loginUserInterface | null> {
-		const user = await this.userRepo
+		return this.userRepo
 			.findOneBy([{ email: data }, { username: data }])
-			.then((x) => zodLogginUserDao.parse(x));
-		return user as loginUserInterface
+			.then((x) => z.nullable(zodLogginUserDao).parse(x));
 	}
 
 
