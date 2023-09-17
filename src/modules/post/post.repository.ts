@@ -2,7 +2,7 @@ import { DataSource, Repository } from "typeorm";
 import { PostEntity } from "./entity/post.entity";
 import { PostId } from "./model/post-id";
 import { UserId } from "../user/model/user.id";
-import { PostDao } from "./dao/post.dao";
+import { CreatePostDao, PostDao } from "./dao/post.dao";
 import { UserEntity } from "../user/entity/user.entity";
 import { CreatePostInterface } from "./model/post";
 import { TagEntity } from "./tag/entity/tag.entity";
@@ -41,9 +41,9 @@ export class PostRepository {
                     }) as TagEntity
                 } else {
                     return existingTag
-                }               
+                }
             }
-            const createdTags = post.tags ? post.tags.map(createNewTag) : []
+            const createdTags = post.tags ? await Promise.all(post.tags.map(createNewTag)) : []
             const newPost = await postRepo.save({
                 userId: post.userId,
                 photos: post.photos,
@@ -54,8 +54,9 @@ export class PostRepository {
                 { id: post.userId },
                 { postCount: () => "postCount + 1" }
             )
-            newPost.tags = createdTags
-            return newPost
+            newPost.tags = createdTags;
+            await this.appDataSource.manager.save(newPost);
+            return CreatePostDao(newPost);
         })
     }
 }
