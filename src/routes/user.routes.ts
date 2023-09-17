@@ -40,7 +40,7 @@ export const makeUserRouter = (userService: UserService, jwtService: JwtService)
 		handleExpresss(res, () => userService.updateUserInfo(req.user.id, dto, req.file));
 	});
 
-	app.get("/verifyToken", async (req, res) => {
+	app.post("/verifyToken", async (req, res) => {
 		const dto = jwtDto.parse(req.body)
 		handleExpresss(res, () => jwtService.verify(dto))
 	})
