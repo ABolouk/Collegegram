@@ -1,26 +1,33 @@
 import jwt from "jsonwebtoken";
-import { UserRepository } from './user.repository';
-import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from '../../utility/http-errors';
-import { LoginDtoType } from './dto/login.dto';
-import { ForgetPasswordDto } from './dto/forget-password.dto';
-import { EmailService } from '../email/email.service';
-import { resetPasswordRoute } from '../../routes/user.routes';
-import { PayloadType, createMessageForOneTimeLink, createOneTimeLink, createOneTimeLinkSecret } from '../../utility/one-time-link';
-import { sessionRepository } from './session.repository';
-import { signupDto } from './dto/signup.dto';
-import { Password } from '../../utility/password-utils';
-import { randomBytes } from 'crypto';
-import { UserId } from './model/user.id';
-import { EditProfileType } from "./dto/edit-profile.dto";
-import { UserAuth } from "./model/user.auth"
-import { loginUserInterface } from "./model/user";
-import { followDtoType } from '../follow/dto/follow.dto';
-import { FollowRequestRepository } from "../follow/follow-request.repository";
-import { FollowRepository } from "../follow/follow.repository";
-import { FollowReqStatus } from '../follow/model/follow.req.status';
+import {UserRepository} from './user.repository';
+import {BadRequestError, ConflictError, NotFoundError, UnauthorizedError} from '../../utility/http-errors';
+import {LoginDtoType} from './dto/login.dto';
+import {ForgetPasswordDto} from './dto/forget-password.dto';
+import {EmailService} from '../email/email.service';
+import {resetPasswordRoute} from '../../routes/user.routes';
+import {
+    PayloadType,
+    createMessageForOneTimeLink,
+    createOneTimeLink,
+    createOneTimeLinkSecret
+} from '../../utility/one-time-link';
+import {sessionRepository} from './session.repository';
+import {signupDto} from './dto/signup.dto';
+import {Password} from '../../utility/password-utils';
+import {randomBytes} from 'crypto';
+import {UserId} from './model/user.id';
+import {EditProfileType} from "./dto/edit-profile.dto";
+import {UserAuth} from "./model/user.auth"
+import {loginUserInterface} from "./model/user";
+import {followDtoType} from '../follow/dto/follow.dto';
+import {FollowRequestRepository} from "../follow/follow-request.repository";
+import {FollowRepository} from "../follow/follow.repository";
+import {FollowReqStatus} from '../follow/model/follow.req.status';
 
 export class UserService {
-    constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService, private followReqRepo: FollowRequestRepository, private followRepo: FollowRepository) { }
+    constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService, private followReqRepo: FollowRequestRepository, private followRepo: FollowRepository) {
+    }
+
     async login(loginDto: LoginDtoType) {
         const user = await this.userRepository.findByEmailOrUsername(loginDto.authenticator)
         if (user === null) {
@@ -31,12 +38,13 @@ export class UserService {
         if (!passwordsMatch) {
             throw new UnauthorizedError();
         }
-        const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "1h" })
+        const accessToken = jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET as string, {expiresIn: "1h"})
         const refreshToken = randomBytes(64).toString('hex')
         const time = loginDto.rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
         const userInfo = await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
-        return { userInfo, accessToken, refreshToken };
+        return {userInfo, accessToken, refreshToken};
     }
+
     async findById(id: UserId) {
         return this.userRepository.findById(id);
     }
@@ -48,6 +56,7 @@ export class UserService {
     async deleteToken(token: string) {
         return this.sessionRepo.deleteToken(token);
     }
+
     async signup(dto: signupDto) {
         const uniqueEmail = await this.userRepository.isUniqueEmail(dto.email);
         if (!uniqueEmail) {
@@ -80,10 +89,10 @@ export class UserService {
 
         await this.userRepository.createUser(user);
 
-        return { success: true };
+        return {success: true};
     }
 
-    async forgetPassword({ authenticator }: ForgetPasswordDto) {
+    async forgetPassword({authenticator}: ForgetPasswordDto) {
         if (!UserAuth.is(authenticator)) {
             throw new UnauthorizedError();
         }
@@ -114,13 +123,15 @@ export class UserService {
 
         if (!UserId.is(userId)) {
             throw new BadRequestError("Invalid userId");
-        };
+        }
+        ;
 
         const user = await this.userRepository.findById(userId);
 
         if (!user) {
             throw new NotFoundError('User');
-        };
+        }
+        ;
 
         return user;
     }
@@ -145,7 +156,7 @@ export class UserService {
         }
 
         this.userRepository.updatePasswordById(user.id, await Password.makeHashed(password1)); //???
-        return { success: true };
+        return {success: true};
     }
 
     async updateUserInfo(userId: UserId, editInfo: EditProfileType, file?: Express.Multer.File) {
@@ -157,8 +168,13 @@ export class UserService {
 
         if (!user) {
             throw new NotFoundError('User');
+        }
+        ;
+        const {confirmPassword, ...updateUserInfo} = {
+            ...editInfo,
+            avatar: file ? file.path : "default path",
+            password: await editPass
         };
-        const { confirmPassword, ...updateUserInfo } = { ...editInfo, avatar: file ? file.path : "default path", password: await editPass };
 
         await this.userRepository.updateUser(user.id, updateUserInfo);
         const updatedUser = await this.getUserById(userId);
@@ -171,31 +187,40 @@ export class UserService {
             throw new NotFoundError("User")
         }
 
-        if (await this.followRepo.getFollowRelation({ followerId: userId, followingId: followingUser.id })) {
+        if (await this.followRepo.getFollowRelation({followerId: userId, followingId: followingUser.id})) {
             throw new ConflictError("You are already following this user")
         }
 
-        if (followingUser.isPrivate === true) {
-            await this.followReqRepo.createFollowRequest({ interactionId: 1, followerId: userId, followingId: followingUser.id, status: FollowReqStatus.status.pending })
-            return { status: "pending" }
+        if (followingUser.isPrivate) {
+            await this.followReqRepo.createFollowRequest({
+                interactionId: 1,
+                followerId: userId,
+                followingId: followingUser.id,
+                status: FollowReqStatus.status.pending
+            })
+            return {status: "pending"}
         }
 
-        await this.followRepo.createFollowRelation({ interactionId: 1, followerId: userId, followingId: followingUser.id })
-        return { status: "accepted" }
+        await this.followRepo.createFollowRelation({
+            interactionId: 1,
+            followerId: userId,
+            followingId: followingUser.id
+        })
+        return {status: "accepted"}
     }
 
-    async unfollow(dto: followDtoType, userId: UserId) {
+    async unfollow(dto: followDtoType, followerId: UserId) {
         const followingUser = await this.userRepository.findByUsername(dto.UserName);
         if (!followingUser) {
             throw new NotFoundError("User")
         }
 
-        if (!(await this.followRepo.getFollowRelation({ followerId: userId, followingId: followingUser.id }))) {
+        if (!(await this.followRepo.getFollowRelation({followerId: followerId, followingId: followingUser.id}))) {
             throw new ConflictError("You are not following this user")
         }
 
-        await this.followRepo.deleteFollowRelation({ followerId: userId, followingId: followingUser.id })
-        return { status: "unfollowed" }
+        await this.followRepo.deleteFollowRelation({followerId: followerId, followingId: followingUser.id})
+        return {status: "unfollowed"}
     }
 
 }

@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { FollowReqId } from "../model/follow.req.id";
-import { followReqDao } from "../model/follow.request";
+import { followReqIdDao } from "../model/follow.request";
 
-export const zodFollowReqDao = z.object({
+export const zodFollowReqIdDao = z.object({
     id: FollowReqId.zod,
-}).transform((x): followReqDao => x)
+}).transform((x): followReqIdDao => x)

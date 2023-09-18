@@ -6,8 +6,8 @@ import { FollowReqStatus } from "./follow.req.status";
 import { User } from '../../user/model/user';
 
 export interface FollowRequest {
-    followerUsername: UserName;
-    followingUsername: UserName;
+    followerUserId: UserName;
+    followingUserId: UserName;
 }
 
 export interface createFollowRequest {
@@ -17,6 +17,6 @@ export interface createFollowRequest {
     status: FollowReqStatus.status;
 }
 
-export interface followReqDao {
+export interface followReqIdDao {
     id: FollowReqId;
 }
