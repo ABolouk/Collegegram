@@ -26,10 +26,10 @@ export const makePostRouter = (userService: UserService, postService: PostServic
 		handleExpresss(res, () => postService.getPostById(postId));
 	});
 
-	app.post("/user", loginMiddle(userService), (req, res) => {
+	app.post("/user/:limit/:nextOffset?", loginMiddle(userService), (req, res) => {
 		const user = req.user;
-		const { limit, page } = getPostsDto.parse(req.body)
-		handleExpresss(res, () => postService.getPostsByUserId(user.id, limit, page));
+		const { limit, nextOffset } = getPostsDto.parse(req.params);
+		handleExpresss(res, () => postService.getPostsByUserId(user.id, limit, nextOffset ? nextOffset : 0));
 	});
 
 	app.post("/:id/comment", loginMiddle(userService), (req, res) => {
