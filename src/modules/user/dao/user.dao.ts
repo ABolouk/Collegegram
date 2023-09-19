@@ -17,9 +17,10 @@ export const zodUserDao = z
     username: UserName.zod,
     email: Email.zod,
     password: HashedPassword.zod,
-    bio: z.string(),
-    firstName: zodFirstName,
-    lastName: zodLastName,
+    bio: z.string().optional(),
+    firstName: zodFirstName.optional(),
+    lastName: zodLastName.optional(),
+    avatar: z.string().optional(),
     isPrivate: z.boolean()
 
   }).transform((x): User => x)
@@ -30,9 +31,6 @@ export const zodLogginUserDao = z
     id: UserId.zod,
     username: UserName.zod,
     email: Email.zod,
-    bio: z.string(),
-    firstName: zodFirstName,
-    lastName: zodLastName,
+    password: HashedPassword.zod,
     isPrivate: z.boolean()
-
   }).transform((x): loginUserInterface => x)

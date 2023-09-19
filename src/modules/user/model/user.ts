@@ -23,10 +23,7 @@ export interface loginUserInterface {
     id: UserId;
     email: Email;
     username: UserName;
-    bio?: string;
-    firstName?: string;
-    lastName?: string;
-    avatar?: string;
+    password: HashedPassword,
     isPrivate: boolean;
 }
 
