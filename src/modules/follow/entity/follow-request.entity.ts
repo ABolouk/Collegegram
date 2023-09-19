@@ -1,7 +1,8 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
 import { UserId } from "../../user/model/user.id";
 import { FollowReqId } from "../model/follow.req.id";
 import { FollowReqStatus } from "../model/follow.req.status";
+import {UserEntity} from "../../user/entity/user.entity";
 
 @Entity("follow requset")
 export class FollowRequestEntity {
@@ -11,10 +12,10 @@ export class FollowRequestEntity {
     @Column()
     interactionId!: number;
 
-    @Column()
+    @ManyToOne(() => UserEntity)
     followerId!: UserId;
 
-    @Column()
+    @ManyToOne(() => UserEntity)
     followingId!: UserId;
 
     @Column()

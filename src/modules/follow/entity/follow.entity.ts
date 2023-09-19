@@ -1,7 +1,8 @@
-import { Column, CreateDateColumn, Entity, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
 import { UserId } from "../../user/model/user.id";
 import { User } from "../../user/model/user";
 import { FollowId } from "../model/follow.id";
+import {UserEntity} from "../../user/entity/user.entity";
 
 @Entity("follow")
 export class FollowEntity {
@@ -11,10 +12,10 @@ export class FollowEntity {
     @Column()
     interactionId!: number;
 
-    @Column()
+    @ManyToOne(() => UserEntity)
     followerId!: UserId;
 
-    @Column()
+    @ManyToOne(() => UserEntity)
     followingId!: UserId;
 
     @CreateDateColumn()
