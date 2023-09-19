@@ -33,7 +33,10 @@ export const makePostRouter = (userService: UserService, postService: PostServic
 	});
 
 	app.post("/:id/comment", loginMiddle(userService), (req, res) => {
-		const dto = createCommentDto.parse({ ...req.body, postId: req.params.id })
+		const userId = req.user.id
+		const postId = req.params.id
+		const dto = createCommentDto.parse({ userId, postId, ...req.body })
+		console.log(dto)
 		handleExpresss(res, () => commentService.comment(dto))
 	})
 
