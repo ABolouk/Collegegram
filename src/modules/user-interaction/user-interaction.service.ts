@@ -1,34 +1,31 @@
 import { UserId } from "../user/model/user.id";
+import { InteractionInterface, UserInteractionInterface } from "./model/user-interaction";
 import { UserInteractionRepository } from "./user-interaction.repository";
 
-export class USerInteractionService{
+export class USerInteractionService {
   constructor(private userInteractionRepo: UserInteractionRepository) { }
-  
-  async getOrCreateUserInteraction(firstUserId: UserId, secondUserId: UserId) {  //FIXME: 
-    const interaction = this.ifExistInteraction(firstUserId, secondUserId)
-    if (!interaction){
-      const createInteraction = {
-        userId1: firstUserId,
-        userId2: secondUserId
-      }
 
-      return await this.userInteractionRepo.creatUserInteraction(createInteraction)
+  async createUserInteraction(interaction: InteractionInterface): Promise<UserInteractionInterface> { 
+    const createInteraction = {
+      userId1: interaction.userId1,
+      userId2: interaction.userId2
     }
-    return interaction
+
+    return await this.userInteractionRepo.creatUserInteraction(createInteraction)
   }
 
-  async ifExistInteraction(firstUserId: UserId, secondUserId: UserId) {
-    const userInteraction = await this.userInteractionRepo.findByTwoUserId(firstUserId, secondUserId)
+  async getInteraction(interaction: InteractionInterface) : Promise<UserInteractionInterface | null>{
+    const userInteraction = await this.userInteractionRepo.findByTwoUserId(interaction)
     if (!userInteraction) {
       return null
     }
     return userInteraction
   }
 
-  async deleteUserInteraction(firstUserId: UserId, secondUserId: UserId) { //FIXME: 
-    const interaction = await this.ifExistInteraction(firstUserId, secondUserId)
-    if (interaction !== null) {
-      return await this.userInteractionRepo.deleteUserInteractionById(interaction.id)
+  async deleteUserInteraction(interaction: InteractionInterface) {
+    const userInteraction = await this.getInteraction(interaction)
+    if (userInteraction !== null) {
+      return await this.userInteractionRepo.deleteUserInteractionById(userInteraction.id)
     }
     return null
   }
