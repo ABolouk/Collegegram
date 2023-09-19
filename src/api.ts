@@ -15,6 +15,9 @@ import {FollowRepository} from "./modules/follow/follow.repository";
 import {followRequestRepository} from "./modules/follow/follow-request.repository";
 import {followRequestService} from "./modules/follow/follow.request.service";
 import {followService} from "./modules/follow/follow.service";
+import {JwtService} from "./modules/jwt/jwt.service";
+import cors from 'cors'
+
 
 export const makeApp = (dataSource: DataSource) => {
     const app = express();
@@ -22,13 +25,14 @@ export const makeApp = (dataSource: DataSource) => {
     app.use(express.json())
     const userRepo = new UserRepository(dataSource);
     const sessionRepo = new sessionRepository(dataSource);
+    const jwtService = new JwtService(sessionRepo)
     const followRepo = new FollowRepository(dataSource);
     const followReqRepo = new followRequestRepository(dataSource);
     const followRellService = new followService(followRepo);
     const followReqService = new followRequestService(followReqRepo,followRellService);
     const emailService = new EmailService()
     const userService = new UserService(userRepo, sessionRepo, emailService, followReqService, followRellService);
-    app.use("/user", makeUserRouter(userService));
+    app.use("/user", makeUserRouter(userService, jwtService));
 
     const postRepo = new PostRepository(dataSource);
     const postService = new PostService(postRepo);

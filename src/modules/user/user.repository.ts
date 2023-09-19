@@ -13,13 +13,8 @@ export class UserRepository {
 		this.userRepo = appDataSource.getRepository(UserEntity);
 	}
 
-	async findByUsername(username: UserName): Promise<User | null> {
-		const user = await this.userRepo.findOneBy({ username });
-		return user as User
-	}
-
 	async isUniqueUserName(username: UserName): Promise<UserName.Unique | null> {
-		const user = await this.findByUsername(username)
+		const user = await this.findByEmailOrUsername(username)
 		if (user === null) {
 			return username as UserName.Unique
 		}
@@ -27,8 +22,7 @@ export class UserRepository {
 	}
 
 	async findByEmail(email: Email): Promise<User | null> {
-		const user = await this.userRepo.findOneBy({ email })
-		return user as User
+		return this.userRepo.findOneBy({ email }).then((x) => z.nullable(zodUserDao).parse(x))
 	}
 
 	async isUniqueEmail(email: Email): Promise<Email.Unique | null> {
@@ -39,11 +33,10 @@ export class UserRepository {
 		return null;
 	}
 
-	async findByEmailOrUsername(data: Email | UserName): Promise<loginUserInterface | null> {
-		const user = await this.userRepo
+	async findByEmailOrUsername(data: Email | UserName): Promise<User | null> {
+		return this.userRepo
 			.findOneBy([{ email: data }, { username: data }])
-			.then((x) => zodLogginUserDao.parse(x));
-		return user as loginUserInterface
+			.then((x) => z.nullable(zodUserDao).parse(x));
 	}
 
 
@@ -67,7 +60,7 @@ export class UserRepository {
 		this.userRepo.update({ id: userId }, user)
 	}
 
-	createUser(user: createUserInterface): Promise<User> {
+	createUser(user: createUserInterface){
 		return this.userRepo.save(user)
 	}
 }

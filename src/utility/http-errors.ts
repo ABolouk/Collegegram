@@ -54,3 +54,9 @@ export class ConflictError extends HttpError {
         super(409, message)
     }
 }
+
+export class jwtError extends HttpError {
+    constructor() {
+        super(482, "توکن نامعتبر می‌باشد.");
+    }
+}

@@ -43,11 +43,14 @@ export const loginMiddle = (userService: UserService) =>
                 const decode = jwt.verify(token, accessKey);
                 const { id } = decode as JwtPayload;
                 if (!UserId.is(id)) {
-                    throw new UnauthorizedError();
+                    res.status(401).send({ message: "شما اجازه دسترسی به این صفحه را ندارید." });
+                    return;
                 }
                 const loggedInUser = await userService.findById(id);
+                console.log(loggedInUser);
                 if (!loggedInUser) {
-                    throw new UnauthorizedError();
+                    res.status(401).send({ message: "شما اجازه دسترسی به این صفحه را ندارید." });
+                    return;
                 }
                 req.user = loggedInUser;
 

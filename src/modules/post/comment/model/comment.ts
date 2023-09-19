@@ -4,7 +4,7 @@ import { Content } from "./comment-content";
 import { CommentId } from "./comment-id";
 
 export interface CommentInterface {
-  autherId: UserId;
+  userId: UserId;
   postId: PostId;
   content: Content
 }

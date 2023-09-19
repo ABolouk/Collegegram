@@ -9,8 +9,9 @@ import { HashedPassword, Password } from '../../../utility/password-utils';
 // User Interface type:??????
 export interface User {
     id: UserId;
-    email: string;
-    username: string;
+    email: Email;
+    username: UserName;
+    password: HashedPassword,
     bio?: string;
     firstName?: string;
     lastName?: string;
@@ -20,9 +21,12 @@ export interface User {
 
 export interface loginUserInterface {
     id: UserId;
-    username: UserName;
     email: Email;
-    password: HashedPassword,
+    username: UserName;
+    bio?: string;
+    firstName?: string;
+    lastName?: string;
+    avatar?: string;
     isPrivate: boolean;
 }
 

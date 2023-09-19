@@ -23,6 +23,7 @@ import {followDtoType} from '../follow/dto/follow.dto';
 import {FollowReqStatus} from '../follow/model/follow.req.status';
 import {followRequestService} from "../follow/follow.request.service";
 import {followService} from "../follow/follow.service";
+import { UserName } from "./model/user.username";
 
 export class UserService {
     constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService, private followReqService: followRequestService, private followRellService: followService) {
@@ -38,11 +39,11 @@ export class UserService {
         if (!passwordsMatch) {
             throw new UnauthorizedError();
         }
-        const accessToken = jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET as string, {expiresIn: "1h"})
+        const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "1h" })
         const refreshToken = randomBytes(64).toString('hex')
         const time = loginDto.rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
-        const userInfo = await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
-        return {userInfo, accessToken, refreshToken};
+        await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
+        return { user, accessToken, refreshToken };
     }
 
     async findById(id: UserId) {
@@ -176,6 +177,14 @@ export class UserService {
 
         await this.userRepository.updateUser(user.id, updateUserInfo);
         return await this.getUserById(userId);
+    }
+
+    async getUserIdByUserName(username: UserName) {
+        const user = await this.userRepository.findByEmailOrUsername(username)
+        if (!user) {
+            return null
+        }
+        return user.id
     }
 
     async follow(dto: followDtoType, userId: UserId) {

@@ -11,16 +11,19 @@ import {editProfile} from "../modules/user/dto/edit-profile.dto";
 import {followDto} from '../modules/follow/dto/follow.dto';
 import {unfollowDto} from "../modules/follow/dto/unfollow.dto";
 import {followRequestDto} from "../modules/follow/dto/follow.request.dto";
+import { JwtService } from "../modules/jwt/jwt.service";
+import { jwtDto } from "../modules/jwt/dto/jwt.dto";
+import { blockDto } from "../modules/block/dto/block.dto";
 
 export const resetPasswordRoute = "reset_password"
 
 
-export const makeUserRouter = (userService: UserService) => {
-    const app = Router();
-    app.post("/login", (req, res) => {
-        const dto = loginDto.parse(req.body);
-        handleExpresss(res, () => userService.login(dto));
-    });
+export const makeUserRouter = (userService: UserService, jwtService: JwtService) => {
+	const app = Router();
+	app.post("/login", (req, res) => {
+		const dto = loginDto.parse(req.body);
+		handleExpresss(res, () => userService.login(dto));
+	});
 
     app.post("/register", (req, res) => {
         const dto = signupDto.parse(req.body);
@@ -41,6 +44,10 @@ export const makeUserRouter = (userService: UserService) => {
         const dto = editProfile.parse(req.body);
         handleExpresss(res, () => userService.updateUserInfo(req.user.id, dto, req.file));
     });
+    app.post("/verifyToken", async (req, res) => {
+        const dto = jwtDto.parse(req.body)
+        handleExpresss(res, () => jwtService.verify(dto))
+    })
     app.post("/follow", loginMiddle(userService), (req, res) => {
         const dto = followDto.parse(req.body);
         handleExpresss(res, () => userService.follow(dto, req.user.id));
