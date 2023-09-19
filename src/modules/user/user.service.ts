@@ -6,10 +6,10 @@ import {ForgetPasswordDto} from './dto/forget-password.dto';
 import {EmailService} from '../email/email.service';
 import {resetPasswordRoute} from '../../routes/user.routes';
 import {
-    PayloadType,
     createMessageForOneTimeLink,
     createOneTimeLink,
-    createOneTimeLinkSecret
+    createOneTimeLinkSecret,
+    PayloadType
 } from '../../utility/one-time-link';
 import {sessionRepository} from './session.repository';
 import {signupDto} from './dto/signup.dto';
@@ -20,12 +20,12 @@ import {EditProfileType} from "./dto/edit-profile.dto";
 import {UserAuth} from "./model/user.auth"
 import {loginUserInterface} from "./model/user";
 import {followDtoType} from '../follow/dto/follow.dto';
-import {FollowRequestRepository} from "../follow/follow-request.repository";
-import {FollowRepository} from "../follow/follow.repository";
 import {FollowReqStatus} from '../follow/model/follow.req.status';
+import {followRequestService} from "../follow/follow.request.service";
+import {followService} from "../follow/follow.service";
 
 export class UserService {
-    constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService, private followReqRepo: FollowRequestRepository, private followRepo: FollowRepository) {
+    constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService, private followReqService: followRequestService, private followRellService: followService) {
     }
 
     async login(loginDto: LoginDtoType) {
@@ -124,14 +124,12 @@ export class UserService {
         if (!UserId.is(userId)) {
             throw new BadRequestError("Invalid userId");
         }
-        ;
 
         const user = await this.userRepository.findById(userId);
 
         if (!user) {
             throw new NotFoundError('User');
         }
-        ;
 
         return user;
     }
@@ -177,8 +175,7 @@ export class UserService {
         };
 
         await this.userRepository.updateUser(user.id, updateUserInfo);
-        const updatedUser = await this.getUserById(userId);
-        return updatedUser;
+        return await this.getUserById(userId);
     }
 
     async follow(dto: followDtoType, userId: UserId) {
@@ -187,26 +184,24 @@ export class UserService {
             throw new NotFoundError("User")
         }
 
-        if (await this.followRepo.getFollowRelation({followerId: userId, followingId: followingUser.id})) {
+        if (await this.followRellService.getFollowRelation({followerId: userId, followingId: followingUser.id})) {
             throw new ConflictError("You are already following this user")
         }
 
         if (followingUser.isPrivate) {
-            await this.followReqRepo.createFollowRequest({
+            return await this.followReqService.createFollowRequest({
                 interactionId: 1,
                 followerId: userId,
                 followingId: followingUser.id,
                 status: FollowReqStatus.status.pending
             })
-            return {status: "pending"}
         }
 
-        await this.followRepo.createFollowRelation({
+        return await this.followRellService.createFollowRelation({
             interactionId: 1,
             followerId: userId,
             followingId: followingUser.id
         })
-        return {status: "accepted"}
     }
 
     async unfollow(dto: followDtoType, followerId: UserId) {
@@ -215,12 +210,34 @@ export class UserService {
             throw new NotFoundError("User")
         }
 
-        if (!(await this.followRepo.getFollowRelation({followerId: followerId, followingId: followingUser.id}))) {
+        if (!(await this.followRellService.getFollowRelation({followerId: followerId, followingId: followingUser.id}))) {
             throw new ConflictError("You are not following this user")
         }
 
-        await this.followRepo.deleteFollowRelation({followerId: followerId, followingId: followingUser.id})
-        return {status: "unfollowed"}
+        return this.followRellService.deleteFollowRelation({followerId: followerId, followingId: followingUser.id})
     }
 
+    async acceptFollowRequest(dto: followDtoType, followingId: UserId) {
+        const followerUser = await this.userRepository.findByUsername(dto.UserName);
+        if (!followerUser) {
+            throw new NotFoundError("User")
+        }
+        return await this.followReqService.followRequestAction({followerUserId: followerUser.id, followingUserId: followingId}, FollowReqStatus.status.accepted)
+    }
+
+    async rejectFollowRequest(dto: followDtoType, followingId: UserId) {
+        const followerUser = await this.userRepository.findByUsername(dto.UserName);
+        if (!followerUser) {
+            throw new NotFoundError("User")
+        }
+        return await this.followReqService.followRequestAction({followerUserId: followerUser.id, followingUserId: followingId}, FollowReqStatus.status.rejected)
+    }
+
+    async cancelFollowRequest(dto: followDtoType, followerId: UserId) {
+        const followingUser = await this.userRepository.findByUsername(dto.UserName);
+        if (!followingUser) {
+            throw new NotFoundError("User")
+        }
+        return await this.followReqService.followRequestAction({followerUserId: followerId, followingUserId: followingUser.id}, FollowReqStatus.status.cancelled)
+    }
 }
