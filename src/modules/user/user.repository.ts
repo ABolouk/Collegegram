@@ -13,13 +13,8 @@ export class UserRepository {
 		this.userRepo = appDataSource.getRepository(UserEntity);
 	}
 
-	async findByUsername(username: UserName): Promise<User | null> {
-		const user = await this.userRepo.findOneBy({ username });
-		return user as User
-	}
-
 	async isUniqueUserName(username: UserName): Promise<UserName.Unique | null> {
-		const user = await this.findByUsername(username)
+		const user = await this.findByEmailOrUsername(username)
 		if (user === null) {
 			return username as UserName.Unique
 		}
