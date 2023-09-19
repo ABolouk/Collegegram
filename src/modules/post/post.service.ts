@@ -3,6 +3,7 @@ import { UserId } from "../user/model/user.id";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { PostId } from "./model/post-id";
 import { PostRepository } from "./post.repository";
+import { PostsInterface } from "./model/post";
 
 export class PostService {
     constructor(private postRepository: PostRepository) { }
@@ -21,7 +22,11 @@ export class PostService {
         return post;
     }
 
-    async getPostsByUserId(userId: UserId, limit: number, page: number) {
-        return await this.postRepository.getPostsByUserId(userId, limit, page);
+    async getPostsByUserId(userId: UserId, limit: number, nextOffset: number): Promise<PostsInterface> {
+        const posts = await this.postRepository.getPostsByUserId(userId, limit, nextOffset);
+        return {
+            posts: posts,
+            nextOffset: posts[-1].createdAt.getTime(),
+        }
     }
 }
