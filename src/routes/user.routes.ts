@@ -10,6 +10,7 @@ import { upload } from "../utility/multer";
 import { editProfile } from "../modules/user/dto/edit-profile.dto";
 import { JwtService } from "../modules/jwt/jwt.service";
 import { jwtDto } from "../modules/jwt/dto/jwt.dto";
+import { blockDto } from "../modules/block/dto/block.dto";
 export const resetPasswordRoute = "reset_password"
 
 
@@ -43,6 +44,12 @@ export const makeUserRouter = (userService: UserService, jwtService: JwtService)
 	app.post("/verifyToken", async (req, res) => {
 		const dto = jwtDto.parse(req.body)
 		handleExpresss(res, () => jwtService.verify(dto))
+	})
+
+	app.post("block", loginMiddle(userService), async (req, res) => {
+		const userId = req.user.id
+		const dto = blockDto.parse({ ...req.body, userId })
+		handleExpresss(res, () => );
 	})
 	return app;
 };
