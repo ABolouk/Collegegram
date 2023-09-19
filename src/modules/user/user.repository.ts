@@ -33,10 +33,10 @@ export class UserRepository {
 		return null;
 	}
 
-	async findByEmailOrUsername(data: Email | UserName): Promise<loginUserInterface | null> {
+	async findByEmailOrUsername(data: Email | UserName): Promise<User | null> {
 		return this.userRepo
 			.findOneBy([{ email: data }, { username: data }])
-			.then((x) => z.nullable(zodLogginUserDao).parse(x));
+			.then((x) => z.nullable(zodUserDao).parse(x));
 	}
 
 
@@ -58,7 +58,7 @@ export class UserRepository {
 		this.userRepo.update({ id: userId }, user)
 	}
 
-	createUser(user: createUserInterface): Promise<User> {
+	createUser(user: createUserInterface){
 		return this.userRepo.save(user)
 	}
 }

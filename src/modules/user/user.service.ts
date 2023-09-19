@@ -14,6 +14,7 @@ import { UserId } from './model/user.id';
 import { EditProfileType } from "./dto/edit-profile.dto";
 import { UserAuth } from "./model/user.auth"
 import { loginUserInterface } from "./model/user";
+import { UserName } from "./model/user.username";
 
 export class UserService {
     constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService) { }
@@ -158,6 +159,14 @@ export class UserService {
 
         this.userRepository.updateUser(user.id, updateUserInfo);
         return true;
+    }
+
+    async getUserIdByUserName(username: UserName) {
+        const user = await this.userRepository.findByEmailOrUsername(username)
+        if (!user) {
+            return null
+        }
+        return user.id
     }
 
 }
