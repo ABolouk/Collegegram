@@ -23,10 +23,11 @@ import {followDtoType} from '../follow/dto/follow.dto';
 import {FollowReqStatus} from '../follow/model/follow.req.status';
 import {followRequestService} from "../follow/follow.request.service";
 import {followService} from "../follow/follow.service";
-import { UserName } from "./model/user.username";
+import {UserName} from "./model/user.username";
+import {USerInteractionService} from "../user-interaction/user-interaction.service";
 
 export class UserService {
-    constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService, private followReqService: followRequestService, private followRellService: followService) {
+    constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService, private userInteractionService: USerInteractionService, private followReqService: followRequestService, private followRellService: followService) {
     }
 
     async login(loginDto: LoginDtoType) {
@@ -34,16 +35,16 @@ export class UserService {
         if (user === null) {
             throw new NotFoundError("User");
         }
-        user
+
         const passwordsMatch = await Password.comparePasswords(loginDto.password, user.password)
         if (!passwordsMatch) {
             throw new UnauthorizedError();
         }
-        const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "1h" })
+        const accessToken = jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET as string, {expiresIn: "1h"})
         const refreshToken = randomBytes(64).toString('hex')
         const time = loginDto.rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
         await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
-        return { user, accessToken, refreshToken };
+        return {user, accessToken, refreshToken};
     }
 
     async findById(id: UserId) {
@@ -192,14 +193,23 @@ export class UserService {
         if (!followingUser) {
             throw new NotFoundError("User")
         }
-
+        let userInteraction = await this.userInteractionService.getInteraction({
+            userId1: userId,
+            userId2: followingUser.id
+        })
+        if (!userInteraction) {
+            userInteraction = await this.userInteractionService.createUserInteraction({
+                userId1: userId,
+                userId2: followingUser.id
+            })
+        }
         if (await this.followRellService.getFollowRelation({followerId: userId, followingId: followingUser.id})) {
             throw new ConflictError("You are already following this user")
         }
 
         if (followingUser.isPrivate) {
             return await this.followReqService.createFollowRequest({
-                interactionId: 1,
+                interactionId: userInteraction.id,
                 followerId: userId,
                 followingId: followingUser.id,
                 status: FollowReqStatus.status.pending
@@ -207,7 +217,7 @@ export class UserService {
         }
 
         return await this.followRellService.createFollowRelation({
-            interactionId: 1,
+            interactionId: userInteraction.id,
             followerId: userId,
             followingId: followingUser.id
         })
@@ -219,7 +229,10 @@ export class UserService {
             throw new NotFoundError("User")
         }
 
-        if (!(await this.followRellService.getFollowRelation({followerId: followerId, followingId: followingUser.id}))) {
+        if (!(await this.followRellService.getFollowRelation({
+            followerId: followerId,
+            followingId: followingUser.id
+        }))) {
             throw new ConflictError("You are not following this user")
         }
 
@@ -231,7 +244,10 @@ export class UserService {
         if (!followerUser) {
             throw new NotFoundError("User")
         }
-        return await this.followReqService.followRequestAction({followerUserId: followerUser.id, followingUserId: followingId}, FollowReqStatus.status.accepted)
+        return await this.followReqService.followRequestAction({
+            followerUserId: followerUser.id,
+            followingUserId: followingId
+        }, FollowReqStatus.status.accepted)
     }
 
     async rejectFollowRequest(dto: followDtoType, followingId: UserId) {
@@ -239,7 +255,10 @@ export class UserService {
         if (!followerUser) {
             throw new NotFoundError("User")
         }
-        return await this.followReqService.followRequestAction({followerUserId: followerUser.id, followingUserId: followingId}, FollowReqStatus.status.rejected)
+        return await this.followReqService.followRequestAction({
+            followerUserId: followerUser.id,
+            followingUserId: followingId
+        }, FollowReqStatus.status.rejected)
     }
 
     async cancelFollowRequest(dto: followDtoType, followerId: UserId) {
@@ -247,6 +266,9 @@ export class UserService {
         if (!followingUser) {
             throw new NotFoundError("User")
         }
-        return await this.followReqService.followRequestAction({followerUserId: followerId, followingUserId: followingUser.id}, FollowReqStatus.status.cancelled)
+        return await this.followReqService.followRequestAction({
+            followerUserId: followerId,
+            followingUserId: followingUser.id
+        }, FollowReqStatus.status.cancelled)
     }
 }

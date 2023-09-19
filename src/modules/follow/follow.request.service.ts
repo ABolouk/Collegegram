@@ -33,7 +33,7 @@ export class followRequestService {
             if (followReqStatus === FollowReqStatus.status.accepted) {
                 await this.followReqRepo.updateFollowRequest(followReq.id, followReqStatus);
                 await this.followRellService.createFollowRelation({
-                    interactionId: 1,
+                    interactionId: followReq.interactionId,
                     followerId: followReq.followerId,
                     followingId: followReq.followingId,
                 })

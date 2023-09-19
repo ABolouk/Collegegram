@@ -24,7 +24,7 @@ export class UserInteractionRepository {
       .then((x) => z.nullable(zodUserInteractionDao).parse(x))
   }
 
-  creatUserInteraction(userInteraction: InteractionInterface) {
+  async creatUserInteraction(userInteraction: InteractionInterface) {
     return this.userInteractionRepo.save(userInteraction).then((x) => zodUserInteractionDao.parse(x))
   }
 

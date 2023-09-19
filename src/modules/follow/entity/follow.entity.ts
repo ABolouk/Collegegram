@@ -1,15 +1,16 @@
 import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
-import { UserId } from "../../user/model/user.id";
-import { User } from "../../user/model/user";
-import { FollowId } from "../model/follow.id";
+import {UserId} from "../../user/model/user.id";
+import {User} from "../../user/model/user";
+import {FollowId} from "../model/follow.id";
 import {UserEntity} from "../../user/entity/user.entity";
+import {UserInteractionEntity} from "../../user-interaction/entity/user-interaction";
 
 @Entity("follow")
 export class FollowEntity {
     @PrimaryGeneratedColumn()
     id!: FollowId;
 
-    @Column()
+    @ManyToOne(() => UserInteractionEntity, {onDelete: "CASCADE"})
     interactionId!: number;
 
     @ManyToOne(() => UserEntity)
