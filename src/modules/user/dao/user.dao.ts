@@ -12,16 +12,16 @@ import { zodLastName } from "../model/user.lastName";
 // Zod Dao:
 
 export const zodUserDao = z
-  .object({
-    id: UserId.zod,
-    username: UserName.zod,
-    email: Email.zod,
-    password: HashedPassword.zod,
-    bio: z.string().optional(),
-    firstName: zodFirstName.optional(),
-    lastName: zodLastName.optional(),
-    avatar: z.string().optional(),
-    isPrivate: z.boolean()
+    .object({
+        id: UserId.zod,
+        username: UserName.zod,
+        email: Email.zod,
+        password: HashedPassword.zod,
+        bio: z.coerce.string(),
+        firstName: zodFirstName,
+        lastName: zodLastName,
+        avatar: z.coerce.string(),
+        isPrivate: z.boolean()
 
   }).transform((x): User => x)
 
