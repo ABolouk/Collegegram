@@ -7,6 +7,7 @@ import { UserEntity } from "../user/entity/user.entity";
 import { CreatePostInterface } from "./model/post";
 import { TagEntity } from "./tag/entity/tag.entity";
 import { CreateTagInterface } from "./tag/model/tag";
+import { LessThan } from "typeorm";
 
 export class PostRepository {
     private postRepo: Repository<PostEntity>;
@@ -18,13 +19,23 @@ export class PostRepository {
         return this.postRepo.findOneBy({ id });
     }
 
-    getPostsByUserId(userId: UserId, limit: number, page: number): Promise<PostEntity[]> {
-        return this.postRepo.find({
-            where: { userId: userId },
-            order: { createdAt: 'ASC', id: 'ASC' },
-            skip: limit * (page - 1),
-            take: limit,
-        });
+    getPostsByUserId(userId: UserId, limit: number, nextOffset: number): Promise<PostEntity[]> {
+        if (nextOffset === 0) {
+            return this.postRepo.find({
+                where: { userId: userId },
+                order: { createdAt: 'desc' },
+                take: limit,
+            });
+        } else {
+            return this.postRepo.find({
+                where: {
+                    userId: userId,
+                    createdAt: LessThan(new Date(nextOffset)),
+                },
+                order: { createdAt: 'desc' },
+                take: limit,
+            });
+        }
     }
 
     async createPost(post: CreatePostInterface): Promise<PostDao> {
@@ -55,7 +66,7 @@ export class PostRepository {
                 { postCount: () => "postCount + 1" }
             )
             newPost.tags = createdTags;
-            await this.appDataSource.manager.save(newPost);
+            await postRepo.save(newPost);
             return CreatePostDao(newPost);
         })
     }
