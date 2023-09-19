@@ -1,8 +1,9 @@
-import { UserName } from "../../user/model/user.username";
-import {z} from "zod"
+import { z } from "zod"
+import { UserId } from "../../user/model/user.id"
+import { UserName } from "../../user/model/user.username"
 
 export const blockDto = z.object({
-  userName: UserName.zod,
+  userId: UserId.zod,
   blockedUserName: UserName.zod
 })
 
