@@ -188,7 +188,7 @@ export class UserService {
     }
 
     async follow(dto: followDtoType, userId: UserId) {
-        const followingUser = await this.userRepository.findByUsername(dto.UserName);
+        const followingUser = await this.userRepository.findByEmailOrUsername(dto.UserName);
         if (!followingUser) {
             throw new NotFoundError("User")
         }
@@ -214,7 +214,7 @@ export class UserService {
     }
 
     async unfollow(dto: followDtoType, followerId: UserId) {
-        const followingUser = await this.userRepository.findByUsername(dto.UserName);
+        const followingUser = await this.userRepository.findByEmailOrUsername(dto.UserName);
         if (!followingUser) {
             throw new NotFoundError("User")
         }
@@ -227,7 +227,7 @@ export class UserService {
     }
 
     async acceptFollowRequest(dto: followDtoType, followingId: UserId) {
-        const followerUser = await this.userRepository.findByUsername(dto.UserName);
+        const followerUser = await this.userRepository.findByEmailOrUsername(dto.UserName);
         if (!followerUser) {
             throw new NotFoundError("User")
         }
@@ -235,7 +235,7 @@ export class UserService {
     }
 
     async rejectFollowRequest(dto: followDtoType, followingId: UserId) {
-        const followerUser = await this.userRepository.findByUsername(dto.UserName);
+        const followerUser = await this.userRepository.findByEmailOrUsername(dto.UserName);
         if (!followerUser) {
             throw new NotFoundError("User")
         }
@@ -243,7 +243,7 @@ export class UserService {
     }
 
     async cancelFollowRequest(dto: followDtoType, followerId: UserId) {
-        const followingUser = await this.userRepository.findByUsername(dto.UserName);
+        const followingUser = await this.userRepository.findByEmailOrUsername(dto.UserName);
         if (!followingUser) {
             throw new NotFoundError("User")
         }
