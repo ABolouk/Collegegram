@@ -3,7 +3,6 @@ import { Email } from "../model/user.email";
 import { UserId } from "../model/user.id";
 import { UserName } from "../model/user.username";
 import { z } from "zod";
-import { hash } from "bcrypt";
 import { HashedPassword } from "../../../utility/password-utils";
 
 // Zod Dao:

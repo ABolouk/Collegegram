@@ -8,12 +8,17 @@ import { UserService } from "../modules/user/user.service";
 import { createCommentDto } from "../modules/post/comment/dto/create-comment.dto";
 import { getPostsDto } from "../modules/post/dto/get-posts-dto";
 import { getPostIdDto } from "../modules/post/dto/get-post-id-dto";
+import { uploadMultiple } from "../utility/multer";
+import { BadRequestError } from "../utility/http-errors";
 
 export const makePostRouter = (userService: UserService, postService: PostService, commentService: CommentService) => {
 	const app = Router();
-	app.post("/", loginMiddle(userService), async (req, res) => {
+	app.post("/", loginMiddle(userService), uploadMultiple.array('post-photos'), async (req, res) => {
 		const data = createPostDto.parse(req.body);
-		handleExpresss(res, () => postService.createPost(data));
+		if (!req.files) {
+			return new BadRequestError("post has no images")
+		}
+		handleExpresss(res, () => postService.createPost(data, req.files as Express.Multer.File[]));
 	});
 
 	app.get("/:id", loginMiddle(userService), async (req, res) => {
@@ -21,10 +26,9 @@ export const makePostRouter = (userService: UserService, postService: PostServic
 		handleExpresss(res, () => postService.getPostById(postId));
 	});
 
-	app.post("/user", loginMiddle(userService), (req, res) => {
-		const user = req.user;
-		const { limit, page } = getPostsDto.parse(req.body)
-		handleExpresss(res, () => postService.getPostsByUserId(user.id, limit, page));
+	app.post("/user/:limit/:nextOffset?", loginMiddle(userService), (req, res) => {
+		const { limit, nextOffset } = getPostsDto.parse(req.params);
+		handleExpresss(res, () => postService.getPostsByUserId(req.user.id, limit, nextOffset ? nextOffset : 0));
 	});
 
 	app.post("/:id/comment", loginMiddle(userService), (req, res) => {

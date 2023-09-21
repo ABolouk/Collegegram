@@ -1,5 +1,6 @@
 import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm";
 import { UserId } from "../model/user.id";
+import { WholeNumber } from "../../../data/whole-number";
 
 @Entity("users")
 export class UserEntity {
@@ -29,6 +30,9 @@ export class UserEntity {
 
     @Column('boolean', { default: false })
     isPrivate!: boolean;
+
+    @Column({default: 0})
+    postCount!: WholeNumber;
 
     @CreateDateColumn()
     createdAt!: Date;
