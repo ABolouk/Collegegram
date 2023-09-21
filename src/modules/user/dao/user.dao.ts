@@ -18,8 +18,8 @@ export const zodUserDao = z
         email: Email.zod,
         password: HashedPassword.zod,
         bio: z.coerce.string(),
-        firstName: zodFirstName,
-        lastName: zodLastName,
+        firstName: z.nullable(zodFirstName),
+        lastName: z.nullable(zodLastName),
         avatar: z.coerce.string(),
         isPrivate: z.boolean()
 
