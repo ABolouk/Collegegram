@@ -5,6 +5,7 @@ import {zodFollowReqDao, zodFollowReqIdDao} from "./dao/follow.req.dao";
 import {FollowReqStatus} from "./model/follow.req.status";
 import status = FollowReqStatus.status;
 import {FollowReqId} from "./model/follow.req.id";
+import {z} from "zod";
 
 export class followRequestRepository {
     private followRequestRepo: Repository<FollowRequestEntity>;
@@ -18,12 +19,11 @@ export class followRequestRepository {
     }
 
     async getFollowRequest(followRequest: FollowRequest): Promise<followReqDao | null> {
-        return this.followRequestRepo.find({
-            where: {
+        return await this.followRequestRepo.findOneBy([{
                 followerId: followRequest.followerUserId,
                 followingId: followRequest.followingUserId
-            }
-        }).then((x) => x ? zodFollowReqDao.parse(x) : null);
+            }]
+        ).then((x) => z.nullable(zodFollowReqDao).parse(x));
     }
 
     async updateFollowRequest(followReqId: FollowReqId, followReqStatus: FollowReqStatus.status) {
