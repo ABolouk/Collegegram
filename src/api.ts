@@ -29,9 +29,9 @@ export const makeApp = (dataSource: DataSource) => {
     const sessionRepo = new sessionRepository(dataSource);
     const jwtService = new JwtService(sessionRepo);
     const userInteractionRepo = new UserInteractionRepository(dataSource);
-    const userInteractionService = new USerInteractionService(userInteractionRepo);
     const followRepo = new FollowRepository(dataSource);
     const followReqRepo = new followRequestRepository(dataSource);
+    const userInteractionService = new USerInteractionService(userInteractionRepo);
     const followRellService = new followService(followRepo);
     const followReqService = new followRequestService(followReqRepo, followRellService);
     const emailService = new EmailService()
