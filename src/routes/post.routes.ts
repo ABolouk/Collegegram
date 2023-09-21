@@ -31,7 +31,6 @@ export const makePostRouter = (userService: UserService, postService: PostServic
 		const userId = req.user.id
 		const postId = req.params.id
 		const dto = createCommentDto.parse({ userId, postId, ...req.body })
-		console.log(dto)
 		handleExpresss(res, () => commentService.comment(dto))
 	})
 
