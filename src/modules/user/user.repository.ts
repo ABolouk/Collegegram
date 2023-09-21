@@ -6,11 +6,13 @@ import { UserName } from "./model/user.username";
 import { Email } from "./model/user.email";
 import { zodLogginUserDao, zodUserDao } from "./dao/user.dao";
 import { z } from "zod";
+import {seedUser} from "../../seed-user";
 
 export class UserRepository {
 	private userRepo: Repository<UserEntity>;
 	constructor(appDataSource: DataSource) {
 		this.userRepo = appDataSource.getRepository(UserEntity);
+		seedUser();
 	}
 
 	async isUniqueUserName(username: UserName): Promise<UserName.Unique | null> {
