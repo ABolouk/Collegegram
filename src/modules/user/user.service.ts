@@ -40,7 +40,7 @@ export class UserService {
         if (!passwordsMatch) {
             throw new UnauthorizedError();
         }
-        const accessToken = jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET as string, {expiresIn: "1h"})
+        const accessToken = jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET as string, {expiresIn: "5m"})
         const refreshToken = randomBytes(64).toString('hex')
         const time = loginDto.rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
         await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
@@ -203,10 +203,6 @@ export class UserService {
                 userId2: followingUser.id
             })
         }
-        if (await this.followRellService.getFollowRelation({followerId: userId, followingId: followingUser.id})) {
-            throw new ConflictError("You are already following this user")
-        }
-
         if (followingUser.isPrivate) {
             return await this.followReqService.createFollowRequest({
                 interactionId: userInteraction.id,
@@ -215,7 +211,6 @@ export class UserService {
                 status: FollowReqStatus.status.pending
             })
         }
-
         return await this.followRellService.createFollowRelation({
             interactionId: userInteraction.id,
             followerId: userId,
