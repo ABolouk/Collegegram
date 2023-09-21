@@ -12,7 +12,7 @@ export interface CreateBlockInterface {
   blockedUserId: UserId
 }
 
-export interface BlockedUserInterface{
+export interface BlockedUsersInterface{
   userId: UserId,
   blockedUser: UserId[]
 }

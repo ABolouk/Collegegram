@@ -12,15 +12,8 @@ export class UserInteractionRepository {
 
   async findByTwoUserId(userInteraction: InteractionInterface): Promise<UserInteractionInterface | null> {
 
-    return this.userInteractionRepo.createQueryBuilder("userInteraction") //FIXME: ?? test
-      .where(qb => {
-        qb.where("userInteraction.userId1 = :userId1", { userId1: userInteraction.userId1 })
-          .andWhere("userInteraction.userId1 = :userId2", { userId2: userInteraction.userId2 })
-      }).orWhere(qb => {
-        qb.where("userInteraction.userId1 = :userId1", { userId1: userInteraction.userId2 })
-          .andWhere("userInteraction.userId1 = :userId2", { userId2: userInteraction.userId1 })
-      })
-      .getOne()
+    return this.userInteractionRepo
+      .findOneBy([{ userId1: userInteraction.userId1, userId2: userInteraction.userId2 }, { userId1: userInteraction.userId2, userId2: userInteraction.userId1 }])
       .then((x) => z.nullable(zodUserInteractionDao).parse(x))
   }
 
