@@ -11,9 +11,9 @@ import { FollowEntity } from "./modules/follow/entity/follow.entity";
 import { FollowRequestEntity } from "./modules/follow/entity/follow-request.entity";
 
 export const AppDataSource = new DataSource({
-    url: process.env.DB_URL,
+    host: process.env.DB_URL,
     type: "postgres",
-    port: 34561,
+    port: 5432,
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
