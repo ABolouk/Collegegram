@@ -1,4 +1,12 @@
-import {Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn} from "typeorm";
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinColumn, JoinTable,
+    ManyToOne,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
 import {UserId} from "../../user/model/user.id";
 import {User} from "../../user/model/user";
 import {FollowId} from "../model/follow.id";
@@ -10,14 +18,24 @@ export class FollowEntity {
     @PrimaryGeneratedColumn()
     id!: FollowId;
 
-    @ManyToOne(() => UserInteractionEntity, {onDelete: "CASCADE"})
+    @Column()
     interactionId!: number;
 
-    @ManyToOne(() => UserEntity)
+    @ManyToOne(() => UserInteractionEntity, {onDelete: "CASCADE"})
+    interaction!: UserInteractionEntity;
+
+
+    @Column()
     followerId!: UserId;
 
-    @ManyToOne(() => UserEntity)
+    @ManyToOne(() => UserEntity , {onDelete: "CASCADE"})
+    follower!: UserEntity;
+
+    @Column()
     followingId!: UserId;
+
+    @ManyToOne(() => UserEntity, {onDelete: "CASCADE"})
+    following!: UserEntity;
 
     @CreateDateColumn()
     createdAt!: Date;
