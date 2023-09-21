@@ -2,7 +2,7 @@ import { Express } from "express";
 import { AppDataSource } from "../src/data-source";
 import { makeApp } from "../src/api";
 import request from "supertest";
-import { NotFoundError, UnauthorizedError } from "../src/utility/http-errors";
+import {BadRequestError, NotFoundError, UnauthorizedError} from "../src/utility/http-errors";
 
 
 describe("User Module", () => {
@@ -31,7 +31,7 @@ describe("User Module", () => {
 				authenticator: "@asgar1",
 				password: "A112345!a",
 			})
-			.expect(new UnauthorizedError().status);
+			.expect(400);
 	});
 	it("should not login if wrong password", async () => {
 		const res = await request(app)
@@ -42,6 +42,7 @@ describe("User Module", () => {
 			})
 			.expect(new UnauthorizedError().status);
 	})
+	//FIXME: ali
 	it("should not login if the username does not have enough characters ", async () => {
 		const res = await request(app)
 			.post("/user/login")

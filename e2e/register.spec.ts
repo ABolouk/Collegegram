@@ -37,8 +37,8 @@ describe("registerUser", () => {
         {
           username: "bbjfkkdj",
           email: "hilbbjai_aa@yahoo.com",
-          password: "12345678_Am",
-          confirmPassword: "12345678_Am"
+          password: "A112345!a",
+          confirmPassword: "A112345!a"
         }
       )
       .expect(new ConflictError("ایمیل وارد شده از قبل در کالج‌گرام ثبت شده است").status);
@@ -51,8 +51,8 @@ describe("registerUser", () => {
         {
           username: "bbjfdj",
           email: "hilbbjadddi_aa@yahoo.com",
-          password: "12345678_Am",
-          confirmPassword: "12345678_Am"
+          password: "A112345!a",
+          confirmPassword: "A112345!a"
         }
       )
       .expect(new ConflictError("یوزرنیم وارد شده از قبل در کالج‌گرام ثبت شده است").status);
