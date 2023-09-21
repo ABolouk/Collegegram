@@ -21,7 +21,7 @@ export class followRequestService {
     }
 
     async getFollowRequest(followRequest: FollowRequest) {
-        return this.followReqRepo.getFollowRequest(followRequest);
+        return await this.followReqRepo.getFollowRequest(followRequest);
     }
 
     async followRequestAction(followRequest: FollowRequest, followReqStatus: FollowReqStatus.status) {
