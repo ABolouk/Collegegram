@@ -43,8 +43,8 @@ export const makeUserRouter = (userService: UserService, jwtService: JwtService)
         handleExpresss(res, () => userService.updateUserInfo(req.user.id, dto, req.file));
     });
     app.post("/verifyToken", async (req, res) => {
-        const dto = jwtDto.parse(req.body)
-        handleExpresss(res, () => jwtService.verify(dto))
+        // const dto = jwtDto.parse(req.body)
+        handleExpresss(res, () => jwtService.verify(req.body))
     })
     app.post("/follow", loginMiddle(userService), (req, res) => {
         const dto = followDto.parse(req.body);
