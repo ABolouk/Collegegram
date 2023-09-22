@@ -1,8 +1,8 @@
-import { CreateDateColumn, Entity, JoinColumn, ManyToMany, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 import { UserId } from "../../user/model/user.id";
 import { UserEntity } from "../../user/entity/user.entity";
 
-Entity("block")
+@Entity("block")
 export class BlockEntity{
   @PrimaryGeneratedColumn()
   id!: UserId;
