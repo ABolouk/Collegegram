@@ -23,7 +23,10 @@ import {USerInteractionService} from "./modules/user-interaction/user-interactio
 
 export const makeApp = (dataSource: DataSource) => {
     const app = express();
-
+    // app.use(cors({credentials: true, origin: '*', methods: ['GET', 'PUT', 'POST', 'DELETE', 'OPTIONS'] , allowedHeaders : '*' }))
+    app.use(cors({
+        origin: 'http://localhost:5173',
+    }))
     app.use(express.json())
     const userRepo = new UserRepository(dataSource);
     const sessionRepo = new sessionRepository(dataSource);

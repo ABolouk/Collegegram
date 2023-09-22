@@ -37,7 +37,6 @@ export const makeUserRouter = (userService: UserService, jwtService: JwtService)
     app.post(`/${resetPasswordRoute}/:userId/:token`, async (req, res) => {
         const {userId, token} = req.params;
         const {password1, password2} = req.body;
-
         handleExpresss(res, () => userService.resetPassword(userId, token, password1, password2));
     })
     app.post("/editProfile", loginMiddle(userService), upload.single('avatar'), (req, res) => {

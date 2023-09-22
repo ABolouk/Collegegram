@@ -3,14 +3,15 @@ import { UserId } from "../user/model/user.id";
 import { CreatePostDto } from "./dto/create-post.dto";
 import { PostId } from "./model/post-id";
 import { PostRepository } from "./post.repository";
+import { PostsInterface } from "./model/post";
 
 export class PostService {
     constructor(private postRepository: PostRepository) { }
 
-    async createPost(dto: CreatePostDto) {
+    async createPost(dto: CreatePostDto, photos: Express.Multer.File[]) {
         // TODO: maybe some validations
-        // TODO: also how to save images
-        return await this.postRepository.createPost(dto);
+        const photosPath: string[] = photos.length !== 0 ? photos.map(x => x.path) : []
+        return await this.postRepository.createPost({ ...dto, photos: photosPath });
     }
 
     async getPostById(postId: PostId) {
@@ -21,7 +22,11 @@ export class PostService {
         return post;
     }
 
-    async getPostsByUserId(userId: UserId, limit: number, page: number) {
-        return await this.postRepository.getPostsByUserId(userId, limit, page);
+    async getPostsByUserId(userId: UserId, limit: number, nextOffset: number): Promise<PostsInterface> {
+        const posts = await this.postRepository.getPostsByUserId(userId, limit, nextOffset);
+        return {
+            posts: posts,
+            nextOffset: posts[-1].createdAt.getTime(),
+        }
     }
 }
