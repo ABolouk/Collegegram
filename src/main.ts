@@ -8,6 +8,12 @@ declare global {
 		interface Request {
 			user: User;
 		}
+		namespace Multer {
+			/** Object containing file metadata and access information. */
+			interface File {
+				key: string,
+			}
+		}
 	}
 }
 
