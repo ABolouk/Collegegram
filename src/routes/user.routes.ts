@@ -14,7 +14,6 @@ import {followRequestDto} from "../modules/follow/dto/follow.request.dto";
 import { JwtService } from "../modules/jwt/jwt.service";
 import { jwtDto } from "../modules/jwt/dto/jwt.dto";
 import { blockDto } from "../modules/block/dto/block.dto";
-
 export const resetPasswordRoute = "reset_password"
 
 

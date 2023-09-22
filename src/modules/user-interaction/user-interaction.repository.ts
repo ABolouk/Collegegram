@@ -13,13 +13,10 @@ export class UserInteractionRepository {
 
     async findByTwoUserId(userInteraction: InteractionInterface): Promise<UserInteractionInterface | null> {
 
-        return this.userInteractionRepo //FIXME: ?? test
-            .findOneBy([{
-                userId1: userInteraction.userId1,
-                userId2: userInteraction.userId2
-            }, {userId1: userInteraction.userId2, userId2: userInteraction.userId1}])
-            .then((x) => z.nullable(zodUserInteractionDao).parse(x))
-    }
+    return this.userInteractionRepo
+      .findOneBy([{ userId1: userInteraction.userId1, userId2: userInteraction.userId2 }, { userId1: userInteraction.userId2, userId2: userInteraction.userId1 }])
+      .then((x) => z.nullable(zodUserInteractionDao).parse(x))
+  }
 
     async creatUserInteraction(userInteraction: InteractionInterface) {
         return this.userInteractionRepo.save(userInteraction).then((x) => zodUserInteractionDao.parse(x))
