@@ -24,9 +24,17 @@ export class PostService {
 
     async getPostsByUserId(userId: UserId, limit: number, nextOffset: number): Promise<PostsInterface> {
         const posts = await this.postRepository.getPostsByUserId(userId, limit, nextOffset);
+        console.log(posts)
+        if ( !posts || !posts.at(-1) ) {
+            return {
+                posts: posts,
+                nextOffset: 0,
+            }
+        }
+        const date = posts.at(-1)?.createdAt
         return {
             posts: posts,
-            nextOffset: posts[-1].createdAt.getTime(),
+            nextOffset: date ? date.getTime() : 0,
         }
     }
 }
