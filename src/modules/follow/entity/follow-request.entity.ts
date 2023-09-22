@@ -28,14 +28,14 @@ export class FollowRequestEntity {
     @Column()
     followerId!: UserId;
 
-    @ManyToOne(() => UserEntity)
-    user!: UserEntity;
+    @ManyToOne(() => UserEntity, {onDelete: "CASCADE"})
+    follower!: UserEntity;
 
     @Column()
     followingId!: UserId;
 
-    @ManyToOne(() => UserEntity)
-    user1!: UserEntity;
+    @ManyToOne(() => UserEntity, {onDelete: "CASCADE"})
+    following!: UserEntity;
 
     @Column()
     status!: FollowReqStatus.status;
