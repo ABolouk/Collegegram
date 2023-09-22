@@ -21,7 +21,7 @@ export class JwtService {
 
 
   async verify(dto : jwtDto) { // ASK : T?? <T extends verifedToken> Promise<T>?
-    if (typeof dto.token !== 'string') {
+    if (typeof dto.token !== 'string' || dto.token === null) {
       throw new jwtError() // NOTE: new JsonWebTokenError('jwt must be a string')
     }
 
