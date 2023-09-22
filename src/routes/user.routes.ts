@@ -45,6 +45,5 @@ export const makeUserRouter = (userService: UserService, jwtService: JwtService)
 		const dto = jwtDto.parse(req.body)
 		handleExpresss(res, () => jwtService.verify(dto))
 	})
-	
 	return app;
 };
