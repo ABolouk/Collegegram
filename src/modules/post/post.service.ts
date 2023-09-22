@@ -10,7 +10,9 @@ export class PostService {
 
     async createPost(dto: CreatePostDto, photos: Express.Multer.File[]) {
         // TODO: maybe some validations
-        const photosPath: string[] = photos.length !== 0 ? photos.map(x => x.path) : []
+        const photosPath: string[] = photos.map(
+            x => 'https://collegegrammedia.darkube.app/mediacollegegram/' + x.key
+        )
         return await this.postRepository.createPost({ ...dto, photos: photosPath });
     }
 
