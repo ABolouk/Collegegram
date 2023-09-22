@@ -1,8 +1,8 @@
-import jwt, { JwtPayload } from 'jsonwebtoken';
-import { NextFunction, Request, Response } from "express";
-import { UserService } from "./modules/user/user.service";
-import { UnauthorizedError } from './utility/http-errors';
-import { UserId } from './modules/user/model/user.id';
+import jwt, {JwtPayload} from 'jsonwebtoken';
+import {NextFunction, Request, Response} from "express";
+import {UserService} from "./modules/user/user.service";
+import {UnauthorizedError} from './utility/http-errors';
+import {UserId} from './modules/user/model/user.id';
 import 'dotenv-flow/config';
 
 
@@ -12,7 +12,7 @@ export const loginMiddle = (userService: UserService) =>
         const refreshToken = req.headers['refresh-token'];
 
         if (!token) {
-            res.status(401).send({ message: "شما اجازه دسترسی به این صفحه را ندارید." });
+            res.status(401).send({message: "شما اجازه دسترسی به این صفحه را ندارید."});
             return;
         }
         const accessKey = process.env.ACCESS_TOKEN_SECRET as string;
@@ -22,38 +22,50 @@ export const loginMiddle = (userService: UserService) =>
                     if (err.name === 'TokenExpiredError') {
                         const session = await userService.findSessionByRefreshToken(refreshToken as string);
                         if (!session) {
-                            res.status(401).send({ message: "شما اجازه دسترسی به این صفحه را ندارید." });
+                            res.status(401).send({message: "شما اجازه دسترسی به این صفحه را ندارید."});
                             return;
                         }
                         if (session.expireDate < new Date()) {
                             await userService.deleteToken(refreshToken as string);
-                            res.status(401).send({ message: "شما اجازه دسترسی به این صفحه را ندارید." });
+                            res.status(401).send({message: "شما اجازه دسترسی به این صفحه را ندارید."});
                             return;
                         }
                         // TODO: payload type
-                        const accessToken = jwt.sign({ id: session.userId }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: '1h' });
+                        const accessToken = jwt.sign({id: session.userId}, accessKey, {expiresIn: '1h'});
                         res.setHeader('authorization', `Bearer ${accessToken}`);
+                        const decode = jwt.verify(accessToken, accessKey);
+                        const {id} = decode as JwtPayload;
+                        if (!UserId.is(id)) {
+                            res.status(401).send({message: "شما اجازه دسترسی به این صفحه را ندارید."});
+                            return;
+                        }
+                        const loggedInUser = await userService.findById(id);
+                        if (!loggedInUser) {
+                            res.status(401).send({message: "شما اجازه دسترسی به این صفحه را ندارید."});
+                            return;
+                        }
+                        req.user = loggedInUser;
+                        next();
+                        return;
                     }
 
                     if (err?.name === 'JsonWebTokenError') {
-                        res.status(401).send({ message: "شما اجازه دسترسی به این صفحه را ندارید." });
+                        res.status(401).send({message: "شما اجازه دسترسی به این صفحه را ندارید."});
                         return;
                     }
                 }
                 const decode = jwt.verify(token, accessKey);
-                const { id } = decode as JwtPayload;
+                const {id} = decode as JwtPayload;
                 if (!UserId.is(id)) {
-                    res.status(401).send({ message: "شما اجازه دسترسی به این صفحه را ندارید." });
+                    res.status(401).send({message: "شما اجازه دسترسی به این صفحه را ندارید."});
                     return;
                 }
                 const loggedInUser = await userService.findById(id);
-                console.log(loggedInUser);
                 if (!loggedInUser) {
-                    res.status(401).send({ message: "شما اجازه دسترسی به این صفحه را ندارید." });
+                    res.status(401).send({message: "شما اجازه دسترسی به این صفحه را ندارید."});
                     return;
                 }
                 req.user = loggedInUser;
-
                 next();
             })
     };

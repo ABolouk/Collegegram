@@ -6,20 +6,17 @@ import { UserName } from "./model/user.username";
 import { Email } from "./model/user.email";
 import { zodLogginUserDao, zodUserDao } from "./dao/user.dao";
 import { z } from "zod";
+import {seedUser} from "../../seed-user";
 
 export class UserRepository {
 	private userRepo: Repository<UserEntity>;
 	constructor(appDataSource: DataSource) {
 		this.userRepo = appDataSource.getRepository(UserEntity);
-	}
-
-	async findByUsername(username: UserName): Promise<User | null> {
-		const user = await this.userRepo.findOneBy({ username });
-		return user as User
+		seedUser();
 	}
 
 	async isUniqueUserName(username: UserName): Promise<UserName.Unique | null> {
-		const user = await this.findByUsername(username)
+		const user = await this.findByEmailOrUsername(username)
 		if (user === null) {
 			return username as UserName.Unique
 		}
@@ -52,6 +49,7 @@ export class UserRepository {
 		)
 	}
 
+	//FIXME: this is not a good way to do this
 	updatePasswordById(id: UserId, password: string) {
 		this.userRepo.update(
 			{ id: id },
@@ -59,11 +57,12 @@ export class UserRepository {
 		)
 	}
 
-	updateUser(userId: UserId, user: updateUser) {
+	//FIXME: this is not a good way to do this
+	async updateUser(userId: UserId, user: updateUser) {
 		this.userRepo.update({ id: userId }, user)
 	}
 
-	createUser(user: createUserInterface): Promise<User> {
+	createUser(user: createUserInterface){
 		return this.userRepo.save(user)
 	}
 }

@@ -6,9 +6,9 @@
     "start": "ts-node src/main.ts",
     "test:e2e": "jest --forceExit --detectOpenHandles --testMatch **/e2e/**/*.spec.ts --runInBand",
     "test": "jest --testMatch **/src/**/*.spec.ts",
-    "typeorm": "typeorm-ts-node-commonjs",
-    "typeorm:run": "typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
-    "typeorm:generate": "typeorm-ts-node-commonjs migration:generate -d ./src/data-source.ts"
+    "typeorm": "NODE_ENV=test typeorm-ts-node-commonjs",
+    "typeorm:run": "NODE_ENV=test typeorm-ts-node-commonjs migration:run -d ./src/data-source.ts",
+    "typeorm:generate": "NODE_ENV=test typeorm-ts-node-commonjs migration:generate -d ./src/data-source.ts"
   },
   "license": "MIT",
   "devDependencies": {
