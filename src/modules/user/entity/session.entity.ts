@@ -1,4 +1,4 @@
-import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import {Column, Entity, JoinColumn, OneToMany, OneToOne, PrimaryGeneratedColumn} from "typeorm";
 import { UserEntity } from "./user.entity";
 import { UserId } from "../model/user.id";
 
@@ -11,7 +11,7 @@ export class SessionEntity {
     @Column()
     token!: string;
 
-    @OneToOne(() => UserEntity, user => user.id)
+    @Column()
     userId!: UserId;
 
     @Column()

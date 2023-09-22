@@ -12,10 +12,10 @@ export interface User {
     email: Email;
     username: UserName;
     password: HashedPassword,
-    bio?: string;
-    firstName?: string;
-    lastName?: string;
-    avatar?: string;
+    bio: string | null
+    firstName: string | null;
+    lastName: string | null
+    avatar: string | null;
     isPrivate: boolean;
 }
 
@@ -23,10 +23,7 @@ export interface loginUserInterface {
     id: UserId;
     email: Email;
     username: UserName;
-    bio?: string;
-    firstName?: string;
-    lastName?: string;
-    avatar?: string;
+    password: HashedPassword,
     isPrivate: boolean;
 }
 

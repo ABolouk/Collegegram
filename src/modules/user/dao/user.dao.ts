@@ -11,15 +11,16 @@ import { zodLastName } from "../model/user.lastName";
 // Zod Dao:
 
 export const zodUserDao = z
-  .object({
-    id: UserId.zod,
-    username: UserName.zod,
-    email: Email.zod,
-    password: HashedPassword.zod,
-    bio: z.string(),
-    firstName: zodFirstName,
-    lastName: zodLastName,
-    isPrivate: z.boolean()
+    .object({
+        id: UserId.zod,
+        username: UserName.zod,
+        email: Email.zod,
+        password: HashedPassword.zod,
+        bio: z.coerce.string(),
+        firstName: z.nullable(zodFirstName),
+        lastName: z.nullable(zodLastName),
+        avatar: z.coerce.string(),
+        isPrivate: z.boolean()
 
   }).transform((x): User => x)
 
@@ -29,9 +30,6 @@ export const zodLogginUserDao = z
     id: UserId.zod,
     username: UserName.zod,
     email: Email.zod,
-    bio: z.string(),
-    firstName: zodFirstName,
-    lastName: zodLastName,
+    password: HashedPassword.zod,
     isPrivate: z.boolean()
-
   }).transform((x): loginUserInterface => x)

@@ -11,8 +11,15 @@ import {PostRepository} from "./modules/post/post.repository";
 import {PostService} from "./modules/post/post.service";
 import {CommentService} from "./modules/post/comment/comment.service";
 import {CommentRepository} from "./modules/post/comment/comment.repository";
+import {FollowRepository} from "./modules/follow/follow.repository";
+import {followRequestRepository} from "./modules/follow/follow-request.repository";
+import {followRequestService} from "./modules/follow/follow.request.service";
+import {followService} from "./modules/follow/follow.service";
 import {JwtService} from "./modules/jwt/jwt.service";
 import cors from 'cors'
+import {UserInteractionRepository} from "./modules/user-interaction/user-interaction.repository";
+import {USerInteractionService} from "./modules/user-interaction/user-interaction.service";
+
 
 export const makeApp = (dataSource: DataSource) => {
     const app = express();
@@ -23,9 +30,15 @@ export const makeApp = (dataSource: DataSource) => {
     app.use(express.json())
     const userRepo = new UserRepository(dataSource);
     const sessionRepo = new sessionRepository(dataSource);
-    const jwtService = new JwtService(sessionRepo)
+    const jwtService = new JwtService(sessionRepo);
+    const userInteractionRepo = new UserInteractionRepository(dataSource);
+    const followRepo = new FollowRepository(dataSource);
+    const followReqRepo = new followRequestRepository(dataSource);
+    const userInteractionService = new USerInteractionService(userInteractionRepo);
+    const followRellService = new followService(followRepo);
+    const followReqService = new followRequestService(followReqRepo, followRellService);
     const emailService = new EmailService()
-    const userService = new UserService(userRepo, sessionRepo, emailService);
+    const userService = new UserService(userRepo, sessionRepo, emailService, userInteractionService, followReqService, followRellService);
     app.use("/user", makeUserRouter(userService, jwtService));
 
     const postRepo = new PostRepository(dataSource);

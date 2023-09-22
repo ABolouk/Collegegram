@@ -42,13 +42,6 @@ export class BlockService {
     return this.blockRepo.findBlock(deletedBlock)
   }
 
-  async filterBlockedUser <A> (
-    blockedUser: [],
-    fn: () => Promise<A>
-  ) {
-    
-  }
-
   async getBlockedUsers(id: UserId) {
     const blockedUsers = await this.blockRepo.findBlockedUsers(id)
     return blockedUsers

@@ -8,6 +8,8 @@ import { CommentEntity } from "./modules/post/comment/entity/comment.entity";
 import { TagEntity } from "./modules/post/tag/entity/tag.entity";
 import { UserInteractionEntity } from "./modules/user-interaction/entity/user-interaction";
 import { BlockEntity } from "./modules/block/entity/block.entity";
+import { FollowEntity } from "./modules/follow/entity/follow.entity";
+import { FollowRequestEntity } from "./modules/follow/entity/follow-request.entity";
 
 export const AppDataSource = new DataSource({
     url: process.env.DB_URL,
@@ -17,7 +19,7 @@ export const AppDataSource = new DataSource({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     logging: false,
-    entities: [UserEntity, SessionEntity, PostEntity, CommentEntity, TagEntity, UserInteractionEntity, BlockEntity],
+    entities: [UserEntity, SessionEntity, PostEntity, CommentEntity, TagEntity, UserInteractionEntity, FollowEntity, FollowRequestEntity, BlockEntity],
     migrations: ["./src/migrations/*.ts"],
     subscribers: [],
 });
