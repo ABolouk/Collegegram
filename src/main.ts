@@ -1,4 +1,3 @@
-import { createConnection } from "net";
 import { makeApp } from "./api";
 import { AppDataSource } from "./data-source"
 import { User } from "./modules/user/model/user";
