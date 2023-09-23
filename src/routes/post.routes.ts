@@ -18,7 +18,7 @@ export const makePostRouter = (userService: UserService, postService: PostServic
 		if (!req.files) {
 			return new BadRequestError("post has no images")
 		}
-		handleExpresss(res, () => postService.createPost(data, req.files as Express.Multer.File[]));
+		handleExpresss(res, () => postService.createPost(data, req.files as Express.Multer.File[], req.user));
 	});
 
 	app.get("/:id", loginMiddle(userService), async (req, res) => {

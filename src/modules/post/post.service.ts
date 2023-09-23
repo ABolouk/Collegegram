@@ -4,16 +4,17 @@ import { CreatePostDto } from "./dto/create-post.dto";
 import { PostId } from "./model/post-id";
 import { PostRepository } from "./post.repository";
 import { PostsInterface } from "./model/post";
+import { User } from "../user/model/user";
 
 export class PostService {
     constructor(private postRepository: PostRepository) { }
 
-    async createPost(dto: CreatePostDto, photos: Express.Multer.File[]) {
+    async createPost(dto: CreatePostDto, photos: Express.Multer.File[], loggedInUser: User) {
         // TODO: maybe some validations
         const photosPath: string[] = photos.map(
             x => 'https://collegegrammedia.darkube.app/mediacollegegram/' + x.key
         )
-        return await this.postRepository.createPost({ ...dto, photos: photosPath });
+        return await this.postRepository.createPost({ ...dto, photos: photosPath, userId: loggedInUser.id });
     }
 
     async getPostById(postId: PostId) {
