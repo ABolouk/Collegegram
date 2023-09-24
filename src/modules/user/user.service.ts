@@ -44,7 +44,7 @@ export class UserService {
         const refreshToken = randomBytes(64).toString('hex')
         const time = loginDto.rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
         await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
-        return {user, accessToken, refreshToken};
+        return {accessToken, refreshToken};
     }
 
     async findById(id: UserId) {
@@ -90,8 +90,9 @@ export class UserService {
         };
 
         await this.userRepository.createUser(user);
-
-        return {success: true};
+        const accessToken = jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET as string, {expiresIn: "5m"})
+        const refreshToken = randomBytes(64).toString('hex')
+        return {accessToken, refreshToken};
     }
 
     async forgetPassword({authenticator}: ForgetPasswordDto) {
