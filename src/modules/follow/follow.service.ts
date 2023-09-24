@@ -7,7 +7,7 @@ export class followService {
     }
 
     async getFollowRelation(followRelation: Follow) {
-        return this.followRepo.getFollowRelation(followRelation);
+        return await this.followRepo.getFollowRelation(followRelation);
     }
 
     async createFollowRelation(followRelation: createFollowRelation) {

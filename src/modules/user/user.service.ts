@@ -223,14 +223,13 @@ export class UserService {
         if (!followingUser) {
             throw new NotFoundError("User")
         }
-
-        if (!(await this.followRellService.getFollowRelation({
+        const res = (await this.followRellService.getFollowRelation({
             followerId: followerId,
             followingId: followingUser.id
-        }))) {
+        }))
+        if (!res) {
             throw new ConflictError("You are not following this user")
         }
-
         return this.followRellService.deleteFollowRelation({followerId: followerId, followingId: followingUser.id})
     }
 

@@ -24,6 +24,9 @@ export class FollowRepository {
     }
 
     async deleteFollowRelation(followRelation: Follow) {
-        await this.followRepo.delete({followerId: followRelation.followerId, followingId: followRelation.followingId})
+        return await this.followRepo.delete({
+            followerId: followRelation.followerId,
+            followingId: followRelation.followingId
+        })
     }
 }
