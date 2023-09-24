@@ -15,9 +15,11 @@ export const makePostRouter = (userService: UserService, postService: PostServic
 	const app = Router();
 	app.post("/", loginMiddle(userService), uploadMinIO.array('post-photos'), async (req, res) => {
 		const data = createPostDto.parse(req.body);
+		console.log(data)
 		if (!req.files) {
 			return new BadRequestError("post has no images")
 		}
+		console.log(req.files)
 		handleExpresss(res, () => postService.createPost(data, req.files as Express.Multer.File[], req.user));
 	});
 
