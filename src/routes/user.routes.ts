@@ -11,19 +11,20 @@ import {editProfile} from "../modules/user/dto/edit-profile.dto";
 import {followDto} from '../modules/follow/dto/follow.dto';
 import {unfollowDto} from "../modules/follow/dto/unfollow.dto";
 import {followRequestDto} from "../modules/follow/dto/follow.request.dto";
-import { JwtService } from "../modules/jwt/jwt.service";
-import { jwtDto } from "../modules/jwt/dto/jwt.dto";
-import { blockDto } from "../modules/block/dto/block.dto";
+import {JwtService} from "../modules/jwt/jwt.service";
+import {jwtDto} from "../modules/jwt/dto/jwt.dto";
+import {blockDto} from "../modules/block/dto/block.dto";
 import {getUserDto} from "../modules/user/dto/get.user.dto";
+
 export const resetPasswordRoute = "reset_password"
 
 
 export const makeUserRouter = (userService: UserService, jwtService: JwtService) => {
-	const app = Router();
-	app.post("/login", (req, res) => {
-		const dto = loginDto.parse(req.body);
-		handleExpresss(res, () => userService.login(dto));
-	});
+    const app = Router();
+    app.post("/login", (req, res) => {
+        const dto = loginDto.parse(req.body);
+        handleExpresss(res, () => userService.login(dto));
+    });
 
     app.post("/register", (req, res) => {
         const dto = signupDto.parse(req.body);
@@ -33,6 +34,10 @@ export const makeUserRouter = (userService: UserService, jwtService: JwtService)
     app.post("/getUserProfile", loginMiddle(userService), (req, res) => {
         const dto = getUserDto.parse(req.body);
         handleExpresss(res, () => userService.getUserProfile(dto, req.user.id));
+    });
+
+    app.get("/getUser", loginMiddle(userService), (req, res) => {
+        handleExpresss(res, () => userService.getUser(req.user.id));
     });
 
     app.post("/login/forget", (req, res) => {

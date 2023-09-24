@@ -101,20 +101,36 @@ export class UserService {
         if (!user) {
             throw new NotFoundError("User")
         }
-        if(user.id !== userId){
+        if (user.id !== userId) {
             return {
-                username : user.username,
-                firstName : user.firstName,
-                lastName : user.lastName,
-                postCount : user.postCount,
-                avatar : user.avatar,
-                bio : user.bio,
-                isPrivate : user.isPrivate
+                username: user.username,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                postCount: user.postCount,
+                avatar: user.avatar,
+                bio: user.bio,
+                isPrivate: user.isPrivate
             }
         }
 
         return new BadRequestError("You can not see your profile");
 
+    }
+
+    async getUser(userId: UserId) {
+        const user = await this.userRepository.findById(userId);
+        if (!user) {
+            throw new NotFoundError("User")
+        }
+        return {
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            postCount: user.postCount,
+            avatar: user.avatar,
+            bio: user.bio,
+            isPrivate: user.isPrivate
+        }
     }
 
     async forgetPassword({authenticator}: ForgetPasswordDto) {
