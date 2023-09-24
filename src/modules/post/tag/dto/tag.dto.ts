@@ -1,18 +1,18 @@
-import { z } from "zod";
-import { HexadecimalColor } from "../../../../data/hexadecimal-color";
-import { randomHexaDecimalColor } from "../../../../utility/random-hexadecimal-color";
-import { CreateTagInterface, SplittedTag } from "../model/tag";
-import { TagTitle } from "../model/tag-title";
+import {z} from "zod";
+import {HexadecimalColor} from "../../../../data/hexadecimal-color";
+import {randomHexaDecimalColor} from "../../../../utility/random-hexadecimal-color";
+import {CreateTagInterface, SplittedTag} from "../model/tag";
+import {TagTitle} from "../model/tag-title";
 
 export const tagDto = z.object({
     title: z.string().min(2).max(7),
     color: z.string().refine(HexadecimalColor.is),
 })
 
-export interface TagDto extends z.infer<typeof tagDto> { }
+export type TagDtoType = z.infer<typeof tagDto>;
 
 const splitStringtoArray = (str: string): SplittedTag[] => {
-    return str.split(' ').map((value) => ({ title: value, color: randomHexaDecimalColor() }))
+    return str.split(' ').map((value) => ({title: value, color: randomHexaDecimalColor()}))
 }
 
 const isTags = (tags: SplittedTag[]): boolean => {
@@ -22,7 +22,7 @@ const isTags = (tags: SplittedTag[]): boolean => {
 }
 
 const changeStringArrayToTags = (tags: SplittedTag[]): CreateTagInterface[] => {
-    return tags.map((x) => ({ title: x.title as TagTitle, color: x.color as HexadecimalColor }))
+    return tags.map((x) => ({title: x.title as TagTitle, color: x.color as HexadecimalColor}))
 };
 
-export const zodTags = z.string().transform(splitStringtoArray).refine(isTags).transform(changeStringArrayToTags);
+export const zodTags = z.string().nonempty().transform(splitStringtoArray).refine(isTags).transform(changeStringArrayToTags);
