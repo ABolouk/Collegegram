@@ -19,23 +19,15 @@ export class PostRepository {
         return this.postRepo.findOneBy({ id });
     }
 
-    getPostsByUserId(userId: UserId, limit: number, nextOffset: number): Promise<PostEntity[]> {
-        if (nextOffset === 0) {
-            return this.postRepo.find({
-                where: { userId: userId },
-                order: { createdAt: 'desc' },
-                take: limit,
-            });
-        } else {
-            return this.postRepo.find({
-                where: {
-                    userId: userId,
-                    createdAt: LessThan(new Date(nextOffset)),
-                },
-                order: { createdAt: 'desc' },
-                take: limit,
-            });
-        }
+    getPostsByUserId(userId: UserId, limit: number, startTime: Date): Promise<PostEntity[]> {
+        return this.postRepo.find({
+            where: {
+                userId: userId,
+                createdAt: LessThan(startTime),
+            },
+            order: {createdAt: 'desc'},
+            take: limit,
+        });
     }
 
     async createPost(post: CreatePostInterface): Promise<PostDao> {

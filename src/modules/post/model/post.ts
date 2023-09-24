@@ -24,5 +24,5 @@ export interface CreatePostInterface {
 
 export interface PostsInterface {
   posts: PostEntity[],
-  nextOffset: number,
+  nextOffset: Date,
 }
