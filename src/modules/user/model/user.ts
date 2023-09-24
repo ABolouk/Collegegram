@@ -4,6 +4,7 @@ import { UserName } from "./user.username";
 import { firstName } from './user.firstName';
 import { lastName } from './user.lastName';
 import { HashedPassword, Password } from '../../../utility/password-utils';
+import {WholeNumber} from "../../../data/whole-number";
 
 
 // User Interface type:??????
@@ -12,6 +13,7 @@ export interface User {
     email: Email;
     username: UserName;
     password: HashedPassword,
+    postCount: WholeNumber;
     bio: string | null
     firstName: string | null;
     lastName: string | null
@@ -19,13 +21,7 @@ export interface User {
     isPrivate: boolean;
 }
 
-export interface loginUserInterface {
-    id: UserId;
-    email: Email;
-    username: UserName;
-    password: HashedPassword,
-    isPrivate: boolean;
-}
+
 
 export interface createUserInterface {
     id: UserId;

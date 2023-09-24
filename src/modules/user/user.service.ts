@@ -18,13 +18,14 @@ import {randomBytes} from 'crypto';
 import {UserId} from './model/user.id';
 import {EditProfileType} from "./dto/edit-profile.dto";
 import {UserAuth} from "./model/user.auth"
-import {loginUserInterface} from "./model/user";
 import {followDtoType} from '../follow/dto/follow.dto';
 import {FollowReqStatus} from '../follow/model/follow.req.status';
 import {followRequestService} from "../follow/follow.request.service";
 import {followService} from "../follow/follow.service";
 import {UserName} from "./model/user.username";
 import {USerInteractionService} from "../user-interaction/user-interaction.service";
+import {GetUserDtoType} from "./dto/get.user.dto";
+import {User} from "./model/user";
 
 export class UserService {
     constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService, private userInteractionService: USerInteractionService, private followReqService: followRequestService, private followRellService: followService) {
@@ -95,6 +96,27 @@ export class UserService {
         return {accessToken, refreshToken};
     }
 
+    async getUserProfile(dto: GetUserDtoType, userId: UserId) {
+        const user = await this.userRepository.findByEmailOrUsername(dto.userName);
+        if (!user) {
+            throw new NotFoundError("User")
+        }
+        if(user.id !== userId){
+            return {
+                username : user.username,
+                firstName : user.firstName,
+                lastName : user.lastName,
+                postCount : user.postCount,
+                avatar : user.avatar,
+                bio : user.bio,
+                isPrivate : user.isPrivate
+            }
+        }
+
+        return new BadRequestError("You can not see your profile");
+
+    }
+
     async forgetPassword({authenticator}: ForgetPasswordDto) {
         if (!UserAuth.is(authenticator)) {
             throw new UnauthorizedError();
@@ -145,7 +167,7 @@ export class UserService {
 
         const user = await this.getUserById(userId);
 
-        const secret = createOneTimeLinkSecret(user as loginUserInterface) //????
+        const secret = createOneTimeLinkSecret(user as User) //????
         const payload = jwt.verify(token, secret) as PayloadType
 
         if (payload.userId !== user.id) {

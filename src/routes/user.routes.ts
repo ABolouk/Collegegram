@@ -14,6 +14,7 @@ import {followRequestDto} from "../modules/follow/dto/follow.request.dto";
 import { JwtService } from "../modules/jwt/jwt.service";
 import { jwtDto } from "../modules/jwt/dto/jwt.dto";
 import { blockDto } from "../modules/block/dto/block.dto";
+import {getUserDto} from "../modules/user/dto/get.user.dto";
 export const resetPasswordRoute = "reset_password"
 
 
@@ -28,6 +29,12 @@ export const makeUserRouter = (userService: UserService, jwtService: JwtService)
         const dto = signupDto.parse(req.body);
         handleExpresss(res, () => userService.signup(dto), 201)
     })
+
+    app.post("/getUserProfile", loginMiddle(userService), (req, res) => {
+        const dto = getUserDto.parse(req.body);
+        handleExpresss(res, () => userService.getUserProfile(dto, req.user.id));
+    });
+
     app.post("/login/forget", (req, res) => {
         const dto = forgetPasswordDto.parse(req.body);
         handleExpresss(res, () => userService.forgetPassword(dto));

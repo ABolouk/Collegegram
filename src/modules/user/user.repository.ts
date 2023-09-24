@@ -1,10 +1,10 @@
 import { DataSource, Repository } from "typeorm";
 import { UserEntity } from "./entity/user.entity";
-import { createUserInterface, updateUser, User, loginUserInterface } from "./model/user";
+import { createUserInterface, updateUser, User } from "./model/user";
 import { UserId } from "./model/user.id";
 import { UserName } from "./model/user.username";
 import { Email } from "./model/user.email";
-import { zodLogginUserDao, zodUserDao } from "./dao/user.dao";
+import { zodUserDao } from "./dao/user.dao";
 import { z } from "zod";
 import {seedUser} from "../../seed-user";
 
@@ -35,10 +35,10 @@ export class UserRepository {
 		return null;
 	}
 
-	async findByEmailOrUsername(data: Email | UserName): Promise<loginUserInterface | null> {
+	async findByEmailOrUsername(data: Email | UserName): Promise<User | null> {
 		return this.userRepo
 			.findOneBy([{ email: data }, { username: data }])
-			.then((x) => z.nullable(zodLogginUserDao).parse(x));
+			.then((x) => z.nullable(zodUserDao).parse(x));
 	}
 
 
