@@ -123,6 +123,7 @@ export class UserService {
             throw new NotFoundError("User")
         }
         return {
+            email: user.email,
             username: user.username,
             firstName: user.firstName,
             lastName: user.lastName,
