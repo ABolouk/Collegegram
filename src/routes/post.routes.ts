@@ -16,6 +16,7 @@ export const makePostRouter = (userService: UserService, postService: PostServic
 	app.post("/", loginMiddle(userService), uploadMinIO.array('post-photos'), async (req, res) => {
 		const data = createPostDto.parse(req.body);
 		console.log(data)
+		console.log(req.body)
 		if (!req.files) {
 			return new BadRequestError("post has no images")
 		}
