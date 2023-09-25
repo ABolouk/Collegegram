@@ -60,9 +60,3 @@ export class jwtError extends HttpError {
         super(482, "توکن نامعتبر می‌باشد.");
     }
 }
-
-export class ZodError extends HttpError {
-    constructor(message: string) {
-        super(500, message)
-    }
-}

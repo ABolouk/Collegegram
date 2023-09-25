@@ -30,18 +30,6 @@ import { Brand } from "../../../../utility/brand";
 
 // export type Tag = Brand<{ title: TagTitle, color: HexadecimalColor }, "Tag">
 
-const customErrorMap: z.ZodErrorMap = (issue, ctx) => {
-    if (issue.code === z.ZodIssueCode.invalid_type) {
-        if (issue.expected === "string") {
-            return { message: "bad type!" };
-        }
-    }
-    if (issue.code === z.ZodIssueCode.custom) {
-        return { message: `less-than-${(issue.params || {}).minimum}` };
-    }
-    return { message: ctx.defaultError };
-};
-
 
 export interface Tag {
     title: TagTitle,
@@ -74,5 +62,5 @@ export module Tags {
         return value.every(Tag.is)
     }
 
-    export const zod = z.string().transform(transformTags).refine(is, new z.ZodError([]))
+    export const zod = z.string().transform(transformTags).refine(is)
 }
