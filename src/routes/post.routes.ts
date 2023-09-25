@@ -18,7 +18,6 @@ export const makePostRouter = (userService: UserService, postService: PostServic
 		if (!req.files) {
 			return new BadRequestError("post has no images")
 		}
-		console.log(req.files)
 		handleExpresss(res, () => postService.createPost(data, req.files as Express.Multer.File[], req.user));
 	});
 
