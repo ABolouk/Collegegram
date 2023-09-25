@@ -1,10 +1,13 @@
 import { z } from "zod"
-import { zodTags } from "../tag/dto/tag.dto";
+import { Tags } from "../tag/dto/tag.dto";
+
+
 
 export const createPostDto = z.object({
   description: z.string().max(255),
-  tags: zodTags,
-  closeFriends: z.coerce.boolean(),
+  tags: Tags.zod,
+  closeFriends: z.coerce.boolean().default(false)
+
 })
 
-export type CreatePostDto = z.infer<typeof createPostDto>;
+export type CreatePostDtoType = z.infer<typeof createPostDto>;

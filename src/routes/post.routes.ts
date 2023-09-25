@@ -13,18 +13,15 @@ import { BadRequestError } from "../utility/http-errors";
 
 export const makePostRouter = (userService: UserService, postService: PostService, commentService: CommentService) => {
 	const app = Router();
-	app.post("/", loginMiddle(userService), uploadMinIO.array('post-photos'), async (req, res) => {
+	app.post("/", loginMiddle(userService), uploadMinIO.array('post-photos'), (req, res) => {
 		const data = createPostDto.parse(req.body);
-		console.log(data)
-		console.log(req.body)
 		if (!req.files) {
 			return new BadRequestError("post has no images")
 		}
-		console.log(req.files)
 		handleExpresss(res, () => postService.createPost(data, req.files as Express.Multer.File[], req.user));
 	});
 
-	app.get("/:id", loginMiddle(userService), async (req, res) => {
+	app.get("/:id", loginMiddle(userService),(req, res) => {
 		const { postId } = getPostIdDto.parse(req.params);
 		handleExpresss(res, () => postService.getPostById(postId));
 	});
