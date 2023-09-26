@@ -14,6 +14,7 @@ import {followRequestDto} from "../modules/follow/dto/follow.request.dto";
 import { JwtService } from "../modules/jwt/jwt.service";
 import { jwtDto } from "../modules/jwt/dto/jwt.dto";
 import { blockDto } from "../modules/block/dto/block.dto";
+
 export const resetPasswordRoute = "reset_password"
 
 
@@ -67,5 +68,18 @@ export const makeUserRouter = (userService: UserService, jwtService: JwtService)
         handleExpresss(res, () => userService.cancelFollowRequest(dto, req.user.id));
     });
 
-    return app;
+    app.post("/block", loginMiddle(userService), (req, res) => {
+        const userId = req.user.id
+        const dto = blockDto.parse({userId, ...req.body})
+        handleExpresss(res, () => userService.block(dto))
+    })
+    
+    app.post("/unblock", loginMiddle(userService), (req, res) => {
+        const userId = req.user.id
+        const dto = blockDto.parse({ userId, ...req.body })
+        handleExpresss(res, () => userService.unblock(dto))
+    })
+
+    return app
+
 };
