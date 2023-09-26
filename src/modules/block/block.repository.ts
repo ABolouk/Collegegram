@@ -27,10 +27,10 @@ export class BlockRepository {
     })
   }
 
-  async findBlockedUsers(blockedUserId: UserId){
-    const blockedUsers = await this.blockRepo
-      .find({ select: { userId: true}, where: { blockedUserId: blockedUserId } })
-    return blockedUsers
+  async findBlockerUsers(id: UserId){
+    const blockerUsers = await this.blockRepo
+      .find({ select: { userId: true}, where: { blockedUserId: id } })
+    return blockerUsers
   }
 
 
