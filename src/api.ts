@@ -19,6 +19,8 @@ import {JwtService} from "./modules/jwt/jwt.service";
 import cors from 'cors'
 import {UserInteractionRepository} from "./modules/user-interaction/user-interaction.repository";
 import {USerInteractionService} from "./modules/user-interaction/user-interaction.service";
+import { BlockService } from "./modules/block/block.service";
+import { BlockRepository } from "./modules/block/block.repository";
 
 
 export const makeApp = (dataSource: DataSource) => {
@@ -38,7 +40,9 @@ export const makeApp = (dataSource: DataSource) => {
     const followRellService = new followService(followRepo);
     const followReqService = new followRequestService(followReqRepo, followRellService);
     const emailService = new EmailService()
-    const userService = new UserService(userRepo, sessionRepo, emailService, userInteractionService, followReqService, followRellService);
+    const blockRepo = new BlockRepository(dataSource)
+    const blockService = new BlockService(blockRepo)
+    const userService = new UserService(userRepo, sessionRepo, emailService, userInteractionService, followReqService, followRellService, blockService);
     app.use("/user", makeUserRouter(userService, jwtService));
 
     const postRepo = new PostRepository(dataSource);
