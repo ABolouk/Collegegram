@@ -62,4 +62,11 @@ export class PostRepository {
             return CreatePostDao(newPost);
         })
     }
+
+    async userHasMorePosts(userId: UserId, startTime: Date): Promise<boolean> {
+        const posts = await this.postRepo.find(
+            {where: {userId: userId, createdAt: LessThan(startTime)}}
+        )
+        return posts.length !== 0;
+    }
 }
