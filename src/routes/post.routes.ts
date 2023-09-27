@@ -41,5 +41,10 @@ export const makePostRouter = (userService: UserService, postService: PostServic
 		handleExpresss(res, () => commentService.comment(dto))
 	})
 
+	app.get("/:id/like", loginMiddle(userService), (req, res) => {
+		const userId = req.user.id
+		const postId = req.params.id
+		handleExpresss(res, () => postService.like(userId, postId))
+	})
 	return app;
 };
