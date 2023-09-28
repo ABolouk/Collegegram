@@ -33,4 +33,10 @@ export class PostService {
             nextOffset: posts.length === 0 ? new Date() : posts[posts.length - 1].createdAt,
         }
     }
+
+    async getPostsByUsersId(usersId: string[], limit: number, startTime: Date) {
+        const posts = await this.postRepository.getPostsByusersId(usersId, limit, startTime)
+        return posts
+    }
+
 }
