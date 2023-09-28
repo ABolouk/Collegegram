@@ -36,4 +36,32 @@ export class LikeService {
         likeEventEmmmiter.emit('like', newLike.userId, newLike.postId);
         return {status: "liked"};
     }
+
+    async unlike(dto: LikeDtoType) {
+        const post = await this.postService.getPostById(dto.postId);
+        if (!post) {
+            throw new NotFoundError('Post');
+        }
+        if (post.userId === dto.userId) {
+            throw new BadRequestError('You can not unlike your own post');
+        }
+        const author = await this.userService.getUserById(post.userId);
+        if (author.isPrivate) {
+            const follow = await this.followRellService.getFollowRelation({
+                followerId: dto.userId,
+                followingId: author.id
+            });
+            if (!follow) {
+                throw new BadRequestError('You can not like this post');
+            }
+        }
+        const like = await this.likeRepository.isLiked(dto);
+        if (!like) {
+            throw new BadRequestError('You have not liked this post');
+        }
+
+        await this.likeRepository.delete(dto);
+        return {status: "unliked"};
+
+    }
 }

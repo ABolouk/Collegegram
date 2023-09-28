@@ -18,6 +18,10 @@ export class LikeRepository {
         return this.likeRepo.findOneBy({userId: like.userId, postId: like.postId});
     }
 
+    async delete(like: likeInterface): Promise<void> {
+        await this.likeRepo.delete({userId: like.userId, postId: like.postId});
+    }
+
 
 
 }

@@ -49,5 +49,13 @@ export const makePostRouter = (userService: UserService, postService: PostServic
 		const dto = likeDto.parse({ userId, postId, ...req.body })
 		handleExpresss(res, () => likeService.like(dto))
 	})
+
+	app.get("/:id/unlike", loginMiddle(userService), (req, res) => {
+		const userId = req.user.id
+		const postId = req.params.id
+		const dto = likeDto.parse({ userId, postId, ...req.body })
+		handleExpresss(res, () => likeService.unlike(dto))
+	})
+
 	return app;
 };
