@@ -6,7 +6,7 @@ import { blockEventEmmmiter } from "../../utility/event-handling";
 
 export class followService {
     constructor(private followRepo: FollowRepository) {
-        blockEventEmmmiter.on("block", (x) => this.deleteFollowRelation(x))
+        blockEventEmmmiter.on("block", (x, y) => this.deleteFollowRelation({followerId: x, followingId: y}))
     }
 
 
