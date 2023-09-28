@@ -2,7 +2,7 @@ import { DataSource, Repository } from "typeorm";
 import { BlockEntity } from "./entity/block.entity";
 import { BlockInterface, UnblockRelationInterface, BlockRelationInterface} from "./model/block";
 import { z } from "zod"
-import { zodBlockDao } from "./dao/block.dao";
+import { zodBlockDao, zodBlockRellDao } from "./dao/block.dao";
 import { UserId } from "../user/model/user.id";
 
 export class BlockRepository {
@@ -11,8 +11,8 @@ export class BlockRepository {
     this.blockRepo = appDataSource.getRepository(BlockEntity);
   }
 
-  createBlockRelation(blockInterface: BlockRelationInterface): Promise<BlockRelationInterface> {
-    return this.blockRepo.save(blockInterface)
+  async createBlockRelation(blockInterface: BlockRelationInterface): Promise<BlockRelationInterface> {
+    return this.blockRepo.save(blockInterface).then((x) => zodBlockRellDao.parse(x))
   }
 
   async findBlock(blockRelation: BlockRelationInterface): Promise<BlockInterface | null> {
@@ -21,7 +21,7 @@ export class BlockRepository {
       .then((x) => z.nullable(zodBlockDao).parse(x))
   }
 
-  deleteBlockRelation(unblockRelation: UnblockRelationInterface) { 
+  async deleteBlockRelation(unblockRelation: UnblockRelationInterface) { 
     return this.blockRepo.delete({
       userId: unblockRelation.userId, blockedUserId: unblockRelation.blockedUserId
     })
