@@ -41,17 +41,4 @@ export class PostService {
             nextOffset: date ? date.getTime() : 0,
         }
     }
-
-    async like(userId: UserId, postId: PostId) {
-        const post = await this.getPostById(postId);
-        if (!post) {
-            throw new NotFoundError('Post');
-        }
-        if(post.userId === userId){
-            throw new BadRequestError('You cannot like your own post')
-        }
-
-
-
-    }
 }
