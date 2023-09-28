@@ -20,11 +20,10 @@ export class BlockService {
       throw new BadRequestError(".شما قبلا این کاربر را بلاک کرده‌اید.")
     }
 
-    await this.blockRepo.createBlockRelation(blockRell)
-    const followerId = blockRell.userId
-    const followingId = blockRell.blockedUserId
+    const newBlockRelation = await this.blockRepo.createBlockRelation(blockRell)
 
-    blockEventEmmmiter.emit("block", { x:blockRell.userId , y: blockRell.blockedUserId })
+
+    blockEventEmmmiter.emit("block", newBlockRelation.userId, newBlockRelation.blockedUserId)
     return { status: "blocked" }
     //NOTE: follow userid: followingid, followerid
   }
