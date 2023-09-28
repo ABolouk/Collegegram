@@ -15,8 +15,12 @@ export class PostRepository {
         this.postRepo = appDataSource.getRepository(PostEntity);
     }
 
-    getPostById(id: PostId): Promise<PostEntity | null> {
-        return this.postRepo.findOneBy({ id });
+    async getPostById(id: PostId): Promise<PostDao | null> {
+        const post = await this.postRepo.findOne({
+            relations: ['tags'],
+            where: { id: id },
+        })
+        return post ? CreatePostDao(post) : null;
     }
 
     async getPostsByUserId(userId: UserId, limit: number, startTime: Date): Promise<PostDao[]> {
