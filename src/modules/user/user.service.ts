@@ -117,6 +117,11 @@ export class UserService {
 
     }
 
+    async getFamilyNameById(id: UserId) {
+        const user = await this.getUserById(id)
+        return { firstName: user.firstName, lastName: user.lastName}
+    }
+
     async getUser(userId: UserId) {
         const user = await this.userRepository.findById(userId);
         if (!user) {
