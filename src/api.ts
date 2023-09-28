@@ -19,6 +19,8 @@ import {JwtService} from "./modules/jwt/jwt.service";
 import cors from 'cors'
 import {UserInteractionRepository} from "./modules/user-interaction/user-interaction.repository";
 import {USerInteractionService} from "./modules/user-interaction/user-interaction.service";
+import {LikeRepository} from "./modules/post/like/like.repository";
+import {LikeService} from "./modules/post/like/like.service";
 
 
 export const makeApp = (dataSource: DataSource) => {
@@ -45,7 +47,9 @@ export const makeApp = (dataSource: DataSource) => {
     const postService = new PostService(postRepo);
     const commentRepo = new CommentRepository(dataSource);
     const commentService = new CommentService(commentRepo, postService);
-    app.use("/post", makePostRouter(userService, postService, commentService));
+    const likeRepo = new LikeRepository(dataSource);
+    const likeService = new LikeService(likeRepo, postService, userService, followRellService);
+    app.use("/post", makePostRouter(userService, postService, commentService, likeService));
 
     app.use((req, res, next) => {
         next();
