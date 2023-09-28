@@ -21,14 +21,14 @@ export const makePostRouter = (userService: UserService, postService: PostServic
 		handleExpresss(res, () => postService.createPost(data, req.files as Express.Multer.File[], req.user));
 	});
 
+	app.get("/user", loginMiddle(userService), (req, res) => {
+		const { limit, startTime } = getPostsDto.parse(req.query);
+		handleExpresss(res, () => postService.getPostsByUserId(req.user.id, limit, startTime ? startTime : new Date()));
+	});
+
 	app.get("/:id", loginMiddle(userService), (req, res) => {
 		const { id } = getPostIdDto.parse(req.params);
 		handleExpresss(res, () => postService.getPostById(id));
-	});
-
-	app.post("/user", loginMiddle(userService), (req, res) => {
-		const { limit, startTime } = getPostsDto.parse(req.query);
-		handleExpresss(res, () => postService.getPostsByUserId(req.user.id, limit, startTime ? startTime : new Date()));
 	});
 
 	app.post("/:id/comment", loginMiddle(userService), (req, res) => {
