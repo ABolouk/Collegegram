@@ -10,8 +10,10 @@ import { getPostsDto } from "../modules/post/dto/get-posts-dto";
 import { getPostIdDto } from "../modules/post/dto/get-post-id-dto";
 import { uploadMinIO } from "../utility/multer";
 import { BadRequestError } from "../utility/http-errors";
+import {likeDto} from "../modules/post/like/dto/like.dto";
+import {LikeService} from "../modules/post/like/like.service";
 
-export const makePostRouter = (userService: UserService, postService: PostService, commentService: CommentService) => {
+export const makePostRouter = (userService: UserService, postService: PostService, commentService: CommentService , likeService : LikeService) => {
 	const app = Router();
 	app.post("/", loginMiddle(userService), uploadMinIO.array('post-photos'), async (req, res) => {
 		const data = createPostDto.parse(req.body);
@@ -44,7 +46,8 @@ export const makePostRouter = (userService: UserService, postService: PostServic
 	app.get("/:id/like", loginMiddle(userService), (req, res) => {
 		const userId = req.user.id
 		const postId = req.params.id
-		handleExpresss(res, () => postService.like(userId, postId))
+		const dto = likeDto.parse({ userId, postId, ...req.body })
+		handleExpresss(res, () => likeService.like(dto))
 	})
 	return app;
 };
