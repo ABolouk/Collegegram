@@ -3,11 +3,12 @@ import {UserEntity} from "../../../user/entity/user.entity";
 import {PostId} from "../../model/post-id";
 import {PostEntity} from "../../entity/post.entity";
 import {UserId} from "../../../user/model/user.id";
+import {LikeId} from "../model/like.id";
 
 @Entity("likes")
 export class LikeEntity {
     @PrimaryGeneratedColumn()
-    id!: number
+    id!: LikeId
 
     @Column()
     userId!: UserId
