@@ -11,7 +11,7 @@ export class BookMarkService {
 
 
   async bookmark(dto: BookMarkDtoType) {
-    const post = this.postService.getPostById(dto.postId)
+    const post = await this.postService.getPostById(dto.postId)
     if (!post) {
       throw new NotFoundError('Post');
     }
@@ -36,7 +36,7 @@ export class BookMarkService {
   }
 
   async unBookmark(dto: BookMarkDtoType) {
-    const post = this.postService.getPostById(dto.postId)
+    const post = await this.postService.getPostById(dto.postId)
     if (!post) {
       throw new NotFoundError('Post');
     }

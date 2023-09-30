@@ -39,21 +39,16 @@ export class BookmarkRepository {
   }
 
   async deleteBookmark(bookmark: Bookmark) {
-    return new Promise<bookmarkInterface>(async (resolve, reject) => {
-      try {
-        await this.appDataSource.manager.transaction(async manager => {
-          const postRepo = manager.getRepository(PostEntity);
-          const bookmarkRepo = manager.getRepository(BookmarkEntity);
-          const newBookmark = await bookmarkRepo.delete({ id: bookmark.id });
-          await postRepo.update(
-            { id: bookmark.postId },
-            { bookmarkCount: () => "bookmarkCount - 1" }
-          );
-        });
-      } catch (error) {
-        reject(error);
-      }
+    await this.appDataSource.manager.transaction(async manager => {
+      const postRepo = manager.getRepository(PostEntity);
+      const bookmarkRepo = manager.getRepository(BookmarkEntity);
+      const deletedBookmark = await bookmarkRepo.delete({ userId: bookmark.userId, postId: bookmark.postId });
+      await postRepo.update(
+        { id: bookmark.postId },
+        { bookmarkCount: () => "bookmarkCount - 1" }
+      );
     });
+
   }
 
 }
