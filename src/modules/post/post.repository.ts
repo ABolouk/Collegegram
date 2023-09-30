@@ -56,6 +56,7 @@ export class PostRepository {
             const newPost = await postRepo.save({
                 userId: post.userId,
                 photos: post.photos,
+                tags: createdTags,
                 description: post.description,
                 closeFriends: post.closeFriends,
             }) as PostEntity
@@ -63,8 +64,6 @@ export class PostRepository {
                 { id: post.userId },
                 { postCount: () => "postCount + 1" }
             )
-            newPost.tags = createdTags;
-            await postRepo.save(newPost);
             return CreatePostDao(newPost);
         })
     }
