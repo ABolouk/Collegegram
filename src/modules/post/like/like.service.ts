@@ -4,10 +4,13 @@ import {LikeDtoType} from "./dto/like.dto";
 import {BadRequestError, NotFoundError} from "../../../utility/http-errors";
 import {followService} from "../../follow/follow.service";
 import {UserService} from "../../user/user.service";
-import {likeEventEmmmiter} from "../../../data/event-handling";
+import {blockEventEmmmiter, likeEventEmmmiter} from "../../../data/event-handling";
+import {UserId} from "../../user/model/user.id";
+import {User} from "../../user/model/user";
 
 export class LikeService {
     constructor(private likeRepository: LikeRepository, private postService: PostService, private userService: UserService, private followRellService: followService) {
+        blockEventEmmmiter.on("block", (x, y) => this.blockAction({blockerId: x, blockedId: y}))
     }
 
     async like(dto: LikeDtoType) {
@@ -62,6 +65,11 @@ export class LikeService {
 
         await this.likeRepository.delete(dto);
         return {status: "unliked"};
-
     }
+
+    async blockAction(dto: { blockerId: UserId, blockedId: UserId }) {
+        return await this.likeRepository.blockedUserLike(dto);
+    }
+
+
 }
