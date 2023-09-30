@@ -3,6 +3,7 @@ import { UserEntity } from "../../user/entity/user.entity";
 import { CommentEntity } from "../comment/entity/comment.entity";
 import { TagEntity } from "../tag/entity/tag.entity";
 import { UserId } from "../../user/model/user.id";
+import { WholeNumber } from "../../../data/whole-number";
 
 
 
@@ -32,6 +33,9 @@ export class PostEntity {
 
   @Column('boolean', { default: false })
   closeFriends!: boolean;
+
+  @Column({ default: 0 })
+  bookmarkCount!: WholeNumber;
 
   @CreateDateColumn()
   createdAt!: Date;
