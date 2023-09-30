@@ -1,24 +1,26 @@
-import express, {ErrorRequestHandler} from "express";
-import {DataSource} from "typeorm";
-import {UserRepository} from "./modules/user/user.repository";
-import {UserService} from "./modules/user/user.service";
-import {makeUserRouter} from "./routes/user.routes";
-import {sessionRepository} from "./modules/user/session.repository";
-import {ZodError} from "zod";
-import {EmailService} from "./modules/email/email.service";
-import {makePostRouter} from "./routes/post.routes";
-import {PostRepository} from "./modules/post/post.repository";
-import {PostService} from "./modules/post/post.service";
-import {CommentService} from "./modules/post/comment/comment.service";
-import {CommentRepository} from "./modules/post/comment/comment.repository";
-import {FollowRepository} from "./modules/follow/follow.repository";
-import {followRequestRepository} from "./modules/follow/follow-request.repository";
-import {followRequestService} from "./modules/follow/follow.request.service";
-import {followService} from "./modules/follow/follow.service";
-import {JwtService} from "./modules/jwt/jwt.service";
+import express, { ErrorRequestHandler } from "express";
+import { DataSource } from "typeorm";
+import { UserRepository } from "./modules/user/user.repository";
+import { UserService } from "./modules/user/user.service";
+import { makeUserRouter } from "./routes/user.routes";
+import { sessionRepository } from "./modules/user/session.repository";
+import { ZodError } from "zod";
+import { EmailService } from "./modules/email/email.service";
+import { makePostRouter } from "./routes/post.routes";
+import { PostRepository } from "./modules/post/post.repository";
+import { PostService } from "./modules/post/post.service";
+import { CommentService } from "./modules/post/comment/comment.service";
+import { CommentRepository } from "./modules/post/comment/comment.repository";
+import { FollowRepository } from "./modules/follow/follow.repository";
+import { followRequestRepository } from "./modules/follow/follow-request.repository";
+import { followRequestService } from "./modules/follow/follow.request.service";
+import { followService } from "./modules/follow/follow.service";
+import { JwtService } from "./modules/jwt/jwt.service";
 import cors from 'cors'
-import {UserInteractionRepository} from "./modules/user-interaction/user-interaction.repository";
-import {USerInteractionService} from "./modules/user-interaction/user-interaction.service";
+import { UserInteractionRepository } from "./modules/user-interaction/user-interaction.repository";
+import { USerInteractionService } from "./modules/user-interaction/user-interaction.service";
+import { BookMarkService } from "./bookmark/book-mark.service";
+import { BookmarkRepository as BookmarkRepository } from "./bookmark/book-mark.repository";
 
 
 export const makeApp = (dataSource: DataSource) => {
@@ -45,7 +47,9 @@ export const makeApp = (dataSource: DataSource) => {
     const postService = new PostService(postRepo);
     const commentRepo = new CommentRepository(dataSource);
     const commentService = new CommentService(commentRepo, postService);
-    app.use("/post", makePostRouter(userService, postService, commentService));
+    const bookMarkRepo = new BookmarkRepository(dataSource)
+    const bookMarkService = new BookMarkService(bookMarkRepo, postService, userService, followRellService)
+    app.use("/post", makePostRouter(userService, postService, commentService, bookMarkService));
 
     app.use((req, res, next) => {
         next();
@@ -58,9 +62,9 @@ export const makeApp = (dataSource: DataSource) => {
         next,
     ) => {
         if (error instanceof ZodError) {
-            res.status(400).send({message: error.issues});
+            res.status(400).send({ message: error.issues });
         }
-        res.status(500).send({message: "خطایی رخ داده است. لطفا دوباره تلاش کنید."});
+        res.status(500).send({ message: "خطایی رخ داده است. لطفا دوباره تلاش کنید." });
     };
     app.use(zodErrorHanlder);
     return app
