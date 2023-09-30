@@ -8,7 +8,6 @@ export interface SplittedTag {
 }
 
 export interface TagInterface {
-  id: TagId;
   title: TagTitle;
   color: HexadecimalColor;
 }
