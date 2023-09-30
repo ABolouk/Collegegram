@@ -1,5 +1,4 @@
 import { HexadecimalColor } from "../../../../data/hexadecimal-color";
-import { TagId } from "./tag-id";
 import { TagTitle } from "./tag-title";
 
 export interface SplittedTag {
