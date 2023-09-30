@@ -17,12 +17,17 @@ export class PostRepository {
         this.postRepo = appDataSource.getRepository(PostEntity);
     }
 
-    getPostById(id: PostId): Promise<PostEntity | null> {
-        return this.postRepo.findOneBy({ id });
+    async getPostById(id: PostId): Promise<PostDao | null> {
+        const post = await this.postRepo.findOne({
+            relations: ['tags'],
+            where: { id: id },
+        })
+        return post ? CreatePostDao(post) : null;
     }
 
-    getPostsByUserId(userId: string, limit: number, startTime: Date): Promise<PostEntity[]> {
-        return this.postRepo.find({
+    async getPostsByUserId(userId: UserId, limit: number, startTime: Date): Promise<PostDao[]> {
+        const posts = await this.postRepo.find({
+            relations: ['tags'],
             where: {
                 userId: userId as UserId,
                 createdAt: LessThan(startTime),
@@ -30,6 +35,7 @@ export class PostRepository {
             order: { createdAt: 'desc' },
             take: limit,
         });
+        return posts.map(x => CreatePostDao(x))
     }
 
     async getPostsByusersId(usersId: string[], limit: number, startTime: Date) {
@@ -66,6 +72,7 @@ export class PostRepository {
             const newPost = await postRepo.save({
                 userId: post.userId,
                 photos: post.photos,
+                tags: createdTags,
                 description: post.description,
                 closeFriends: post.closeFriends,
             }) as PostEntity
@@ -73,8 +80,6 @@ export class PostRepository {
                 { id: post.userId },
                 { postCount: () => "postCount + 1" }
             )
-            newPost.tags = createdTags;
-            await postRepo.save(newPost);
             return CreatePostDao(newPost);
         })
     }
