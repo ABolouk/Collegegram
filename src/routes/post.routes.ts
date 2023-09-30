@@ -10,8 +10,11 @@ import { getPostsDto } from "../modules/post/dto/get-posts-dto";
 import { getPostIdDto } from "../modules/post/dto/get-post-id-dto";
 import { uploadMinIO } from "../utility/multer";
 import { BadRequestError } from "../utility/http-errors";
+import { homePageDto } from "../modules/post/dto/home-page.dto";
+import { HomePageService } from "../modules/post/home-page.service";
 
-export const makePostRouter = (userService: UserService, postService: PostService, commentService: CommentService) => {
+
+export const makePostRouter = (userService: UserService, postService: PostService, commentService: CommentService, homePageService: HomePageService) => {
 	const app = Router();
 	app.post("/", loginMiddle(userService), uploadMinIO.array('post-photos'), (req, res) => {
 		const data = createPostDto.parse(req.body);
@@ -20,6 +23,14 @@ export const makePostRouter = (userService: UserService, postService: PostServic
 		}
 		handleExpresss(res, () => postService.createPost(data, req.files as Express.Multer.File[], req.user));
 	});
+
+	app.get("/home", loginMiddle(userService), (req, res) => {
+		const userId = req.user.id
+		const limit = req.query.limit
+		const startTime = req.query.startTime ? req.query.startTime : new Date()
+		const dto = homePageDto.parse({ userId, limit, startTime })
+		handleExpresss(res, () => homePageService.getHome(dto))
+	})
 
 	app.get("/user", loginMiddle(userService), (req, res) => {
 		const { limit, startTime } = getPostsDto.parse(req.query);
@@ -37,6 +48,8 @@ export const makePostRouter = (userService: UserService, postService: PostServic
 		const dto = createCommentDto.parse({ userId, postId, ...req.body })
 		handleExpresss(res, () => commentService.comment(dto))
 	})
+
+	
 
 	return app;
 };

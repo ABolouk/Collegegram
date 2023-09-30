@@ -3,11 +3,13 @@ import { PostEntity } from "./entity/post.entity";
 import { PostId } from "./model/post-id";
 import { UserId } from "../user/model/user.id";
 import { CreatePostDao, PostDao } from "./dao/post.dao";
+import { zodHomePagePostsDao } from "./dao/home-page.dao";
 import { UserEntity } from "../user/entity/user.entity";
 import { CreatePostInterface } from "./model/post";
 import { TagEntity } from "./tag/entity/tag.entity";
 import { CreateTagInterface } from "./tag/model/tag";
-import { LessThan } from "typeorm";
+import { LessThan, In } from "typeorm";
+
 
 export class PostRepository {
     private postRepo: Repository<PostEntity>;
@@ -27,13 +29,27 @@ export class PostRepository {
         const posts = await this.postRepo.find({
             relations: ['tags'],
             where: {
-                userId: userId,
+                userId: userId as UserId,
                 createdAt: LessThan(startTime),
             },
-            order: {createdAt: 'desc'},
+            order: { createdAt: 'desc' },
             take: limit,
         });
         return posts.map(x => CreatePostDao(x))
+    }
+
+    async getPostsByusersId(usersId: string[], limit: number, startTime: Date) {
+        const posts = await this.postRepo.find({
+            relations: ["tags"],
+            where: {
+                userId: In(usersId),
+                createdAt: LessThan(startTime),
+            },
+            order: { createdAt: 'desc' },
+            take: limit,
+        })
+        const homePagePosts = zodHomePagePostsDao.parse(posts)
+        return homePagePosts
     }
 
     async createPost(post: CreatePostInterface): Promise<PostDao> {

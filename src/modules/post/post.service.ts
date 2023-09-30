@@ -35,4 +35,10 @@ export class PostService {
             hasMore: hasMore,
         }
     }
+
+    async getPostsByUsersId(usersId: string[], limit: number, startTime: Date) {
+        const posts = await this.postRepository.getPostsByusersId(usersId, limit, startTime)
+        return posts
+    }
+
 }

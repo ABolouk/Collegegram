@@ -19,6 +19,7 @@ import {JwtService} from "./modules/jwt/jwt.service";
 import cors from 'cors'
 import {UserInteractionRepository} from "./modules/user-interaction/user-interaction.repository";
 import {USerInteractionService} from "./modules/user-interaction/user-interaction.service";
+import { HomePageService } from "./modules/post/home-page.service";
 
 
 export const makeApp = (dataSource: DataSource) => {
@@ -45,7 +46,8 @@ export const makeApp = (dataSource: DataSource) => {
     const postService = new PostService(postRepo);
     const commentRepo = new CommentRepository(dataSource);
     const commentService = new CommentService(commentRepo, postService);
-    app.use("/post", makePostRouter(userService, postService, commentService));
+    const homePageService = new HomePageService(postService, userService)
+    app.use("/post", makePostRouter(userService, postService, commentService, homePageService));
 
     app.use((req, res, next) => {
         next();
