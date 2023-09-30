@@ -10,6 +10,7 @@ import { UserInteractionEntity } from "./modules/user-interaction/entity/user-in
 import { BlockEntity } from "./modules/block/entity/block.entity";
 import { FollowEntity } from "./modules/follow/entity/follow.entity";
 import { FollowRequestEntity } from "./modules/follow/entity/follow-request.entity";
+import { BookmarkEntity } from "./bookmark/entity/book-mark.entity";
 
 export const AppDataSource = new DataSource({
     url: process.env.DB_URL,
@@ -19,7 +20,7 @@ export const AppDataSource = new DataSource({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     logging: false,
-    entities: [UserEntity, SessionEntity, PostEntity, CommentEntity, TagEntity, UserInteractionEntity, FollowEntity, FollowRequestEntity, BlockEntity],
+    entities: [UserEntity, SessionEntity, PostEntity, CommentEntity, TagEntity, UserInteractionEntity, FollowEntity, FollowRequestEntity, BlockEntity, BookmarkEntity],
     migrations: ["./src/migrations/*.ts"],
     subscribers: [],
 });
