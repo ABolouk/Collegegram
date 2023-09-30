@@ -9,6 +9,5 @@ export const zodTagDao = z
     id: TagId.zod,
     title: TagTitle.zod,
     color: TagColor.zod,
-
-  }).transform((x): TagInterface => x)
+  }).transform((x): TagInterface => ({title: x.title, color: x.color}))
   
