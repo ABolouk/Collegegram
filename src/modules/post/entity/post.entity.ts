@@ -46,6 +46,9 @@ export class PostEntity {
     @Column({default: 0})
     likeCount!: WholeNumber;
 
+    @Column({default: 0})
+    commentCount!: WholeNumber;
+
     @CreateDateColumn()
     createdAt!: Date;
 
