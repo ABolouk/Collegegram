@@ -38,7 +38,7 @@ export class PostRepository {
         return posts.map(x => CreatePostDao(x))
     }
 
-    async getPostsByusersId(usersId: string[], limit: number, startTime: Date) {
+    async getPostsByusersId(usersId: UserId[], limit: number, startTime: Date) {
         const posts = await this.postRepo.find({
             relations: ["tags"],
             where: {
@@ -92,7 +92,7 @@ export class PostRepository {
         return posts.length !== 0;
     }
 
-    async userHasMoreHomepagePosts(usersId: string[], startTime: Date) {
+    async userHasMoreHomepagePosts(usersId: UserId[], startTime: Date) {
         const posts = await this.postRepo.find({
             where: {
                 userId: In(usersId),
