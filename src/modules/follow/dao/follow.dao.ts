@@ -1,8 +1,7 @@
 import { z } from "zod";
 import { FollowId } from "../model/follow.id";
-import { followDao, followIdDao } from "../model/follow";
+import { followDao, followIdDao, UserFollowingsId } from "../model/follow";
 import { UserId } from "../../user/model/user.id";
-import { FollowReqStatus } from "../model/follow.req.status";
 
 export const zodFollowIdDao = z.object({
     id: FollowId.zod,
@@ -14,3 +13,8 @@ export const zodFollowRellDao = z.object({
     followingId: UserId.zod,
     followerId: UserId.zod,
 }).transform((x): followDao => x)
+
+
+export const zodFollowingsId = z.array(z.object({
+    followingId: UserId.zod
+})).transform((x): UserFollowingsId => x)

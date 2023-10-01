@@ -46,7 +46,7 @@ export const makeApp = (dataSource: DataSource) => {
     const postService = new PostService(postRepo);
     const commentRepo = new CommentRepository(dataSource);
     const commentService = new CommentService(commentRepo, postService);
-    const homePageService = new HomePageService(postService, userService)
+    const homePageService = new HomePageService(postService, userService, followRellService)
     app.use("/post", makePostRouter(userService, postService, commentService, homePageService));
 
     app.use((req, res, next) => {

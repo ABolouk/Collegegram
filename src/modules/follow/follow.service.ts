@@ -1,6 +1,7 @@
 import {FollowRepository} from "./follow.repository";
 import {createFollowRelation, Follow} from "./model/follow";
 import {ConflictError} from "../../utility/http-errors";
+import { UserId } from "../user/model/user.id";
 
 export class followService {
     constructor(private followRepo: FollowRepository) {
@@ -22,5 +23,9 @@ export class followService {
     async deleteFollowRelation(followRelation: Follow) {
         await this.followRepo.deleteFollowRelation(followRelation);
         return {status: "unfollowed"};
+    }
+
+    async getFollowingsIdByUserId(userId: UserId) {
+        return this.followRepo.getFollowingsIdByUserId(userId)
     }
 }
