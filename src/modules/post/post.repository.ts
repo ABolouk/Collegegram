@@ -48,6 +48,7 @@ export class PostRepository {
             order: { createdAt: 'desc' },
             take: limit,
         })
+        const createAt = posts
         const homePagePosts = zodHomePagePostsDao.parse(posts)
         return homePagePosts
     }

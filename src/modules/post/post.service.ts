@@ -38,7 +38,7 @@ export class PostService {
 
     async getPostsByUsersId(usersId: string[], limit: number, startTime: Date) {
         const posts = await this.postRepository.getPostsByusersId(usersId, limit, startTime)
-        const nextOffset = posts.length === 0 ? new Date() : posts[posts.length - 1].createAt
+        const nextOffset = posts.length === 0 ? new Date() : posts[posts.length - 1].createdAt
         const hasMore = await this.postRepository.userHasMoreHomepagePosts(usersId, nextOffset)
         return {
             posts: posts,
