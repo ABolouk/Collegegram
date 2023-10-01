@@ -90,4 +90,14 @@ export class PostRepository {
         )
         return posts.length !== 0;
     }
+
+    async userHasMoreHomepagePosts(usersId: string[], startTime: Date) {
+        const posts = await this.postRepo.find({
+            where: {
+                userId: In(usersId),
+                createdAt: LessThan(startTime),
+            }
+        })
+        return posts.length !== 0;
+    }
 }

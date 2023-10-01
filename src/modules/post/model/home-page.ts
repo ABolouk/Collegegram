@@ -22,6 +22,7 @@ export interface HomePagePost {
   userId: UserId
   tags: {title: string, color: string}[]
   photos: string[]
+  createAt: Date
 }
 
 export module HomePagePost {
@@ -29,7 +30,8 @@ export module HomePagePost {
     id: PostId.zod,
     userId: UserId.zod,
     tags: z.array(Tag.zod),
-    photos: z.array(z.string())
+    photos: z.array(z.string()),
+    createAt: z.date()
   })
 }
 
