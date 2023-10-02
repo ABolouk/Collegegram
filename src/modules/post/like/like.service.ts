@@ -55,7 +55,7 @@ export class LikeService {
                 followingId: author.id
             });
             if (!follow) {
-                throw new BadRequestError('You can not like this post');
+                throw new BadRequestError('You can not unlike this post');
             }
         }
         const like = await this.likeRepository.isLiked(dto);
