@@ -18,10 +18,11 @@ export class LikeService {
         if (!post) {
             throw new NotFoundError('Post');
         }
-        if (post.userId === dto.userId) {
+        const postAuthorId = await this.postService.getAuthorById(dto.postId);
+        if (postAuthorId === dto.userId) {
             throw new BadRequestError('You can not like your own post');
         }
-        const author = await this.userService.getUserById(post.userId);
+        const author = await this.userService.getUserById(postAuthorId);
         if (author.isPrivate) {
             const follow = await this.followRellService.getFollowRelation({
                 followerId: dto.userId,
@@ -45,10 +46,11 @@ export class LikeService {
         if (!post) {
             throw new NotFoundError('Post');
         }
-        if (post.userId === dto.userId) {
+        const postAuthorId = await this.postService.getAuthorById(dto.postId);
+        if (postAuthorId === dto.userId) {
             throw new BadRequestError('You can not unlike your own post');
         }
-        const author = await this.userService.getUserById(post.userId);
+        const author = await this.userService.getUserById(postAuthorId);
         if (author.isPrivate) {
             const follow = await this.followRellService.getFollowRelation({
                 followerId: dto.userId,

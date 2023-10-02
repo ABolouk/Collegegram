@@ -10,7 +10,7 @@ export const handleExpresss = async <A>(
         const data = await fn();
         res.status(statusCode).send(data);
     } catch (e) {
-        console.log(e);
+        console.log(e)
         if (e instanceof HttpError) {
             res.status(e.status).send({message: e.message});
             return;

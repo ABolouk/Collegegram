@@ -2,7 +2,7 @@ import { UserId } from "../../user/model/user.id";
 import { CommentInterface } from "../comment/model/comment";
 import { CreateTagInterface, TagInterface } from "../tag/model/tag";
 import { PostId } from "./post-id";
-import {PostEntity} from "../entity/post.entity";
+import { PostDao } from "../dao/post.dao";
 
 export interface PostInterface {
   id: PostId;
@@ -23,6 +23,7 @@ export interface CreatePostInterface {
 }
 
 export interface PostsInterface {
-  posts: PostEntity[],
-  nextOffset: number,
+  posts: PostDao[],
+  nextOffset: Date,
+  hasMore: boolean,
 }

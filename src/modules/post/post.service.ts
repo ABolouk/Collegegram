@@ -1,6 +1,6 @@
-import {BadRequestError, NotFoundError} from "../../utility/http-errors";
+import {NotFoundError} from "../../utility/http-errors";
 import {UserId} from "../user/model/user.id";
-import {CreatePostDto} from "./dto/create-post.dto";
+import {CreatePostDtoType} from "./dto/create-post.dto";
 import {PostId} from "./model/post-id";
 import {PostRepository} from "./post.repository";
 import {PostsInterface} from "./model/post";
@@ -10,7 +10,7 @@ export class PostService {
     constructor(private postRepository: PostRepository) {
     }
 
-    async createPost(dto: CreatePostDto, photos: Express.Multer.File[], loggedInUser: User) {
+    async createPost(dto: CreatePostDtoType, photos: Express.Multer.File[], loggedInUser: User) {
         // TODO: maybe some validations
         const photosPath: string[] = photos.map(
             x => 'https://collegegrammedia.darkube.app/mediacollegegram/' + x.key
@@ -26,19 +26,28 @@ export class PostService {
         return post;
     }
 
-    async getPostsByUserId(userId: UserId, limit: number, nextOffset: number): Promise<PostsInterface> {
-        const posts = await this.postRepository.getPostsByUserId(userId, limit, nextOffset);
-        console.log(posts)
-        if (!posts || !posts.at(-1)) {
-            return {
-                posts: posts,
-                nextOffset: 0,
-            }
-        }
-        const date = posts.at(-1)?.createdAt
+    async getPostsByUserId(userId: UserId, limit: number, startTime: Date): Promise<PostsInterface> {
+        const posts = await this.postRepository.getPostsByUserId(userId, limit, startTime);
+        const nextOffset = posts.length === 0 ? new Date() : posts[posts.length - 1].createdAt;
+        const hasMore = await this.postRepository.userHasMorePosts(userId, nextOffset)
         return {
             posts: posts,
-            nextOffset: date ? date.getTime() : 0,
+            nextOffset: nextOffset,
+            hasMore: hasMore,
         }
     }
+
+    async getPostsByUsersId(usersId: string[], limit: number, startTime: Date) {
+        const posts = await this.postRepository.getPostsByusersId(usersId, limit, startTime)
+        return posts
+    }
+
+    async getAuthorById(postId: PostId) {
+        const author = await this.postRepository.getAuthorById(postId)
+        if (!author) {
+            throw new NotFoundError('User');
+        }
+        return author;
+    }
+
 }
