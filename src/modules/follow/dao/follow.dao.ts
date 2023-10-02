@@ -10,7 +10,6 @@ export const zodFollowIdDao = z.object({
 
 export const zodFollowRellDao = z.object({
     id: FollowId.zod,
-    interactionId: z.number(),
     followingId: UserId.zod,
     followerId: UserId.zod,
 }).transform((x): followDao => x)
