@@ -3,9 +3,10 @@ import {FollowReqStatus} from "./model/follow.req.status";
 import {BadRequestError, NotFoundError} from "../../utility/http-errors";
 import {followRequestRepository} from "./follow-request.repository";
 import {followService} from "./follow.service";
+import {FollowReqId} from "./model/follow.req.id";
 
 export class followRequestService {
-    constructor(private followReqRepo: followRequestRepository, private followRellService: followService) {
+    constructor(private followReqRepo: followRequestRepository) {
     }
 
     async createFollowRequest(followRequest: createFollowRequest) {
@@ -24,30 +25,8 @@ export class followRequestService {
         return await this.followReqRepo.getFollowRequest(followRequest);
     }
 
-    async followRequestAction(followRequest: FollowRequest, followReqStatus: FollowReqStatus.status) {
-        const followReq = await this.getFollowRequest(followRequest);
-        if (!followReq) {
-            throw new NotFoundError("Request");
-        }
-        if (followReq.status === FollowReqStatus.status.pending) {
-            if (followReqStatus === FollowReqStatus.status.accepted) {
-                await this.followReqRepo.updateFollowRequest(followReq.id, followReqStatus);
-                await this.followRellService.createFollowRelation({
-                    interactionId: followReq.interactionId,
-                    followerId: followReq.followerId,
-                    followingId: followReq.followingId,
-                })
-                return {status: "followed"};
-            }
-            if (followReqStatus === FollowReqStatus.status.rejected) {
-                await this.followReqRepo.updateFollowRequest(followReq.id, followReqStatus);
-                return {status: "rejected"};
-            }
-            if (followReqStatus === FollowReqStatus.status.cancelled) {
-                await this.followReqRepo.updateFollowRequest(followReq.id, followReqStatus);
-                return {status: "cancelled"};
-            }
-        }
-        return {status: "no action"};
+    async updateFollowRequest(followReqId: FollowReqId, followReqStatus: FollowReqStatus.status) {
+        await this.followReqRepo.updateFollowRequest(followReqId, followReqStatus);
+        return {status: "updated"};
     }
 }
