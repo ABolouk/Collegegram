@@ -10,6 +10,7 @@ import {unfollowDtoType} from "./dto/unfollow.dto";
 import {acceptFollowReqType} from "./dto/followreq.accept.dto";
 import {rejectFollowReqType} from "./dto/followreq.reject.dto";
 import {cancellFollowReqType} from "./dto/followreq.cancel.dto";
+import {UserId} from "../user/model/user.id";
 
 export class followService {
     constructor(private followRepo: FollowRepository, private followRequestService: followRequestService, private userService: UserService) {
@@ -37,6 +38,13 @@ export class followService {
             throw new ConflictError("Follow relation");
         }
         if (followingUser.isPrivate) {
+            const followRequest = await this.followRequestService.getFollowRequest({
+                followerUserId: dto.follower,
+                followingUserId: followingUser.id
+            });
+            if (followRequest) {
+                throw new ConflictError("Follow request already exists");
+            }
             return await this.followRequestService.createFollowRequest({
                 followerId: dto.follower,
                 followingId: followingUser.id,
