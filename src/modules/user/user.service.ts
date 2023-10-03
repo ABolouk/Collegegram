@@ -119,6 +119,8 @@ export class UserService {
 
     async getFamilyNameById(id: UserId) {
         const user = await this.getUserById(id)
+        const lastName = user.lastName
+        const firstName = user.firstName
         return { firstName: user.firstName, lastName: user.lastName}
     }
 
