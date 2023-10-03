@@ -1,17 +1,13 @@
 import { UserId } from "../../user/model/user.id";
-import { CommentInterface } from "../comment/model/comment";
-import { CreateTagInterface, TagInterface } from "../tag/model/tag";
-import { PostId } from "./post-id";
-import { PostDao } from "../dao/post.dao";
+import { CreateTagInterface } from "../tag/model/tag";
+import {Tags} from "../tag/dto/tag.dto";
 
 export interface PostInterface {
-  id: PostId;
-  userId: UserId;
   photos: string[];
   description?: string;
-  comments?: CommentInterface[];
-  tags?: TagInterface[];
-  closeFriends: boolean
+  tags?: Tags;
+  closeFriends: boolean;
+  createdAt: Date;
 }
 
 export interface CreatePostInterface {
@@ -23,7 +19,7 @@ export interface CreatePostInterface {
 }
 
 export interface PostsInterface {
-  posts: PostDao[],
+  posts: PostInterface[],
   nextOffset: Date,
   hasMore: boolean,
 }
