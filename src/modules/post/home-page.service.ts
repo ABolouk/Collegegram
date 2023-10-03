@@ -10,7 +10,7 @@ export class HomePageService {
 
   async getHome(dto: homePageDtoType) {
     const followingUsersId = await this.followService.getFollowingsIdByUserId(dto.userId)
-    const listOffollowingUsersId = await Promise.all(followingUsersId.map((x) => x.followingId))
+    const listOffollowingUsersId = followingUsersId.map((x) => x.followingId)
     const result = (await this.postService.getPostsByUsersId(listOffollowingUsersId, dto.limit, dto.startTime))
     const posts = result.posts
     const homePagePosts = await Promise.all(posts.map(async (x) => ({ id: x.id, familyName: await this.userService.getFamilyNameById(x.userId), userName: (await this.userService.getUserById(x.userId)).username ,tags: x.tags, photos: x.photos })))
