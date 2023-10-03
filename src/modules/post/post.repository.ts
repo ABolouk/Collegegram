@@ -25,8 +25,8 @@ export class PostRepository {
         return post ? CreatePostDao(post) : null;
     }
 
-    async getPostsByUserId(userId: UserId, limit: number, startTime: Date): Promise<PostDao[]> {
-        const posts = await this.postRepo.find({
+    async getPostsByUserId(userId: UserId, limit: number, startTime: Date): Promise<[PostDao[], boolean]> {
+        const [posts, count] = await this.postRepo.findAndCount({
             relations: ['tags'],
             where: {
                 userId: userId as UserId,
@@ -35,7 +35,8 @@ export class PostRepository {
             order: { createdAt: 'desc' },
             take: limit,
         });
-        return posts.map(x => CreatePostDao(x))
+        const hasMore = (count - limit) > 0;
+        return [posts.map(x => CreatePostDao(x)), hasMore]
     }
 
     async getPostsByusersId(usersId: string[], limit: number, startTime: Date) {
@@ -82,13 +83,6 @@ export class PostRepository {
             )
             return CreatePostDao(newPost);
         })
-    }
-
-    async userHasMorePosts(userId: UserId, startTime: Date): Promise<boolean> {
-        const posts = await this.postRepo.find(
-            {where: {userId: userId, createdAt: LessThan(startTime)}}
-        )
-        return posts.length !== 0;
     }
 
     async getAuthorById(postId: PostId): Promise<UserId | null> {

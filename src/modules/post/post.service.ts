@@ -27,9 +27,8 @@ export class PostService {
     }
 
     async getPostsByUserId(userId: UserId, limit: number, startTime: Date): Promise<PostsInterface> {
-        const posts = await this.postRepository.getPostsByUserId(userId, limit, startTime);
+        const [posts, hasMore] = await this.postRepository.getPostsByUserId(userId, limit, startTime);
         const nextOffset = posts.length === 0 ? new Date() : posts[posts.length - 1].createdAt;
-        const hasMore = await this.postRepository.userHasMorePosts(userId, nextOffset)
         return {
             posts: posts,
             nextOffset: nextOffset,
