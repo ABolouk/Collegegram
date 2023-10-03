@@ -1,5 +1,5 @@
-import { Brand } from "../../../utility/brand";
 import { z } from "zod";
+import { Brand } from "../../../utility/brand";
 
 export const LikeNotification = "LikeNotification";
 export type LikeNotificationType = Brand<string, 'Like Notification'>;

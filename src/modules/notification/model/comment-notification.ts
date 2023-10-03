@@ -1,5 +1,5 @@
-import { Brand } from "../../../utility/brand";
 import { z } from "zod";
+import { Brand } from "../../../utility/brand";
 
 export const CommentNotification = "CommentNotification";
 export type CommentNotificationType = Brand<string, 'Comment Notification'>;

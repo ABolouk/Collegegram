@@ -1,5 +1,5 @@
-import {Brand} from "../../../utility/brand";
-import {z} from "zod";
+import { z } from "zod";
+import { Brand } from "../../../utility/brand";
 
 export const FollowRequestPendingNotification = "FollowRequestPendingNotification";
 export type FollowRequestPendingNotificationType = Brand<string, 'Follow Request Pending Notification'>;
