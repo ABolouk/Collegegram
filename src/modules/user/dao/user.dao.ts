@@ -4,8 +4,7 @@ import {UserId} from "../model/user.id";
 import {UserName} from "../model/user.username";
 import {z} from "zod";
 import {HashedPassword} from "../../../utility/password-utils";
-import {isFirstName} from "../model/user.firstName";
-import {zodFirstName} from "../model/user.firstName";
+import { FirstName } from "../model/user.firstName";
 import {zodLastName} from "../model/user.lastName";
 import {WholeNumber} from "../../../data/whole-number";
 
@@ -19,7 +18,7 @@ export const zodUserDao = z
         password: HashedPassword.zod,
         postCount: WholeNumber.zod,
         bio: z.coerce.string(),
-        firstName: z.nullable(zodFirstName),
+        firstName: z.nullable(FirstName.zod),
         lastName: z.nullable(zodLastName),
         avatar: z.coerce.string(),
         isPrivate: z.boolean()
