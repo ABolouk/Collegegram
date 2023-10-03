@@ -59,7 +59,7 @@ export class UserRepository {
 
 	//FIXME: this is not a good way to do this
 	async updateUser(userId: UserId, user: updateUser) {
-		this.userRepo.update({ id: userId }, user)
+		await this.userRepo.update({ id: userId }, user)
 	}
 
 	createUser(user: createUserInterface){
