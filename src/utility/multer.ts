@@ -2,23 +2,6 @@ import multer from 'multer';
 import * as minio from 'minio';
 import multerMinIOStorage from 'multer-minio-storage';
 
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => {
-        cb(null, './media')
-    },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + "-" + req.user.username + "-" + file.originalname)
-    }
-})
-export const upload = multer({ storage: storage })
-
-const multipleStorage = multer.diskStorage({
-    destination: (req, file, cb) => { cb(null, './media' + '/posts/' + req.user.id) },
-    filename: (req, file, cb) => {
-        cb(null, Date.now() + "-" + req.user.username + "-" + file.originalname);
-    }
-})
-export const uploadMultiple = multer({ storage: multipleStorage });
 
 const minioClient = new minio.Client({
     endPoint: 'collegegrammedia.darkube.app',
@@ -37,4 +20,19 @@ const minIOStorage = multerMinIOStorage({
     }
 })
 
-export const uploadMinIO = multer({storage : minIOStorage})
+export const uploadMinIO = multer({storage: minIOStorage})
+
+const minIOAvatarStorage = multerMinIOStorage({
+    minioClient: minioClient,
+    bucket: 'collegegram-avatars',
+    metadata: function (req, file, cb) {
+        cb(null, {fieldName: file.fieldname});
+    },
+    key: function (req, file, cb) {
+        cb(null, Date.now().toString() + '-' + file.originalname)
+    }
+})
+
+
+export const uploadAvatarMinIO = multer({storage: minIOAvatarStorage})
+

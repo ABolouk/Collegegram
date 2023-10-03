@@ -17,7 +17,7 @@ export interface User {
     bio: string | null
     firstName: string | null;
     lastName: string | null
-    avatar: string | null;
+    avatar: string;
     isPrivate: boolean;
 }
 

@@ -17,8 +17,8 @@ import {followRequestService} from "./modules/follow/follow.request.service";
 import {followService} from "./modules/follow/follow.service";
 import {JwtService} from "./modules/jwt/jwt.service";
 import cors from 'cors'
-import {UserInteractionRepository} from "./modules/user-interaction/user-interaction.repository";
-import {USerInteractionService} from "./modules/user-interaction/user-interaction.service";
+import {LikeRepository} from "./modules/post/like/like.repository";
+import {LikeService} from "./modules/post/like/like.service";
 import { HomePageService } from "./modules/post/home-page.service";
 
 
@@ -32,22 +32,22 @@ export const makeApp = (dataSource: DataSource) => {
     const userRepo = new UserRepository(dataSource);
     const sessionRepo = new sessionRepository(dataSource);
     const jwtService = new JwtService(sessionRepo);
-    const userInteractionRepo = new UserInteractionRepository(dataSource);
     const followRepo = new FollowRepository(dataSource);
     const followReqRepo = new followRequestRepository(dataSource);
-    const userInteractionService = new USerInteractionService(userInteractionRepo);
-    const followRellService = new followService(followRepo);
-    const followReqService = new followRequestService(followReqRepo, followRellService);
     const emailService = new EmailService()
-    const userService = new UserService(userRepo, sessionRepo, emailService, userInteractionService, followReqService, followRellService);
-    app.use("/user", makeUserRouter(userService, jwtService));
+    const userService = new UserService(userRepo, sessionRepo, emailService);
+    const followReqService = new followRequestService(followReqRepo);
+    const followRellService = new followService(followRepo, followReqService, userService);
+    app.use("/user", makeUserRouter(userService, jwtService, followRellService));
 
     const postRepo = new PostRepository(dataSource);
     const postService = new PostService(postRepo);
     const commentRepo = new CommentRepository(dataSource);
     const commentService = new CommentService(commentRepo, postService);
-    const homePageService = new HomePageService(postService, userService, followRellService)
-    app.use("/post", makePostRouter(userService, postService, commentService, homePageService));
+    const homePageService = new HomePageService(postService, userService);
+    const likeRepo = new LikeRepository(dataSource);
+    const likeService = new LikeService(likeRepo, postService, userService, followRellService);
+    app.use("/post", makePostRouter(userService, postService, commentService, homePageService,likeService));
 
     app.use((req, res, next) => {
         next();

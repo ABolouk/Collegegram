@@ -91,4 +91,9 @@ export class PostRepository {
         )
         return posts.length !== 0;
     }
+
+    async getAuthorById(postId: PostId): Promise<UserId | null> {
+        const post = await this.postRepo.findOne({where: {id: postId}})
+        return post ? post.userId : null
+    }
 }
