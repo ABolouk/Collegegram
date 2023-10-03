@@ -1,11 +1,11 @@
 import { z } from "zod";
-import { CommentNotificationType } from "./comment.notification.type";
-import { LikeNotificationType } from "./like.notification.type";
-import { FollowNotificationType } from "./follow.notification.type";
+import { CommentNotificationType } from "./comment-notification";
+import { LikeNotificationType } from "./like-notification";
+import { FollowNotificationType } from "./follow-notification";
 import {
     FollowRequestAcceptedNotificationType,
     FollowRequestPendingNotificationType
-} from "./follow.request.notification.type";
+} from "./follow-request-notification";
 
 const allNotificationTypes = [
     CommentNotificationType,
