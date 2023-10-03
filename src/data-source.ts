@@ -9,6 +9,7 @@ import { TagEntity } from "./modules/post/tag/entity/tag.entity";
 import { BlockEntity } from "./modules/block/entity/block.entity";
 import { FollowEntity } from "./modules/follow/entity/follow.entity";
 import { FollowRequestEntity } from "./modules/follow/entity/follow-request.entity";
+import {LikeEntity} from "./modules/post/like/entity/like.entity";
 
 export const AppDataSource = new DataSource({
     url: process.env.DB_URL,
