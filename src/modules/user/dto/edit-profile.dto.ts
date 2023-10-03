@@ -1,13 +1,13 @@
 import { z } from 'zod';
 import { Email } from '../model/user.email';
-import { zodLastName } from '../model/user.lastName';
+import { LastName } from '../model/user.lastName';
 import { Password } from '../../../utility/password-utils';
 import { FirstName } from '../model/user.firstName';
 
 export const editProfile = z.object({
     email: Email.zod,
     firstName: FirstName.zod,
-    lastName: zodLastName,
+    lastName: LastName.zod,
     password: Password.zod,
     confirmPassword: Password.zod,
     isPrivate: z.coerce.boolean(),

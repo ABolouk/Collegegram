@@ -2,7 +2,7 @@ import { Email } from './user.email';
 import { UserId } from "./user.id";
 import { UserName } from "./user.username";
 import { FirstName } from './user.firstName';
-import { lastName } from './user.lastName';
+import { LastName } from './user.lastName';
 import { HashedPassword } from '../../../utility/password-utils';
 import { WholeNumber } from "../../../data/whole-number";
 
@@ -33,7 +33,7 @@ export interface updateUser {
     email: Email;
     password: string;
     firstName: FirstName;
-    lastName: lastName;
+    lastName: LastName;
     avatar: string;
     bio: string;
     isPrivate: boolean;

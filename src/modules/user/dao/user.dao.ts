@@ -1,12 +1,12 @@
-import {User} from "../model/user";
-import {Email} from "../model/user.email";
-import {UserId} from "../model/user.id";
-import {UserName} from "../model/user.username";
-import {z} from "zod";
-import {HashedPassword} from "../../../utility/password-utils";
+import { User } from "../model/user";
+import { Email } from "../model/user.email";
+import { UserId } from "../model/user.id";
+import { UserName } from "../model/user.username";
+import { z } from "zod";
+import { HashedPassword } from "../../../utility/password-utils";
 import { FirstName } from "../model/user.firstName";
-import {zodLastName} from "../model/user.lastName";
-import {WholeNumber} from "../../../data/whole-number";
+import { LastName } from "../model/user.lastName";
+import { WholeNumber } from "../../../data/whole-number";
 
 // Zod Dao:
 
@@ -19,7 +19,7 @@ export const zodUserDao = z
         postCount: WholeNumber.zod,
         bio: z.coerce.string(),
         firstName: z.nullable(FirstName.zod),
-        lastName: z.nullable(zodLastName),
+        lastName: z.nullable(LastName.zod),
         avatar: z.coerce.string(),
         isPrivate: z.boolean()
 
