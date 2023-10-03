@@ -31,4 +31,9 @@ export class followRequestRepository {
         return {status: "updated"};
     }
 
+    async deleteFollowRequest(followReqId: FollowReqId) {
+        await this.followRequestRepo.delete({id: followReqId});
+        return {status: "deleted"};
+    }
+
 }
