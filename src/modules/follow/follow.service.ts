@@ -137,4 +137,8 @@ export class followService {
         return {status: "no action"};
     }
 
+
+    async getFollowingsIdByUserId(userId: UserId) {
+        return this.followRepo.getFollowingsIdByUserId(userId)
+    }
 }

@@ -38,8 +38,8 @@ export class PostRepository {
         return posts.map(x => CreatePostDao(x))
     }
 
-    async getPostsByusersId(usersId: string[], limit: number, startTime: Date) {
-        const posts = await this.postRepo.find({
+    async getPostsByusersId(usersId: UserId[], limit: number, startTime: Date) {
+        const [posts, count] = await this.postRepo.findAndCount({
             relations: ["tags"],
             where: {
                 userId: In(usersId),
@@ -49,7 +49,8 @@ export class PostRepository {
             take: limit,
         })
         const homePagePosts = zodHomePagePostsDao.parse(posts)
-        return homePagePosts
+        const hasMore = count > limit
+        return {homePagePosts, hasMore}
     }
 
     async createPost(post: CreatePostInterface): Promise<PostDao> {
