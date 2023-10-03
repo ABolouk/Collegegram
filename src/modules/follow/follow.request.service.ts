@@ -29,4 +29,9 @@ export class followRequestService {
         await this.followReqRepo.updateFollowRequest(followReqId, followReqStatus);
         return {status: "updated"};
     }
+
+    async deleteFollowRequestById(followReqId: FollowReqId) {
+        await this.followReqRepo.deleteFollowRequest(followReqId);
+        return {status: "deleted"};
+    }
 }
