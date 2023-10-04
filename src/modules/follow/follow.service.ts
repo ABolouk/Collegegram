@@ -11,10 +11,12 @@ import {acceptFollowReqType} from "./dto/followreq.accept.dto";
 import {rejectFollowReqType} from "./dto/followreq.reject.dto";
 import {cancellFollowReqType} from "./dto/followreq.cancel.dto";
 import {UserId} from "../user/model/user.id";
+import { blockEventEmmmiter } from "../../utility/event-handling";
+
 
 export class followService {
     constructor(private followRepo: FollowRepository, private followRequestService: followRequestService, private userService: UserService) {
-        //TODO: Handle Events
+            blockEventEmmmiter.on("block", (x, y) => this.deleteFollowRelation({followerId: x, followingId: y}))
     }
 
     async getFollowRelation(followRelation: Follow) {
@@ -55,12 +57,12 @@ export class followService {
             followerId: dto.follower,
             followingId: followingUser.id
         });
-        return {status: "followed"};
+        return { status: "followed" };
     }
 
     async deleteFollowRelation(followRelation: Follow) {
         await this.followRepo.deleteFollowRelation(followRelation);
-        return {status: "unfollowed"};
+        return { status: "unfollowed" };
     }
 
     async unfollow(dto: unfollowDtoType) {

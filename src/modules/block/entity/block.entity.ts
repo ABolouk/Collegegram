@@ -1,19 +1,23 @@
-import { CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm"
 import { UserId } from "../../user/model/user.id";
 import { UserEntity } from "../../user/entity/user.entity";
 
 @Entity("block")
 export class BlockEntity{
   @PrimaryGeneratedColumn()
-  id!: UserId;
+  id!: number;
+
+  @Column()
+  userId!: UserId;
+    
+  @ManyToOne(() => UserEntity)
+  user!: UserEntity;
+
+  @Column()
+  blockedUserId!: UserId;
 
   @ManyToOne(() => UserEntity)
-  @JoinColumn()
-  userId!: string
-
-  @ManyToOne(() => UserEntity)
-  @JoinColumn()
-  blockedUserId!: string
+  blockedUser!: UserEntity;
 
   @CreateDateColumn()
   createdAt!: Date;
