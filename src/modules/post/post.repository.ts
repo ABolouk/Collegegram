@@ -9,11 +9,15 @@ import { CreatePostInterface, PostInterface } from "./model/post";
 import { TagEntity } from "./tag/entity/tag.entity";
 import { CreateTagInterface } from "./tag/model/tag";
 import { LessThan, In } from "typeorm";
+import { EditPostDto } from "./dto/edit-post.dto";
+import { zodTagDao } from "./tag/dao/tag.dao";
 
 export class PostRepository {
     private postRepo: Repository<PostEntity>;
+    private tagRepo: Repository<TagEntity>;
     constructor(private appDataSource: DataSource) {
         this.postRepo = appDataSource.getRepository(PostEntity);
+        this.tagRepo = appDataSource.getRepository(TagEntity);
     }
 
     async getPostById(id: PostId): Promise<PostInterface | null> {
@@ -57,18 +61,7 @@ export class PostRepository {
             const postRepo = manager.getRepository(PostEntity);
             const userRepo = manager.getRepository(UserEntity);
             const tagRepo = manager.getRepository(TagEntity);
-            const createNewTag = async (element: CreateTagInterface) => {
-                const existingTag = await tagRepo.findOneBy({ title: element.title });
-                if (!existingTag) {
-                    return await tagRepo.save({
-                        title: element.title,
-                        color: element.color,
-                    }) as TagEntity
-                } else {
-                    return existingTag
-                }
-            }
-            const createdTags = post.tags ? await Promise.all(post.tags.map(createNewTag)) : []
+            const createdTags = post.tags ? await Promise.all(post.tags.map(this.createOrGetTag)) : []
             const newPost = await postRepo.save({
                 userId: post.userId,
                 photos: post.photos,
@@ -84,6 +77,18 @@ export class PostRepository {
         })
     }
 
+    private async createOrGetTag(element: CreateTagInterface): Promise<TagEntity> {
+        const existingTag = await this.tagRepo.findOneBy({ title: element.title });
+        if (!existingTag) {
+            return await this.tagRepo.save({
+                title: element.title,
+                color: element.color,
+            }) as TagEntity
+        } else {
+            return existingTag
+        }
+    }
+
     async userHasMorePosts(userId: UserId, startTime: Date): Promise<boolean> {
         const posts = await this.postRepo.find(
             {where: {userId: userId, createdAt: LessThan(startTime)}}
@@ -94,5 +99,23 @@ export class PostRepository {
     async getAuthorById(postId: PostId): Promise<UserId | null> {
         const post = await this.postRepo.findOne({where: {id: postId}})
         return post ? post.userId : null
+    }
+
+    async editPostById(postId: PostId, dto: EditPostDto): Promise<PostInterface> {
+        const tags = await Promise.all(
+            dto.tags
+                .map(tag => (
+                    this.createOrGetTag(zodTagDao.parse({ title: tag.title, color:tag.color }))
+                ))
+        )
+        const post = await this.postRepo.save(
+            {
+                id: postId,
+                description: dto.description,
+                tags: tags,
+                closeFriends: dto.closeFriend,
+            }
+        )
+        return zodPostDao.parse(post)
     }
 }
