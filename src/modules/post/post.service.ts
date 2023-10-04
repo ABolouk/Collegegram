@@ -1,10 +1,11 @@
-import {NotFoundError} from "../../utility/http-errors";
-import {UserId} from "../user/model/user.id";
-import {CreatePostDtoType} from "./dto/create-post.dto";
-import {PostId} from "./model/post-id";
-import {PostRepository} from "./post.repository";
-import {PostsInterface} from "./model/post";
-import {User} from "../user/model/user";
+import { NotFoundError } from "../../utility/http-errors";
+import { UserId } from "../user/model/user.id";
+import { CreatePostDtoType } from "./dto/create-post.dto";
+import { PostId } from "./model/post-id";
+import { PostRepository } from "./post.repository";
+import { PostInterface, PostsInterface } from "./model/post";
+import { User } from "../user/model/user";
+import { EditPostDto } from "./dto/edit-post.dto";
 
 export class PostService {
     constructor(private postRepository: PostRepository) {
@@ -16,6 +17,14 @@ export class PostService {
             x => 'https://collegegrammedia.darkube.app/mediacollegegram/' + x.key
         )
         return await this.postRepository.createPost({...dto, photos: photosPath, userId: loggedInUser.id});
+    }
+
+    async editPostById(postId: PostId, dto: EditPostDto): Promise<PostInterface> {
+        const post = await this.postRepository.getPostById(postId)
+        if (!post) {
+            throw new NotFoundError('Post');
+        }
+        return await this.postRepository.editPostById(postId, dto)
     }
 
     async getPostById(postId: PostId) {
