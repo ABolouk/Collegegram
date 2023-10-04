@@ -4,6 +4,7 @@ import {BadRequestError, NotFoundError} from "../../utility/http-errors";
 import {followRequestRepository} from "./follow-request.repository";
 import {followService} from "./follow.service";
 import {FollowReqId} from "./model/follow.req.id";
+import {FollowRequestEntity} from "./entity/follow-request.entity";
 
 export class followRequestService {
     constructor(private followReqRepo: followRequestRepository) {
@@ -30,8 +31,16 @@ export class followRequestService {
         return {status: "updated"};
     }
 
-    async deleteFollowRequestById(followReqId: FollowReqId) {
-        await this.followReqRepo.deleteFollowRequest(followReqId);
+    async deleteFollowRequest(followRequest: FollowRequestEntity[]) {
+        if (!followRequest) {
+            throw new NotFoundError("Request");
+        }
+        await this.followReqRepo.deleteFollowRequest(followRequest);
         return {status: "deleted"};
     }
+
+    async getFollowRequestInTwoWay(followRequest: FollowRequest) {
+        return await this.followReqRepo.getFollowRequestInTwoWay(followRequest);
+    }
+
 }

@@ -31,9 +31,26 @@ export class followRequestRepository {
         return {status: "updated"};
     }
 
-    async deleteFollowRequest(followReqId: FollowReqId) {
-        await this.followRequestRepo.delete({id: followReqId});
+    async deleteFollowRequest(followRequest: FollowRequestEntity[]) {
+        await this.followRequestRepo.delete(followRequest.map((x) => x.id));
         return {status: "deleted"};
     }
 
+    async getFollowRequestInTwoWay(followRequest: FollowRequest): Promise<FollowRequestEntity[] | null> {
+        return this.followRequestRepo.find(
+            {
+                where: [
+                    {
+                        followerId: followRequest.followerUserId,
+                        followingId: followRequest.followingUserId,
+                    }
+                    ,
+                    {
+                        followerId: followRequest.followingUserId,
+                        followingId: followRequest.followerUserId,
+                    }
+                ]
+            }
+        )
+    }
 }

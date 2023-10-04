@@ -2,7 +2,7 @@ import {DataSource, Repository} from "typeorm";
 import {FollowEntity} from "./entity/follow.entity";
 import {Follow, createFollowRelation, followDao, followIdDao} from './model/follow';
 import {zodFollowIdDao, zodFollowRellDao} from "./dao/follow.dao";
-import {z} from "zod";
+import {map, z} from "zod";
 
 
 import {UserEntity} from "../user/entity/user.entity";
@@ -40,6 +40,24 @@ export class FollowRepository {
             followerId: followRelation.followerId,
             followingId: followRelation.followingId,
         }).then((x) => z.nullable(zodFollowRellDao).parse(x));
+    }
+
+    async getFollowRelInTwoWay(followRelation: Follow): Promise<followDao[] | null> {
+        return this.followRepo.find(
+            {
+                where: [
+                    {
+                        followerId: followRelation.followerId,
+                        followingId: followRelation.followingId,
+                    }
+                    ,
+                    {
+                        followerId: followRelation.followingId,
+                        followingId: followRelation.followerId,
+                    }
+                ]
+            }
+        ).then((x) => z.array(zodFollowRellDao).parse(x));
     }
 
     async deleteFollowRelation(followRelation: Follow) {

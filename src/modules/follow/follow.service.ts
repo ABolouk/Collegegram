@@ -137,33 +137,22 @@ export class followService {
     }
 
     async blockAction(dto: { blockerId: UserId, blockedId: UserId }) {
-        const followRelation1 = await this.getFollowRelation({
+        const followRelation = await this.followRepo.getFollowRelInTwoWay({
             followerId: dto.blockerId,
             followingId: dto.blockedId
         });
-        if (followRelation1) {
-            await this.followRepo.deleteFollowRelation(followRelation1);
+        if (followRelation) {
+            await this.followRepo.deleteFollowRelation({
+                followerId: dto.blockerId,
+                followingId: dto.blockedId
+            })
         }
-        const followRelation2 = await this.getFollowRelation({
-            followerId: dto.blockedId,
-            followingId: dto.blockerId
-        });
-        if (followRelation2) {
-            await this.followRepo.deleteFollowRelation(followRelation2);
-        }
-        const followRequest1 = await this.followRequestService.getFollowRequest({
+        const followRequest = await this.followRequestService.getFollowRequestInTwoWay({
             followerUserId: dto.blockerId,
             followingUserId: dto.blockedId
         });
-        if (followRequest1) {
-            await this.followRequestService.deleteFollowRequestById(followRequest1.id);
-        }
-        const followRequest2 = await this.followRequestService.getFollowRequest({
-            followerUserId: dto.blockedId,
-            followingUserId: dto.blockerId
-        });
-        if (followRequest2) {
-            await this.followRequestService.deleteFollowRequestById(followRequest2.id);
+        if (followRequest) {
+            await this.followRequestService.deleteFollowRequest(followRequest)
         }
         return {status: "blocked"};
     }
