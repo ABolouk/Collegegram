@@ -14,6 +14,7 @@ import {likeDto} from "../modules/post/like/dto/like.dto";
 import {LikeService} from "../modules/post/like/like.service";
 import {homePageDto} from "../modules/post/dto/home-page.dto";
 import {HomePageService} from "../modules/post/home-page.service";
+import {editPostDto} from "../modules/post/dto/edit-post.dto";
 
 export const makePostRouter = (userService: UserService, postService: PostService, commentService: CommentService, homePageService: HomePageService, likeService: LikeService) => {
     const app = Router();
@@ -41,6 +42,12 @@ export const makePostRouter = (userService: UserService, postService: PostServic
     app.get("/:id", loginMiddle(userService), (req, res) => {
         const {id} = getPostIdDto.parse(req.params);
         handleExpresss(res, () => postService.getPostById(id));
+    });
+
+    app.put("/:id", loginMiddle(userService), (req, res) => {
+        const {id} = getPostIdDto.parse(req.params);
+        const dto = editPostDto.parse(req.body);
+        handleExpresss(res, () => postService.editPostById(id, dto));
     });
 
     app.post("/:id/comment", loginMiddle(userService), (req, res) => {
