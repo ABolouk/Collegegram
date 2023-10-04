@@ -1,4 +1,3 @@
-import { createConnection } from "net";
 import { makeApp } from "./api";
 import { AppDataSource } from "./data-source"
 import { User } from "./modules/user/model/user";
@@ -7,6 +6,12 @@ declare global {
 	namespace Express {
 		interface Request {
 			user: User;
+		}
+		namespace Multer {
+			/** Object containing file metadata and access information. */
+			interface File {
+				key: string,
+			}
 		}
 	}
 }

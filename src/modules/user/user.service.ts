@@ -17,22 +17,19 @@ import { Password } from '../../utility/password-utils';
 import { randomBytes } from 'crypto';
 import { UserId } from './model/user.id';
 import { EditProfileType } from "./dto/edit-profile.dto";
-import { UserAuth } from "./model/user.auth"
-import { loginUserInterface } from "./model/user";
-import { followDtoType } from '../follow/dto/follow.dto';
-import { FollowReqStatus } from '../follow/model/follow.req.status';
+import { UserAuth } from "./model/user.auth";
 import { followRequestService } from "../follow/follow.request.service";
 import { followService } from "../follow/follow.service";
 import { UserName } from "./model/user.username";
-import { USerInteractionService } from "../user-interaction/user-interaction.service";
 import { BlockDtoType } from "../block/dto/block.dto";
 import { BlockService } from "../block/block.service";
 import { BlockRelationInterface, UnblockRelationInterface } from "../block/model/block";
+import { GetUserDtoType } from "./dto/get.user.dto";
+import { User } from "./model/user";
 
 export class UserService {
     constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService,
-        private userInteractionService: USerInteractionService,
-        private followReqService: followRequestService, private followRellService: followService, private blockService: BlockService) {
+                private blockService: BlockService) {
     }
 
     async login(loginDto: LoginDtoType) {
@@ -45,11 +42,11 @@ export class UserService {
         if (!passwordsMatch) {
             throw new UnauthorizedError();
         }
-        const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "5m" })
+        const accessToken = jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET as string, {expiresIn: "5m"})
         const refreshToken = randomBytes(64).toString('hex')
         const time = loginDto.rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
         await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
-        return { user, accessToken, refreshToken };
+        return {accessToken, refreshToken};
     }
 
     async findById(id: UserId) {
@@ -95,11 +92,54 @@ export class UserService {
         };
 
         await this.userRepository.createUser(user);
-
-        return { success: true };
+        const accessToken = jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET as string, {expiresIn: "5m"})
+        const refreshToken = randomBytes(64).toString('hex')
+        return {accessToken, refreshToken};
     }
 
-    async forgetPassword({ authenticator }: ForgetPasswordDto) {
+    async getUserProfile(dto: GetUserDtoType, userId: UserId) {
+        const user = await this.userRepository.findByEmailOrUsername(dto.userName);
+        if (!user) {
+            throw new NotFoundError("User")
+        }
+        if (user.id !== userId) {
+            return {
+                username: user.username,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                postCount: user.postCount,
+                avatar: user.avatar,
+                bio: user.bio,
+                isPrivate: user.isPrivate
+            }
+        }
+
+        return new BadRequestError("You can not see your profile");
+    }
+
+    async getFamilyNameById(id: UserId) {
+        const user = await this.getUserById(id)
+        return {firstName: user.firstName, lastName: user.lastName}
+    }
+
+    async getUser(userId: UserId) {
+        const user = await this.userRepository.findById(userId);
+        if (!user) {
+            throw new NotFoundError("User")
+        }
+        return {
+            email: user.email,
+            username: user.username,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            postCount: user.postCount,
+            avatar: user.avatar,
+            bio: user.bio,
+            isPrivate: user.isPrivate
+        }
+    }
+
+    async forgetPassword({authenticator}: ForgetPasswordDto) {
         if (!UserAuth.is(authenticator)) {
             throw new UnauthorizedError();
         }
@@ -141,6 +181,14 @@ export class UserService {
         return user;
     }
 
+    async getUserByUsername(username: UserName) {
+        const user = await this.userRepository.findByEmailOrUsername(username);
+        if (!user) {
+            throw new NotFoundError('User');
+        }
+        return user;
+    }
+
     async resetPassword(userId: string, token: string, password1: Password, password2: Password) { //DTO behtar nist??
 
         if (!UserId.is(userId)) {
@@ -149,7 +197,7 @@ export class UserService {
 
         const user = await this.getUserById(userId);
 
-        const secret = createOneTimeLinkSecret(user as loginUserInterface) //????
+        const secret = createOneTimeLinkSecret(user as User) //????
         const payload = jwt.verify(token, secret) as PayloadType
 
         if (payload.userId !== user.id) {
@@ -161,7 +209,7 @@ export class UserService {
         }
 
         this.userRepository.updatePasswordById(user.id, await Password.makeHashed(password1)); //???
-        return { success: true };
+        return {success: true};
     }
 
     async updateUserInfo(userId: UserId, editInfo: EditProfileType, file?: Express.Multer.File) {
@@ -175,14 +223,14 @@ export class UserService {
             throw new NotFoundError('User');
         }
         ;
-        const { confirmPassword, ...updateUserInfo } = {
+        const {confirmPassword, ...updateUserInfo} = {
             ...editInfo,
-            avatar: file ? file.path : "default path",
+            avatar: file ? "https://collegegrammedia.darkube.app/collegegram-avatars/" + file.key : user.avatar,
             password: await editPass
         };
 
         await this.userRepository.updateUser(user.id, updateUserInfo);
-        return await this.getUserById(userId);
+        return await this.getUser(userId);
     }
 
     async getUserIdByUserName(username: UserName) {
@@ -191,85 +239,6 @@ export class UserService {
             return null
         }
         return user.id
-    }
-
-    async follow(dto: followDtoType, userId: UserId) {
-        const followingUser = await this.userRepository.findByEmailOrUsername(dto.UserName);
-        if (!followingUser) {
-            throw new NotFoundError("User")
-        }
-        let userInteraction = await this.userInteractionService.getInteraction({
-            userId1: userId,
-            userId2: followingUser.id
-        })
-        if (!userInteraction) {
-            userInteraction = await this.userInteractionService.createUserInteraction({
-                userId1: userId,
-                userId2: followingUser.id
-            })
-        }
-        if (followingUser.isPrivate) {
-            return await this.followReqService.createFollowRequest({
-                interactionId: userInteraction.id,
-                followerId: userId,
-                followingId: followingUser.id,
-                status: FollowReqStatus.status.pending
-            })
-        }
-        return await this.followRellService.createFollowRelation({
-            interactionId: userInteraction.id,
-            followerId: userId,
-            followingId: followingUser.id
-        })
-    }
-
-    async unfollow(dto: followDtoType, followerId: UserId) {
-        const followingUser = await this.userRepository.findByEmailOrUsername(dto.UserName);
-        if (!followingUser) {
-            throw new NotFoundError("User")
-        }
-
-        if (!(await this.followRellService.getFollowRelation({
-            followerId: followerId,
-            followingId: followingUser.id
-        }))) {
-            throw new ConflictError("You are not following this user")
-        }
-
-        return this.followRellService.deleteFollowRelation({ followerId: followerId, followingId: followingUser.id })
-    }
-
-    async acceptFollowRequest(dto: followDtoType, followingId: UserId) {
-        const followerUser = await this.userRepository.findByEmailOrUsername(dto.UserName);
-        if (!followerUser) {
-            throw new NotFoundError("User")
-        }
-        return await this.followReqService.followRequestAction({
-            followerUserId: followerUser.id,
-            followingUserId: followingId
-        }, FollowReqStatus.status.accepted)
-    }
-
-    async rejectFollowRequest(dto: followDtoType, followingId: UserId) {
-        const followerUser = await this.userRepository.findByEmailOrUsername(dto.UserName);
-        if (!followerUser) {
-            throw new NotFoundError("User")
-        }
-        return await this.followReqService.followRequestAction({
-            followerUserId: followerUser.id,
-            followingUserId: followingId
-        }, FollowReqStatus.status.rejected)
-    }
-
-    async cancelFollowRequest(dto: followDtoType, followerId: UserId) {
-        const followingUser = await this.userRepository.findByEmailOrUsername(dto.UserName);
-        if (!followingUser) {
-            throw new NotFoundError("User")
-        }
-        return await this.followReqService.followRequestAction({
-            followerUserId: followerId,
-            followingUserId: followingUser.id
-        }, FollowReqStatus.status.cancelled)
     }
 
     async block(dto: BlockDtoType) {
@@ -281,7 +250,6 @@ export class UserService {
             userId: dto.userId,
             blockedUserId: blockedUser.id
         }
-
         return await this.blockService.block(blockrelation)
     }
 
@@ -294,8 +262,6 @@ export class UserService {
             userId: dto.userId,
             blockedUserId: unBlockedUser.id
         }
-
         return await this.blockService.unblock(unblockrelation)
-
     }
 }

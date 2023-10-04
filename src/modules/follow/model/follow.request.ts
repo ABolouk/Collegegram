@@ -11,7 +11,6 @@ export interface FollowRequest {
 }
 
 export interface createFollowRequest {
-    interactionId: number;
     followerId: UserId;
     followingId: UserId;
     status: FollowReqStatus.status;
@@ -23,7 +22,6 @@ export interface followReqIdDao {
 
 export interface followReqDao {
     id: FollowReqId;
-    interactionId: number;
     followerId: UserId;
     followingId: UserId;
     status: FollowReqStatus;

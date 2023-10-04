@@ -8,7 +8,6 @@ export interface Follow {
 }
 
 export interface createFollowRelation {
-    interactionId: number;
     followerId: UserId;
     followingId: UserId;
 }
@@ -19,7 +18,13 @@ export interface followIdDao{
 
 export interface followDao {
     id: FollowId;
-    interactionId: number;
     followerId: UserId;
     followingId: UserId;
 }
+
+export interface FollowingId {
+    followingId: UserId
+}
+
+export type UserFollowingsId = FollowingId[]
+

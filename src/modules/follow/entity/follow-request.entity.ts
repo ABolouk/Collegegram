@@ -11,7 +11,6 @@ import {UserId} from "../../user/model/user.id";
 import {FollowReqId} from "../model/follow.req.id";
 import {FollowReqStatus} from "../model/follow.req.status";
 import {UserEntity} from "../../user/entity/user.entity";
-import {UserInteractionEntity} from "../../user-interaction/entity/user-interaction";
 
 @Entity("follow requset")
 export class FollowRequestEntity {
@@ -19,23 +18,16 @@ export class FollowRequestEntity {
     id!: FollowReqId;
 
     @Column()
-    interactionId!: number;
-
-    @ManyToOne(() => UserInteractionEntity, {onDelete: "CASCADE"})
-    interaction!: UserInteractionEntity;
-
-
-    @Column()
     followerId!: UserId;
 
-    @ManyToOne(() => UserEntity)
-    user!: UserEntity;
+    @ManyToOne(() => UserEntity, {onDelete: "CASCADE"})
+    follower!: UserEntity;
 
     @Column()
     followingId!: UserId;
 
-    @ManyToOne(() => UserEntity)
-    user1!: UserEntity;
+    @ManyToOne(() => UserEntity, {onDelete: "CASCADE"})
+    following!: UserEntity;
 
     @Column()
     status!: FollowReqStatus.status;

@@ -11,7 +11,6 @@ import {UserId} from "../../user/model/user.id";
 import {User} from "../../user/model/user";
 import {FollowId} from "../model/follow.id";
 import {UserEntity} from "../../user/entity/user.entity";
-import {UserInteractionEntity} from "../../user-interaction/entity/user-interaction";
 
 @Entity("follow")
 export class FollowEntity {
@@ -19,16 +18,9 @@ export class FollowEntity {
     id!: FollowId;
 
     @Column()
-    interactionId!: number;
-
-    @ManyToOne(() => UserInteractionEntity, {onDelete: "CASCADE"})
-    interaction!: UserInteractionEntity;
-
-
-    @Column()
     followerId!: UserId;
 
-    @ManyToOne(() => UserEntity , {onDelete: "CASCADE"})
+    @ManyToOne(() => UserEntity, {onDelete: "CASCADE"})
     follower!: UserEntity;
 
     @Column()

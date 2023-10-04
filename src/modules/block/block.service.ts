@@ -1,13 +1,12 @@
 import { BadRequestError } from "../../utility/http-errors";
-// import { USerInteractionService } from "../user-interaction/user-interaction.service";
 import { UserId } from "../user/model/user.id";
+import { UserService } from "../user/user.service";
 import { BlockRepository } from "./block.repository";
 import { blockEventEmmmiter } from "../../utility/event-handling";
 import { BlockRelationInterface, UnblockRelationInterface } from "./model/block";
 
 export class BlockService {
   constructor(private blockRepo: BlockRepository) { }
-
 
   async block(blockRell: BlockRelationInterface) {
 

@@ -1,23 +1,11 @@
-import { UserId } from "../../user/model/user.id";
-import { CommentEntity } from "../comment/entity/comment.entity";
-import { PostEntity } from "../entity/post.entity";
-import { TagInterface } from "../tag/model/tag";
-import { zodTagDao } from "../tag/dao/tag.dao";
+import { z } from "zod";
+import { Tag } from "../tag/dto/tag.dto";
+import { PostInterface } from "../model/post";
 
-export type PostDao = {
-    userId: UserId;
-    photos: string[];
-    description?: string;
-    comments?: CommentEntity[];
-    tags?: TagInterface[];
-    closeFriends: boolean;
-};
-
-export const CreatePostDao = (post: PostEntity): PostDao => ({
-        userId: post.userId,
-        photos: post.photos,
-        description: post.description,
-        comments: post.comments, // FIXME: add commentDao and use here.
-        tags: post.tags?.map(x => zodTagDao.parse(x)) || [],
-        closeFriends: post.closeFriends,
-})
+export const zodPostDao = z.object({
+    photos: z.array(z.string()),
+    description: z.string(),
+    tags: z.array(Tag.zod),
+    closeFriends: z.boolean(),
+    createdAt: z.date(),
+}).transform(post => post as PostInterface)

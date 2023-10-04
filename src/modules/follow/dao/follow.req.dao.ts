@@ -10,7 +10,6 @@ export const zodFollowReqIdDao = z.object({
 
 export const zodFollowReqDao = z.object({
     id: FollowReqId.zod,
-    interactionId: z.number(),
     followingId: UserId.zod,
     followerId: UserId.zod,
     status: FollowReqStatus.zod,

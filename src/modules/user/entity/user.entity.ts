@@ -25,7 +25,7 @@ export class UserEntity {
     @Column({ nullable: true })
     bio?: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true  , default: "https://collegegram-avatars.darkube.app/default-avatar.png"})
     avatar?: string;
 
     @Column('boolean', { default: false })
@@ -33,6 +33,12 @@ export class UserEntity {
 
     @Column({default: 0})
     postCount!: WholeNumber;
+
+    @Column({default: 0})
+    followerCount!: WholeNumber;
+
+    @Column({default: 0})
+    followingCount!: WholeNumber;
 
     @CreateDateColumn()
     createdAt!: Date;

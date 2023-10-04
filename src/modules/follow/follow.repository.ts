@@ -1,8 +1,10 @@
 import {DataSource, Repository} from "typeorm";
 import {FollowEntity} from "./entity/follow.entity";
 import {Follow, createFollowRelation, followDao, followIdDao} from './model/follow';
-import {zodFollowIdDao, zodFollowRellDao} from "./dao/follow.dao";
+import { zodFollowIdDao, zodFollowRellDao, zodFollowingsId } from "./dao/follow.dao";
 import {z} from "zod";
+import { UserId } from "../user/model/user.id";
+import { WholeNumber } from "../../data/whole-number";
 
 
 export class FollowRepository {
@@ -24,6 +26,20 @@ export class FollowRepository {
     }
 
     async deleteFollowRelation(followRelation: Follow) {
-        await this.followRepo.delete({followerId: followRelation.followerId, followingId: followRelation.followingId})
+        return await this.followRepo.delete({
+            followerId: followRelation.followerId,
+            followingId: followRelation.followingId
+        })
+    }
+
+    async getFollowingsIdByUserId(userId: UserId) {
+        return this.followRepo.find({
+            select: {
+                followingId: true
+            },
+            where: {
+                followerId: userId
+            }
+        }).then((x) => zodFollowingsId.parse(x))
     }
 }
