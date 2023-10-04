@@ -11,11 +11,12 @@ import {acceptFollowReqType} from "./dto/followreq.accept.dto";
 import {rejectFollowReqType} from "./dto/followreq.reject.dto";
 import {cancellFollowReqType} from "./dto/followreq.cancel.dto";
 import {UserId} from "../user/model/user.id";
-import {blockEventEmmmiter} from "../../data/event-handling";
+import {blockEventEmmmiter} from "../../utility/event-handling";
+
 
 export class followService {
     constructor(private followRepo: FollowRepository, private followRequestService: followRequestService, private userService: UserService) {
-        //TODO: Handle Events
+
         blockEventEmmmiter.on("block", async (blockerId: UserId, blockedId: UserId) => {
             await this.blockAction({blockerId, blockedId});
         })
@@ -157,4 +158,8 @@ export class followService {
         return {status: "blocked"};
     }
 
+
+    async getFollowingsIdByUserId(userId: UserId) {
+        return this.followRepo.getFollowingsIdByUserId(userId)
+    }
 }

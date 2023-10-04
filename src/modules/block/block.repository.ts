@@ -1,8 +1,8 @@
 import {DataSource, Repository} from "typeorm";
 import {BlockEntity} from "./entity/block.entity";
-import {BlockInterface, CreateBlockInterface} from "./model/block";
+import {BlockInterface, UnblockRelationInterface, BlockRelationInterface} from "./model/block";
 import {z} from "zod"
-import {zodBlockDao} from "./dao/block.dao";
+import {zodBlockDao, zodBlockRellDao} from "./dao/block.dao";
 import {UserId} from "../user/model/user.id";
 
 export class BlockRepository {
@@ -12,26 +12,26 @@ export class BlockRepository {
         this.blockRepo = appDataSource.getRepository(BlockEntity);
     }
 
-    async block(blockInterface: CreateBlockInterface): Promise<CreateBlockInterface> {
-        return this.blockRepo.save(blockInterface)
+    async createBlockRelation(blockInterface: BlockRelationInterface): Promise<BlockRelationInterface> {
+        return this.blockRepo.save(blockInterface).then((x) => zodBlockRellDao.parse(x))
     }
 
-    async findBlock(blockInterface: CreateBlockInterface): Promise<BlockInterface | null> {
+    async findBlock(blockRelation: BlockRelationInterface): Promise<BlockInterface | null> {
         return this.blockRepo
-            .findOneBy({userId: blockInterface.userId, blockedUserId: blockInterface.blockedUserId})
+            .findOneBy({userId: blockRelation.userId, blockedUserId: blockRelation.blockedUserId})
             .then((x) => z.nullable(zodBlockDao).parse(x))
     }
 
-    unblock(id: UserId) {
+    async deleteBlockRelation(unblockRelation: UnblockRelationInterface) {
         return this.blockRepo.delete({
-            id: id
+            userId: unblockRelation.userId, blockedUserId: unblockRelation.blockedUserId
         })
     }
 
-    async findBlockedUsers(id: UserId) {
-        const blockedUsers = await this.blockRepo
-            .find({where: [{blockedUserId: id}], select: {userId: true}})
-        return blockedUsers
+    async findBlockerUsers(id: UserId) {
+        const blockerUsers = await this.blockRepo
+            .find({select: {userId: true}, where: {blockedUserId: id}})
+        return blockerUsers
     }
 
 

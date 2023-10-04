@@ -21,3 +21,10 @@ export interface followDao {
     followerId: UserId;
     followingId: UserId;
 }
+
+export interface FollowingId {
+    followingId: UserId
+}
+
+export type UserFollowingsId = FollowingId[]
+

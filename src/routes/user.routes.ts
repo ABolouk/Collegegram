@@ -3,15 +3,12 @@ import {loginDto} from '../modules/user/dto/login.dto';
 import {handleExpresss} from "../utility/handle-express";
 import {UserService} from '../modules/user/user.service';
 import {forgetPasswordDto} from "../modules/user/dto/forget-password.dto";
-import {BadRequestError} from "../utility/http-errors";
 import {signupDto} from "../modules/user/dto/signup.dto";
 import {loginMiddle} from "../login.middleware";
 import {editProfile} from "../modules/user/dto/edit-profile.dto";
 import {followDto} from '../modules/follow/dto/follow.dto';
 import {unfollowDto} from "../modules/follow/dto/unfollow.dto";
-import {followRequestDto} from "../modules/follow/dto/follow.request.dto";
 import {JwtService} from "../modules/jwt/jwt.service";
-import {jwtDto} from "../modules/jwt/dto/jwt.dto";
 import {blockDto} from "../modules/block/dto/block.dto";
 import {getUserDto} from "../modules/user/dto/get.user.dto";
 import {followService} from "../modules/follow/follow.service";
@@ -87,5 +84,18 @@ export const makeUserRouter = (userService: UserService, jwtService: JwtService,
         handleExpresss(res, () => followService.cancelFollowRequest(dto));
     });
 
-    return app;
+    app.post("/block", loginMiddle(userService), (req, res) => {
+        const userId = req.user.id
+        const dto = blockDto.parse({userId, ...req.body})
+        handleExpresss(res, () => userService.block(dto))
+    })
+
+    app.post("/unblock", loginMiddle(userService), (req, res) => {
+        const userId = req.user.id
+        const dto = blockDto.parse({ userId, ...req.body })
+        handleExpresss(res, () => userService.unblock(dto))
+    })
+
+    return app
+
 };

@@ -16,7 +16,9 @@ import {followRequestRepository} from "./modules/follow/follow-request.repositor
 import {followRequestService} from "./modules/follow/follow.request.service";
 import {followService} from "./modules/follow/follow.service";
 import {JwtService} from "./modules/jwt/jwt.service";
-import cors from 'cors'
+import cors from 'cors';
+import { BlockService } from "./modules/block/block.service";
+import { BlockRepository } from "./modules/block/block.repository";
 import {LikeRepository} from "./modules/post/like/like.repository";
 import {LikeService} from "./modules/post/like/like.service";
 import { HomePageService } from "./modules/post/home-page.service";
@@ -35,7 +37,9 @@ export const makeApp = (dataSource: DataSource) => {
     const followRepo = new FollowRepository(dataSource);
     const followReqRepo = new followRequestRepository(dataSource);
     const emailService = new EmailService()
-    const userService = new UserService(userRepo, sessionRepo, emailService);
+    const blockRepo = new BlockRepository(dataSource)
+    const blockService = new BlockService(blockRepo)
+    const userService = new UserService(userRepo, sessionRepo, emailService, blockService);
     const followReqService = new followRequestService(followReqRepo);
     const followRellService = new followService(followRepo, followReqService, userService);
     app.use("/user", makeUserRouter(userService, jwtService, followRellService));
@@ -44,7 +48,7 @@ export const makeApp = (dataSource: DataSource) => {
     const postService = new PostService(postRepo);
     const commentRepo = new CommentRepository(dataSource);
     const commentService = new CommentService(commentRepo, postService);
-    const homePageService = new HomePageService(postService, userService);
+    const homePageService = new HomePageService(postService, userService, followRellService);
     const likeRepo = new LikeRepository(dataSource);
     const likeService = new LikeService(likeRepo, postService, userService, followRellService);
     app.use("/post", makePostRouter(userService, postService, commentService, homePageService,likeService));

@@ -7,9 +7,14 @@ export interface BlockInterface {
     blockedUserId: UserId
 }
 
-export interface CreateBlockInterface {
-    userId: UserId,
-    blockedUserId: UserId
+export interface BlockRelationInterface {
+  userId: UserId,
+  blockedUserId: UserId
+}
+
+export interface UnblockRelationInterface {
+  userId: UserId,
+  blockedUserId: UserId
 }
 
 export interface BlockedUsersInterface {

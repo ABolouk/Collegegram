@@ -37,9 +37,16 @@ export class PostService {
         }
     }
 
-    async getPostsByUsersId(usersId: string[], limit: number, startTime: Date) {
-        const posts = await this.postRepository.getPostsByusersId(usersId, limit, startTime)
-        return posts
+    async getPostsByUsersId(usersId: UserId[], limit: number, startTime: Date) {
+        const result = await this.postRepository.getPostsByusersId(usersId, limit, startTime)
+        const nextOffset = result.homePagePosts.length === 0 ? new Date() : result.homePagePosts[result.homePagePosts.length - 1].createdAt
+        const hasMore = result.hasMore
+        const homePagePosts = result.homePagePosts
+        return {
+            posts: homePagePosts,
+            nextOffset: nextOffset,
+            hasMore: hasMore,
+        }
     }
 
     async getAuthorById(postId: PostId) {

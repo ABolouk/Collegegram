@@ -1,48 +1,60 @@
-import {NotFoundError} from "../../utility/http-errors";
+import {BadRequestError} from "../../utility/http-errors";
 import {UserId} from "../user/model/user.id";
 import {UserService} from "../user/user.service";
 import {BlockRepository} from "./block.repository";
-import {BlockDtoType} from "./dto/block.dto";
-import {blockEventEmmmiter} from "../../data/event-handling";
+import {blockEventEmmmiter} from "../../utility/event-handling";
+import {BlockRelationInterface, UnblockRelationInterface} from "./model/block";
 
 export class BlockService {
-    constructor(private blockRepo: BlockRepository, private userService: UserService) {
+    constructor(private blockRepo: BlockRepository) {
     }
 
-    async block(dto: BlockDtoType) {
-        const blockedUserId = await this.userService.getUserIdByUserName(dto.blockedUserName)
+    async block(blockRell: BlockRelationInterface) {
 
-        if (!blockedUserId) {
-            throw new NotFoundError("User")
-        }
-        const block = {
-            userId: dto.userId,
-            blockedUserId: blockedUserId
+        if (blockRell.userId === blockRell.blockedUserId) {
+            throw new BadRequestError("شما نمی‌توانید خودتان را بلاک کنید.")
         }
 
-        await this.blockRepo.block(block)
+        const blockRelation = await this.blockRepo.findBlock(blockRell)
+        if (blockRelation) {
+            throw new BadRequestError(".شما قبلا این کاربر را بلاک کرده‌اید.")
+        }
 
-        blockEventEmmmiter.emit("block", block.userId, block.blockedUserId)
+        const newBlockRelation = await this.blockRepo.createBlockRelation(blockRell)
 
-        return { status: "Blocked" }
 
+        blockEventEmmmiter.emit("block", newBlockRelation.userId, newBlockRelation.blockedUserId)
+        return {status: "blocked"}
+        //NOTE: follow userid: followingid, followerid
     }
 
-    async unblock(dto: BlockDtoType) {
-        const blockedUserId = await this.userService.getUserIdByUserName(dto.blockedUserName)
-        if (!blockedUserId) {
-            throw new NotFoundError("User")
+    async unblock(unblock: UnblockRelationInterface) {
+
+        if (unblock.userId === unblock.blockedUserId) {
+            throw new BadRequestError("شما نمی‌توانید خودتان را آنبلاک کنید.")
         }
-        const deletedBlock = {
-            userId: dto.userId,
-            blockedUserId: blockedUserId
+
+        const blockRelation = await this.blockRepo.findBlock(unblock)
+        if (!blockRelation) {
+            throw new BadRequestError(".شما قبلا این کاربر را بلاک نکرده‌اید.")
         }
-        return this.blockRepo.findBlock(deletedBlock)
+
+        await this.blockRepo.deleteBlockRelation(blockRelation)
+        return {status: "unblocked"}
     }
 
-    async getBlockedUsers(id: UserId) {
-        const blockedUsers = await this.blockRepo.findBlockedUsers(id)
-        return blockedUsers
+
+    async checkIfUsersBlockedEachOther(relation: BlockRelationInterface) {
+        const blockRelation = await this.blockRepo.findBlock(relation)
+        if (!blockRelation) {
+            return false
+        }
+        return true
+    }
+
+    async getBlockerUsers(id: UserId) {
+        const blockerUsers = await this.blockRepo.findBlockerUsers(id)
+        return blockerUsers.map((x) => x.userId)
     }
 
 }
