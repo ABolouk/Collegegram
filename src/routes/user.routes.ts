@@ -6,7 +6,6 @@ import {forgetPasswordDto} from "../modules/user/dto/forget-password.dto";
 import {BadRequestError} from "../utility/http-errors";
 import {signupDto} from "../modules/user/dto/signup.dto";
 import {loginMiddle} from "../login.middleware";
-import {upload} from "../utility/multer";
 import {editProfile} from "../modules/user/dto/edit-profile.dto";
 import {followDto} from '../modules/follow/dto/follow.dto';
 import {unfollowDto} from "../modules/follow/dto/unfollow.dto";
@@ -15,11 +14,15 @@ import {JwtService} from "../modules/jwt/jwt.service";
 import {jwtDto} from "../modules/jwt/dto/jwt.dto";
 import {blockDto} from "../modules/block/dto/block.dto";
 import {getUserDto} from "../modules/user/dto/get.user.dto";
+import {followService} from "../modules/follow/follow.service";
+import {acceptFollowReq} from "../modules/follow/dto/followreq.accept.dto";
+import {rejectFollowReq} from "../modules/follow/dto/followreq.reject.dto";
+import {uploadAvatarMinIO} from "../utility/multer";
 
 export const resetPasswordRoute = "reset_password"
 
 
-export const makeUserRouter = (userService: UserService, jwtService: JwtService) => {
+export const makeUserRouter = (userService: UserService, jwtService: JwtService, followService: followService) => {
     const app = Router();
     app.post("/login", (req, res) => {
         const dto = loginDto.parse(req.body);
@@ -50,7 +53,7 @@ export const makeUserRouter = (userService: UserService, jwtService: JwtService)
         const {password1, password2} = req.body;
         handleExpresss(res, () => userService.resetPassword(userId, token, password1, password2));
     })
-    app.post("/editProfile", loginMiddle(userService), upload.single('avatar'), (req, res) => {
+    app.put("/editProfile", loginMiddle(userService), uploadAvatarMinIO.single('avatar'), (req, res) => {
         const dto = editProfile.parse(req.body);
         handleExpresss(res, () => userService.updateUserInfo(req.user.id, dto, req.file));
     });
@@ -59,24 +62,29 @@ export const makeUserRouter = (userService: UserService, jwtService: JwtService)
         handleExpresss(res, () => jwtService.verify(req.body))
     })
     app.post("/follow", loginMiddle(userService), (req, res) => {
-        const dto = followDto.parse(req.body);
-        handleExpresss(res, () => userService.follow(dto, req.user.id));
+        const userId = req.user.id;
+        const dto = followDto.parse({...req.body, userId})
+        handleExpresss(res, () => followService.createFollowRelation(dto));
     });
     app.post("/unfollow", loginMiddle(userService), (req, res) => {
-        const dto = unfollowDto.parse(req.body);
-        handleExpresss(res, () => userService.unfollow(dto, req.user.id));
+        const userId = req.user.id;
+        const dto = unfollowDto.parse({...req.body, userId})
+        handleExpresss(res, () => followService.unfollow(dto));
     });
     app.post("/acceptFollowRequest", loginMiddle(userService), (req, res) => {
-        const dto = followRequestDto.parse(req.body);
-        handleExpresss(res, () => userService.acceptFollowRequest(dto, req.user.id));
+        const userId = req.user.id;
+        const dto = acceptFollowReq.parse({...req.body, userId})
+        handleExpresss(res, () => followService.acceptFollowRequest(dto));
     });
     app.post("/rejectFollowRequest", loginMiddle(userService), (req, res) => {
-        const dto = followRequestDto.parse(req.body);
-        handleExpresss(res, () => userService.rejectFollowRequest(dto, req.user.id));
+        const userId = req.user.id;
+        const dto = rejectFollowReq.parse({...req.body, userId})
+        handleExpresss(res, () => followService.rejectFollowRequest(dto));
     });
     app.post("/cancelFollowRequest", loginMiddle(userService), (req, res) => {
-        const dto = followRequestDto.parse(req.body);
-        handleExpresss(res, () => userService.cancelFollowRequest(dto, req.user.id));
+        const userId = req.user.id;
+        const dto = followDto.parse({...req.body, userId})
+        handleExpresss(res, () => followService.cancelFollowRequest(dto));
     });
 
     return app;

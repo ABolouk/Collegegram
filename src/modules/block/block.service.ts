@@ -1,12 +1,11 @@
 import { NotFoundError } from "../../utility/http-errors";
-import { USerInteractionService } from "../user-interaction/user-interaction.service";
 import { UserId } from "../user/model/user.id";
 import { UserService } from "../user/user.service";
 import { BlockRepository } from "./block.repository";
 import { BlockDtoType } from "./dto/block.dto";
 
 export class BlockService {
-  constructor(private blockRepo: BlockRepository, private userInteractionService: USerInteractionService, private userService: UserService) { }
+  constructor(private blockRepo: BlockRepository, private userService: UserService) { }
 
   async block(dto: BlockDtoType) {
     const blockedUserId = await this.userService.getUserIdByUserName(dto.blockedUserName)
@@ -20,14 +19,7 @@ export class BlockService {
     }
 
     await this.blockRepo.block(block)
-    const interaction = {
-      userId1: dto.userId,
-      userId2: blockedUserId
-    }
-    const userInteraction = await this.userInteractionService.getInteraction(interaction)
-    if (userInteraction !== null) {
-      await this.userInteractionService.deleteUserInteraction(userInteraction)
-    }
+
   }
 
   async unblock(dto: BlockDtoType) {
