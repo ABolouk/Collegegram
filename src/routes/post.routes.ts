@@ -11,9 +11,10 @@ import { getPostIdDto } from "../modules/post/dto/get-post-id-dto";
 import { uploadMinIO } from "../utility/multer";
 import { BadRequestError } from "../utility/http-errors";
 import { BookMarkDto } from "../bookmark/dto/create-book-mark.dto";
-import { BookMarkService } from "../bookmark/book-mark.service";
+import { BookmarkService } from "../bookmark/book-mark.service";
+import { GetBookMarkDto } from "../bookmark/dto/get-book-mark.dto";
 
-export const makePostRouter = (userService: UserService, postService: PostService, commentService: CommentService, bookMarkService: BookMarkService) => {
+export const makePostRouter = (userService: UserService, postService: PostService, commentService: CommentService, bookmarkService: BookmarkService) => {
 	const app = Router();
 	app.post("/", loginMiddle(userService), uploadMinIO.array('post-photos'), (req, res) => {
 		const data = createPostDto.parse(req.body);
@@ -44,14 +45,22 @@ export const makePostRouter = (userService: UserService, postService: PostServic
 		const userId = req.user.id
 		const postId = req.params.id
 		const dto = BookMarkDto.parse({ userId, postId })
-		handleExpresss(res, () => bookMarkService.bookmark(dto))
+		handleExpresss(res, () => bookmarkService.bookmark(dto))
 	})
 
 	app.post("/:id/unbookmark", loginMiddle(userService), (req, res) => {
 		const userId = req.user.id
 		const postId = req.params.id
 		const dto = BookMarkDto.parse({ userId, postId })
-		handleExpresss(res, () => bookMarkService.unBookmark(dto))
+		handleExpresss(res, () => bookmarkService.unBookmark(dto))
+	})
+
+	app.get("/bookmarks", loginMiddle(userService), (req, res) => {
+		const userId = req.user.id
+		const limit = req.query.limit
+		const startTime = req.query.startTime ? req.query.startTime : new Date()
+		const dto = GetBookMarkDto.parse({ userId, limit, startTime })
+		handleExpresss(res, () => bookmarkService.getBookmarks(dto))
 	})
 
 	return app;
