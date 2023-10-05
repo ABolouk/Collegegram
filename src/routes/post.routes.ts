@@ -41,16 +41,16 @@ export const makePostRouter = (userService: UserService, postService: PostServic
 		handleExpresss(res, () => commentService.comment(dto))
 	})
 
-	app.post("/:id/bookmark", loginMiddle(userService), (req, res) => {
+	app.post("/bookmark", loginMiddle(userService), (req, res) => {
 		const userId = req.user.id
-		const postId = req.params.id
+		const postId = req.body.id
 		const dto = CreateBookmarkDto.parse({ userId, postId })
 		handleExpresss(res, () => bookmarkService.bookmark(dto))
 	})
 
-	app.post("/:id/unbookmark", loginMiddle(userService), (req, res) => {
+	app.post("/unbookmark", loginMiddle(userService), (req, res) => {
 		const userId = req.user.id
-		const postId = req.params.id
+		const postId = req.body.id
 		const dto = CreateBookmarkDto.parse({ userId, postId })
 		handleExpresss(res, () => bookmarkService.unBookmark(dto))
 	})
