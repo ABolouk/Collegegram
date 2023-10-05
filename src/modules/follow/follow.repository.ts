@@ -1,12 +1,11 @@
 import {DataSource, Repository} from "typeorm";
 import {FollowEntity} from "./entity/follow.entity";
 import {Follow, createFollowRelation, followDao, followIdDao} from './model/follow';
-import {zodFollowIdDao, zodFollowRellDao} from "./dao/follow.dao";
-import {map, z} from "zod";
 import {zodFollowIdDao, zodFollowRellDao, zodFollowingsId} from "./dao/follow.dao";
 import {z} from "zod";
 import {UserId} from "../user/model/user.id";
 import {WholeNumber} from "../../data/whole-number";
+import {UserEntity} from "../user/entity/user.entity";
 
 
 export class FollowRepository {
