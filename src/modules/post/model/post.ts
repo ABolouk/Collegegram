@@ -1,8 +1,10 @@
 import { UserId } from "../../user/model/user.id";
 import { CreateTagInterface } from "../tag/model/tag";
 import {Tags} from "../tag/dto/tag.dto";
+import {PostId} from "./post-id";
 
 export interface PostInterface {
+  id: PostId;
   photos: string[];
   description?: string;
   tags?: Tags;
