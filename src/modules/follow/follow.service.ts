@@ -1,5 +1,5 @@
 import {FollowRepository} from "./follow.repository";
-import {createFollowRelation, Follow} from "./model/follow";
+import {Follow} from "./model/follow";
 import {BadRequestError, ConflictError, NotFoundError} from "../../utility/http-errors";
 import {followDtoType} from "./dto/follow.dto";
 import {UserService} from "../user/user.service";
@@ -11,12 +11,15 @@ import {acceptFollowReqType} from "./dto/followreq.accept.dto";
 import {rejectFollowReqType} from "./dto/followreq.reject.dto";
 import {cancellFollowReqType} from "./dto/followreq.cancel.dto";
 import {UserId} from "../user/model/user.id";
-import { blockEventEmmmiter } from "../../utility/event-handling";
+import {blockEventEmmmiter} from "../../utility/event-handling";
 
 
 export class followService {
     constructor(private followRepo: FollowRepository, private followRequestService: followRequestService, private userService: UserService) {
-            blockEventEmmmiter.on("block", (x, y) => this.deleteFollowRelation({followerId: x, followingId: y}))
+
+        blockEventEmmmiter.on("block", async (blockerId: UserId, blockedId: UserId) => {
+            await this.blockAction({blockerId, blockedId});
+        })
     }
 
     async getFollowRelation(followRelation: Follow) {
@@ -57,12 +60,7 @@ export class followService {
             followerId: dto.follower,
             followingId: followingUser.id
         });
-        return { status: "followed" };
-    }
-
-    async deleteFollowRelation(followRelation: Follow) {
-        await this.followRepo.deleteFollowRelation(followRelation);
-        return { status: "unfollowed" };
+        return {status: "followed"};
     }
 
     async unfollow(dto: unfollowDtoType) {
@@ -137,6 +135,27 @@ export class followService {
             }
         }
         return {status: "no action"};
+    }
+
+    async blockAction(dto: { blockerId: UserId, blockedId: UserId }) {
+        const followRelation = await this.followRepo.getFollowRelInTwoWay({
+            followerId: dto.blockerId,
+            followingId: dto.blockedId
+        });
+        if (followRelation) {
+            await this.followRepo.deleteFollowRelation({
+                followerId: dto.blockerId,
+                followingId: dto.blockedId
+            })
+        }
+        const followRequest = await this.followRequestService.getFollowRequestInTwoWay({
+            followerUserId: dto.blockerId,
+            followingUserId: dto.blockedId
+        });
+        if (followRequest) {
+            await this.followRequestService.deleteFollowRequest(followRequest)
+        }
+        return {status: "blocked"};
     }
 
 
