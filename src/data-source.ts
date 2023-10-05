@@ -9,7 +9,8 @@ import { TagEntity } from "./modules/post/tag/entity/tag.entity";
 import { BlockEntity } from "./modules/block/entity/block.entity";
 import { FollowEntity } from "./modules/follow/entity/follow.entity";
 import { FollowRequestEntity } from "./modules/follow/entity/follow-request.entity";
-import {LikeEntity} from "./modules/post/like/entity/like.entity";
+import { LikeEntity } from "./modules/post/like/entity/like.entity";
+import { BookmarkEntity } from "./modules/bookmark/entity/book-mark.entity";
 import { NotificationEntity } from "./modules/notification/entity/notification.entity";
 
 export const AppDataSource = new DataSource({
@@ -29,6 +30,8 @@ export const AppDataSource = new DataSource({
         FollowEntity,
         FollowRequestEntity,
         BlockEntity,
+        BookmarkEntity,
+        LikeEntity,
         NotificationEntity,
     ],
     migrations: ["./src/migrations/*.ts"],

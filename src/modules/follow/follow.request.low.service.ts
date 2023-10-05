@@ -2,11 +2,11 @@ import {createFollowRequest, FollowRequest} from "./model/follow.request";
 import {FollowReqStatus} from "./model/follow.req.status";
 import {BadRequestError, NotFoundError} from "../../utility/http-errors";
 import {followRequestRepository} from "./follow-request.repository";
-import {followService} from "./follow.service";
+import {FollowHighService} from "./follow.high.service";
 import {FollowReqId} from "./model/follow.req.id";
 import {FollowRequestEntity} from "./entity/follow-request.entity";
 
-export class followRequestService {
+export class FollowRequestLowService {
     constructor(private followReqRepo: followRequestRepository) {
     }
 

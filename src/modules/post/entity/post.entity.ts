@@ -49,6 +49,9 @@ export class PostEntity {
     @Column({default: 0})
     commentCount!: WholeNumber;
 
+    @Column({ default: 0 })
+    bookmarkCount!: WholeNumber;
+
     @CreateDateColumn()
     createdAt!: Date;
 

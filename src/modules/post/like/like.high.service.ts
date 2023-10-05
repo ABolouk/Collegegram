@@ -1,30 +1,30 @@
 import {LikeRepository} from "./like.repository";
-import {PostService} from "../post.service";
 import {LikeDtoType} from "./dto/like.dto";
 import {BadRequestError, NotFoundError} from "../../../utility/http-errors";
-import {followService} from "../../follow/follow.service";
-import {UserService} from "../../user/user.service";
 import {blockEventEmmmiter, likeEventEmmmiter} from "../../../data/event-handling";
 import {UserId} from "../../user/model/user.id";
-import {User} from "../../user/model/user";
+import {UserLowService} from "../../user/user.low.service";
+import {FollowLowService} from "../../follow/follow.low.service";
+import {PostLowService} from "../post.low.service";
+import {LikeLowService} from "./like.low.service";
 
-export class LikeService {
-    constructor(private likeRepository: LikeRepository, private postService: PostService, private userService: UserService, private followRellService: followService) {
+export class LikeHighService {
+    constructor(private likeLowService: LikeLowService, private postLowService: PostLowService, private userLowService: UserLowService, private followLowService: FollowLowService) {
         blockEventEmmmiter.on("block", (x, y) => this.blockAction({blockerId: x, blockedId: y}))
     }
 
     async like(dto: LikeDtoType) {
-        const post = await this.postService.getPostById(dto.postId);
+        const post = await this.postLowService.getPostById(dto.postId);
         if (!post) {
             throw new NotFoundError('Post');
         }
-        const postAuthorId = await this.postService.getAuthorById(dto.postId);
+        const postAuthorId = await this.postLowService.getAuthorById(dto.postId);
         if (postAuthorId === dto.userId) {
             throw new BadRequestError('You can not like your own post');
         }
-        const author = await this.userService.getUserById(postAuthorId);
+        const author = await this.userLowService.getUserById(postAuthorId);
         if (author.isPrivate) {
-            const follow = await this.followRellService.getFollowRelation({
+            const follow = await this.followLowService.getFollowRelation({
                 followerId: dto.userId,
                 followingId: author.id
             });
@@ -32,27 +32,27 @@ export class LikeService {
                 throw new BadRequestError('You can not like this post');
             }
         }
-        const like = await this.likeRepository.isLiked(dto);
+        const like = await this.likeLowService.isLiked(dto);
         if (like) {
             throw new BadRequestError('You have already liked this post');
         }
-        const newLike = await this.likeRepository.create(dto);
+        const newLike = await this.likeLowService.create(dto);
         likeEventEmmmiter.emit('like', newLike.userId, newLike.postId);
         return {status: "liked"};
     }
 
     async unlike(dto: LikeDtoType) {
-        const post = await this.postService.getPostById(dto.postId);
+        const post = await this.postLowService.getPostById(dto.postId);
         if (!post) {
             throw new NotFoundError('Post');
         }
-        const postAuthorId = await this.postService.getAuthorById(dto.postId);
+        const postAuthorId = await this.postLowService.getAuthorById(dto.postId);
         if (postAuthorId === dto.userId) {
             throw new BadRequestError('You can not unlike your own post');
         }
-        const author = await this.userService.getUserById(postAuthorId);
+        const author = await this.userLowService.getUserById(postAuthorId);
         if (author.isPrivate) {
-            const follow = await this.followRellService.getFollowRelation({
+            const follow = await this.followLowService.getFollowRelation({
                 followerId: dto.userId,
                 followingId: author.id
             });
@@ -60,18 +60,17 @@ export class LikeService {
                 throw new BadRequestError('You can not unlike this post');
             }
         }
-        const like = await this.likeRepository.isLiked(dto);
+        const like = await this.likeLowService.isLiked(dto);
         if (!like) {
             throw new BadRequestError('You have not liked this post');
         }
 
-        await this.likeRepository.delete(dto);
+        await this.likeLowService.delete(dto);
         return {status: "unliked"};
     }
 
     async blockAction(dto: { blockerId: UserId, blockedId: UserId }) {
-        return await this.likeRepository.blockedUserLike(dto);
+        return await this.likeLowService.blockedUserLike(dto);
     }
-
 
 }
