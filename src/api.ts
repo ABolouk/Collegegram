@@ -73,8 +73,8 @@ export const makeApp = (dataSource: DataSource) => {
     app.use("/post", makePostRouter(userLowService, sessionLowService, postHighService, commentService, homePageService, likeHighService , bookmarkService));
 
     const notificationRepo = new NotificationRepository(dataSource);
-    const notificationService = new NotificationService(notificationRepo, postService);
-    app.use("/notification", makeNotificationRouter(userService, notificationService))
+    const notificationService = new NotificationService(notificationRepo, postLowService);
+    app.use("/notification", makeNotificationRouter(userLowService, sessionLowService, notificationService))
 
     app.use((req, res, next) => {
         next();
