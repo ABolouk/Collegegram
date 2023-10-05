@@ -1,6 +1,6 @@
 import { DataSource, LessThan, Repository } from "typeorm";
 import { BookmarkEntity } from "./entity/book-mark.entity";
-import { Bookmark, bookmarkInterface } from "./model/book-mark";
+import { Bookmark, BookmarkInterface } from "./model/book-mark";
 import { PostEntity } from "../post/entity/post.entity";
 import { UserId } from "../user/model/user.id";
 import { zodbookmarkPostssDao } from "./dao/bookmark.dao";
@@ -12,8 +12,8 @@ export class BookmarkRepository {
     this.bookmarkRepo = appDataSource.getRepository(BookmarkEntity);
   }
 
-  createBookmark(bookmark: bookmarkInterface) {
-    return new Promise<bookmarkInterface>(async (resolve, reject) => {
+  createBookmark(bookmark: BookmarkInterface) {
+    return new Promise<BookmarkInterface>(async (resolve, reject) => {
       try {
         await this.appDataSource.manager.transaction(async manager => {
           const postRepo = manager.getRepository(PostEntity);
@@ -35,7 +35,7 @@ export class BookmarkRepository {
 
   }
 
-  async getBookmark(bookmark: bookmarkInterface): Promise<Bookmark | null> {
+  async getBookmark(bookmark: BookmarkInterface): Promise<Bookmark | null> {
     const getBookmark = await this.bookmarkRepo.findOneBy({ userId: bookmark.userId, postId: bookmark.postId })
     return getBookmark
   }

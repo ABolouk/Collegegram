@@ -9,27 +9,27 @@ export interface Bookmark {
   postId: PostId
 }
 
-export interface bookmarkInterface {
+export interface BookmarkInterface {
   userId: UserId,
   postId: PostId
 }
 
-export type bookmarkPosts = bookmarkPostInterface[]
+export type BookmarkPosts = BookmarkPost[]
 
-export interface bookmarkPostInterface {
-  PostId: PostId
+export interface BookmarkPost {
+  postId: PostId
   photos: string[]
   createdAt: Date
 }
-export module bookmarkPost {
+export module BookmarkPost {
   export const zod = z.object({
-    PostId: PostId.zod,
+    postId: PostId.zod,
     photos: z.array(z.string()),
     createdAt: z.date()
   })
 }
 
-export module bookmarkPosts {
-  export const zod = z.array(bookmarkPost.zod)
+export module BookmarkPosts {
+  export const zod = z.array(BookmarkPost.zod)
 }
 
