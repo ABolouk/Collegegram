@@ -17,7 +17,7 @@ export class BookmarkService {
     if (!post) {
       throw new NotFoundError('Post');
     }
-    const author = await this.userService.getUserById(dto.userId);
+    const author = await this.userService.getUserById(post.userId);
     if (!author) {
       throw new NotFoundError("User")
     }
