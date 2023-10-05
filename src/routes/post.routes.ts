@@ -4,7 +4,6 @@ import {CommentService} from "../modules/post/comment/comment.service";
 import {createPostDto} from "../modules/post/dto/create-post.dto";
 import {handleExpresss} from "../utility/handle-express";
 import {loginMiddle} from "../login.middleware";
-import {UserHighService} from "../modules/user/user.high.service";
 import {createCommentDto} from "../modules/post/comment/dto/create-comment.dto";
 import {getPostsDto} from "../modules/post/dto/get-posts-dto";
 import {getPostIdDto} from "../modules/post/dto/get-post-id-dto";
@@ -42,7 +41,7 @@ export const makePostRouter = (userLowService: UserLowService, sessionLowService
 
     app.get("/:id", loginMiddle(userLowService, sessionLowService), (req, res) => {
         const {id} = getPostIdDto.parse(req.params);
-        handleExpresss(res, () => postHighService.getPostById(id));
+        handleExpresss(res, () => postService.getPostById(id));
     });
 
     app.post("/:id/comment", loginMiddle(userLowService, sessionLowService), (req, res) => {
@@ -66,5 +65,27 @@ export const makePostRouter = (userLowService: UserLowService, sessionLowService
         handleExpresss(res, () => likeHighService.unlike(dto))
     })
 
-    return app;
+	app.post("/bookmark", loginMiddle(userService), (req, res) => {
+		const userId = req.user.id
+		const postId = req.body.id
+		const dto = CreateBookmarkDto.parse({ userId, postId })
+		handleExpresss(res, () => bookmarkService.bookmark(dto))
+	})
+
+	app.post("/unbookmark", loginMiddle(userService), (req, res) => {
+		const userId = req.user.id
+		const postId = req.body.id
+		const dto = CreateBookmarkDto.parse({ userId, postId })
+		handleExpresss(res, () => bookmarkService.unBookmark(dto))
+	})
+
+	app.get("/bookmarks", loginMiddle(userService), (req, res) => {
+		const userId = req.user.id
+		const limit = req.query.limit
+		const startTime = req.query.startTime ? req.query.startTime : new Date()
+		const dto = GetBookMarkDto.parse({ userId, limit, startTime })
+		handleExpresss(res, () => bookmarkService.getBookmarks(dto))
+	})
+
+	return app;
 };
