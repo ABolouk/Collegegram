@@ -62,7 +62,7 @@ export class UserRepository {
 		await this.userRepo.update({ id: userId }, user)
 	}
 
-	createUser(user: createUserInterface){
+	async createUser(user: createUserInterface){
 		return this.userRepo.save(user)
 	}
 }
