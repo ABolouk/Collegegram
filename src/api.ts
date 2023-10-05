@@ -19,7 +19,7 @@ import { JwtService } from "./modules/jwt/jwt.service";
 import cors from 'cors'
 import { UserInteractionRepository } from "./modules/user-interaction/user-interaction.repository";
 import { USerInteractionService } from "./modules/user-interaction/user-interaction.service";
-import { BookMarkService } from "./modules/bookmark/book-mark.service";
+import { BookmarkService } from "./modules/bookmark/book-mark.service";
 import { BookmarkRepository as BookmarkRepository } from "./modules/bookmark/book-mark.repository";
 
 
@@ -47,9 +47,9 @@ export const makeApp = (dataSource: DataSource) => {
     const postService = new PostService(postRepo);
     const commentRepo = new CommentRepository(dataSource);
     const commentService = new CommentService(commentRepo, postService);
-    const bookMarkRepo = new BookmarkRepository(dataSource)
-    const bookMarkService = new BookMarkService(bookMarkRepo, postService, userService, followRellService)
-    app.use("/post", makePostRouter(userService, postService, commentService, bookMarkService));
+    const bookmarkRepo = new BookmarkRepository(dataSource)
+    const bookmarkService = new BookmarkService(bookmarkRepo, postService, userService, followRellService)
+    app.use("/post", makePostRouter(userService, postService, commentService, bookmarkService));
 
     app.use((req, res, next) => {
         next();
