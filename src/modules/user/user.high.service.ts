@@ -28,9 +28,10 @@ import {GetUserDtoType} from "./dto/get.user.dto";
 import {User} from "./model/user";
 import {UserLowService} from "./user.low.service";
 import {BlockLowService} from "../block/block.low.service";
+import {SessionLowService} from "./session.low.service";
 
 export class UserHighService {
-    constructor(private userLowService: UserLowService, private sessionRepo: sessionRepository, private emailService: EmailService) {
+    constructor(private userLowService: UserLowService, private sessionLowService: SessionLowService, private emailService: EmailService) {
     }
 
     async login(loginDto: LoginDtoType) {
@@ -46,7 +47,7 @@ export class UserHighService {
         const accessToken = jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET as string, {expiresIn: "5m"})
         const refreshToken = randomBytes(64).toString('hex')
         const time = loginDto.rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
-        await this.sessionRepo.createSession(refreshToken, user.id, new Date(Date.now() + time));
+        await this.sessionLowService.createSession(refreshToken, user.id, new Date(Date.now() + time));
         return {accessToken, refreshToken};
     }
 

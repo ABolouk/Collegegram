@@ -50,7 +50,7 @@ export const makeApp = (dataSource: DataSource) => {
     const followLowService = new FollowLowService(followRepo);
     const followRequestLowService = new FollowRequestLowService(followReqRepo);
     const blockHighService = new BlockHighService(blockLowService, userLowService)
-    const userHighService = new UserHighService(userLowService, sessionRepo, emailService);
+    const userHighService = new UserHighService(userLowService, sessionLowService, emailService);
     const followHighService = new FollowHighService(followLowService, followRequestLowService, userLowService);
     app.use("/user", makeUserRouter(userHighService, sessionLowService, userLowService, jwtService, followHighService, blockHighService));
 
