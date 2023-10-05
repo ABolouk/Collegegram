@@ -38,7 +38,7 @@ export class LikeRepository {
         await this.appDataSource.manager.transaction(async manager => {
             const postRepo = manager.getRepository(PostEntity);
             const likeRepo = manager.getRepository(LikeEntity);
-            const newLike = await likeRepo.delete({userId: like.userId, postId: like.postId});
+            const deleteLike = await likeRepo.delete({userId: like.userId, postId: like.postId});
             await postRepo.update(
                 {id: like.postId},
                 {likeCount: () => "likeCount - 1"}

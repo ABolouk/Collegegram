@@ -1,33 +1,35 @@
 import jwt from "jsonwebtoken";
-import {UserRepository} from './user.repository';
-import {BadRequestError, ConflictError, NotFoundError, UnauthorizedError} from '../../utility/http-errors';
-import {LoginDtoType} from './dto/login.dto';
-import {ForgetPasswordDto} from './dto/forget-password.dto';
-import {EmailService} from '../email/email.service';
-import {resetPasswordRoute} from '../../routes/user.routes';
+import { UserRepository } from './user.repository';
+import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from '../../utility/http-errors';
+import { LoginDtoType } from './dto/login.dto';
+import { ForgetPasswordDto } from './dto/forget-password.dto';
+import { EmailService } from '../email/email.service';
+import { resetPasswordRoute } from '../../routes/user.routes';
 import {
     createMessageForOneTimeLink,
     createOneTimeLink,
     createOneTimeLinkSecret,
     PayloadType
 } from '../../utility/one-time-link';
-import {sessionRepository} from './session.repository';
-import {signupDto} from './dto/signup.dto';
-import {Password} from '../../utility/password-utils';
-import {randomBytes} from 'crypto';
-import {UserId} from './model/user.id';
-import {EditProfileType} from "./dto/edit-profile.dto";
-import {UserAuth} from "./model/user.auth"
-import {followDtoType} from '../follow/dto/follow.dto';
-import {FollowReqStatus} from '../follow/model/follow.req.status';
-import {followRequestService} from "../follow/follow.request.service";
-import {followService} from "../follow/follow.service";
-import {UserName} from "./model/user.username";
-import {GetUserDtoType} from "./dto/get.user.dto";
-import {User} from "./model/user";
+import { sessionRepository } from './session.repository';
+import { signupDto } from './dto/signup.dto';
+import { Password } from '../../utility/password-utils';
+import { randomBytes } from 'crypto';
+import { UserId } from './model/user.id';
+import { EditProfileType } from "./dto/edit-profile.dto";
+import { UserAuth } from "./model/user.auth";
+import { followRequestService } from "../follow/follow.request.service";
+import { followService } from "../follow/follow.service";
+import { UserName } from "./model/user.username";
+import { BlockDtoType } from "../block/dto/block.dto";
+import { BlockService } from "../block/block.service";
+import { BlockRelationInterface, UnblockRelationInterface } from "../block/model/block";
+import { GetUserDtoType } from "./dto/get.user.dto";
+import { User } from "./model/user";
 
 export class UserService {
-    constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService) {
+    constructor(private userRepository: UserRepository, private sessionRepo: sessionRepository, private emailService: EmailService,
+                private blockService: BlockService) {
     }
 
     async login(loginDto: LoginDtoType) {
@@ -113,7 +115,6 @@ export class UserService {
         }
 
         return new BadRequestError("You can not see your profile");
-
     }
 
     async getFamilyNameById(id: UserId) {
@@ -240,5 +241,27 @@ export class UserService {
         return user.id
     }
 
+    async block(dto: BlockDtoType) {
+        const blockedUser = await this.userRepository.findByEmailOrUsername(dto.blockedUserName)
+        if (!blockedUser) {
+            throw new NotFoundError("User")
+        }
+        const blockrelation: BlockRelationInterface = {
+            userId: dto.userId,
+            blockedUserId: blockedUser.id
+        }
+        return await this.blockService.block(blockrelation)
+    }
 
+    async unblock(dto: BlockDtoType) {
+        const unBlockedUser = await this.userRepository.findByEmailOrUsername(dto.blockedUserName)
+        if (!unBlockedUser) {
+            throw new NotFoundError("User")
+        }
+        const unblockrelation: UnblockRelationInterface = {
+            userId: dto.userId,
+            blockedUserId: unBlockedUser.id
+        }
+        return await this.blockService.unblock(unblockrelation)
+    }
 }
