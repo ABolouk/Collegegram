@@ -1,8 +1,10 @@
-import { DataSource, Repository } from "typeorm";
+import { DataSource, LessThan, Repository } from "typeorm";
 import { BookmarkEntity } from "./entity/book-mark.entity";
 import { Bookmark, bookmarkInterface } from "./model/book-mark";
 import { PostEntity } from "../modules/post/entity/post.entity";
-import { PostId } from "../modules/post/model/post-id";
+import { UserId } from "../modules/user/model/user.id";
+import { zodbookmarkPostssDao } from "./dao/bookmark.dao";
+import {z} from "zod"
 
 export class BookmarkRepository {
   private bookmarkRepo: Repository<BookmarkEntity>
@@ -36,6 +38,24 @@ export class BookmarkRepository {
   async getBookmark(bookmark: bookmarkInterface): Promise<Bookmark | null> {
     const getBookmark = await this.bookmarkRepo.findOneBy({ userId: bookmark.userId, postId: bookmark.postId })
     return getBookmark
+  }
+
+
+  async getBookmarksByUserId(userId: UserId, limit: number, startTime: Date){
+    const [posts, count] = await this.bookmarkRepo.findAndCount(
+      {
+        where: {
+          userId: userId,
+          createdAt: LessThan(startTime)
+        },
+        order: { createdAt: 'desc' },
+        take: limit
+
+      }
+    )
+    const bookmarkPosts = z.nullable(zodbookmarkPostssDao).parse(posts)
+    const hasMore = count > limit
+    return { bookmarkPosts: bookmarkPosts, hasMore: hasMore }
   }
 
   async deleteBookmark(bookmark: Bookmark) {
