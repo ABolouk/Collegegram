@@ -1,22 +1,24 @@
-import express, { ErrorRequestHandler } from "express";
-import { DataSource } from "typeorm";
-import { UserRepository } from "./modules/user/user.repository";
-import { UserService } from "./modules/user/user.service";
-import { makeUserRouter } from "./routes/user.routes";
-import { sessionRepository } from "./modules/user/session.repository";
-import { ZodError } from "zod";
-import { EmailService } from "./modules/email/email.service";
-import { makePostRouter } from "./routes/post.routes";
-import { PostRepository } from "./modules/post/post.repository";
-import { PostService } from "./modules/post/post.service";
-import { CommentService } from "./modules/post/comment/comment.service";
-import { CommentRepository } from "./modules/post/comment/comment.repository";
-import { FollowRepository } from "./modules/follow/follow.repository";
-import { followRequestRepository } from "./modules/follow/follow-request.repository";
-import { followRequestService } from "./modules/follow/follow.request.service";
-import { followService } from "./modules/follow/follow.service";
-import { JwtService } from "./modules/jwt/jwt.service";
-import cors from 'cors'
+import express, {ErrorRequestHandler} from "express";
+import {DataSource} from "typeorm";
+import {UserRepository} from "./modules/user/user.repository";
+import {UserService} from "./modules/user/user.service";
+import {makeUserRouter} from "./routes/user.routes";
+import {sessionRepository} from "./modules/user/session.repository";
+import {ZodError} from "zod";
+import {EmailService} from "./modules/email/email.service";
+import {makePostRouter} from "./routes/post.routes";
+import {PostRepository} from "./modules/post/post.repository";
+import {PostService} from "./modules/post/post.service";
+import {CommentService} from "./modules/post/comment/comment.service";
+import {CommentRepository} from "./modules/post/comment/comment.repository";
+import {FollowRepository} from "./modules/follow/follow.repository";
+import {followRequestRepository} from "./modules/follow/follow-request.repository";
+import {followRequestService} from "./modules/follow/follow.request.service";
+import {followService} from "./modules/follow/follow.service";
+import {JwtService} from "./modules/jwt/jwt.service";
+import cors from 'cors';
+import { BlockService } from "./modules/block/block.service";
+import { BlockRepository } from "./modules/block/block.repository";
 import {LikeRepository} from "./modules/post/like/like.repository";
 import {LikeService} from "./modules/post/like/like.service";
 import { HomePageService } from "./modules/post/home-page.service";
@@ -39,7 +41,9 @@ export const makeApp = (dataSource: DataSource) => {
     const followRepo = new FollowRepository(dataSource);
     const followReqRepo = new followRequestRepository(dataSource);
     const emailService = new EmailService()
-    const userService = new UserService(userRepo, sessionRepo, emailService);
+    const blockRepo = new BlockRepository(dataSource)
+    const blockService = new BlockService(blockRepo)
+    const userService = new UserService(userRepo, sessionRepo, emailService, blockService);
     const followReqService = new followRequestService(followReqRepo);
     const followRellService = new followService(followRepo, followReqService, userService);
     app.use("/user", makeUserRouter(userService, jwtService, followRellService));

@@ -38,7 +38,7 @@ export class UnauthorizedError extends HttpError {
 
 export class BadRequestError extends HttpError {
     constructor(message: string) {
-        super(400, "درخواست نامعتبر.");
+        super(400, message);
     }
 }
 

@@ -1,21 +1,38 @@
 import {DataSource, Repository} from "typeorm";
 import {FollowEntity} from "./entity/follow.entity";
 import {Follow, createFollowRelation, followDao, followIdDao} from './model/follow';
-import { zodFollowIdDao, zodFollowRellDao, zodFollowingsId } from "./dao/follow.dao";
+import {zodFollowIdDao, zodFollowRellDao, zodFollowingsId} from "./dao/follow.dao";
 import {z} from "zod";
-import { UserId } from "../user/model/user.id";
-import { WholeNumber } from "../../data/whole-number";
+import {UserId} from "../user/model/user.id";
+import {WholeNumber} from "../../data/whole-number";
+import {UserEntity} from "../user/entity/user.entity";
 
 
 export class FollowRepository {
     private followRepo: Repository<FollowEntity>;
 
-    constructor(appDataSource: DataSource) {
+    constructor(private appDataSource: DataSource) {
         this.followRepo = appDataSource.getRepository(FollowEntity);
     }
 
     async createFollowRelation(followRelation: createFollowRelation): Promise<followIdDao> {
-        return this.followRepo.save(followRelation).then((x) => zodFollowIdDao.parse(x));
+        return await this.appDataSource.manager.transaction(async manager => {
+            const userRepo = manager.getRepository(UserEntity);
+            const followRepo = manager.getRepository(FollowEntity);
+            const newFollow = await followRepo.save({
+                followerId: followRelation.followerId,
+                followingId: followRelation.followingId
+            });
+            await userRepo.update(
+                {id: newFollow.followerId},
+                {followingCount: () => "followingCount + 1"}
+            );
+            await userRepo.update(
+                {id: newFollow.followingId},
+                {followerCount: () => "followerCount + 1"}
+            );
+            return zodFollowIdDao.parse(newFollow);
+        });
     }
 
     async getFollowRelation(followRelation: Follow): Promise<followDao | null> {
@@ -25,11 +42,41 @@ export class FollowRepository {
         }).then((x) => z.nullable(zodFollowRellDao).parse(x));
     }
 
+    async getFollowRelInTwoWay(followRelation: Follow): Promise<followDao[] | null> {
+        return this.followRepo.find(
+            {
+                where: [
+                    {
+                        followerId: followRelation.followerId,
+                        followingId: followRelation.followingId,
+                    }
+                    ,
+                    {
+                        followerId: followRelation.followingId,
+                        followingId: followRelation.followerId,
+                    }
+                ]
+            }
+        ).then((x) => z.array(zodFollowRellDao).parse(x));
+    }
+
     async deleteFollowRelation(followRelation: Follow) {
-        return await this.followRepo.delete({
-            followerId: followRelation.followerId,
-            followingId: followRelation.followingId
-        })
+        await this.appDataSource.manager.transaction(async manager => {
+            const userRepo = manager.getRepository(UserEntity);
+            const followRepo = manager.getRepository(FollowEntity);
+            const deleteFollow = await followRepo.delete({
+                followerId: followRelation.followerId,
+                followingId: followRelation.followingId
+            });
+            await userRepo.update(
+                {id: followRelation.followerId},
+                {followingCount: () => "followingCount - 1"}
+            );
+            await userRepo.update(
+                {id: followRelation.followingId},
+                {followerCount: () => "followerCount - 1"}
+            );
+        });
     }
 
     async getFollowingsIdByUserId(userId: UserId) {
