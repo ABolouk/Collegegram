@@ -17,14 +17,14 @@ import {HomePageService} from "../modules/post/home-page.service";
 import {UserLowService} from "../modules/user/user.low.service";
 import {SessionLowService} from "../modules/user/session.low.service";
 
-export const makePostRouter = (userLowService: UserLowService, sessionLowService: SessionLowService, postService: PostHighService, commentService: CommentService, homePageService: HomePageService, likeHighService: LikeHighService) => {
+export const makePostRouter = (userLowService: UserLowService, sessionLowService: SessionLowService, postHighService: PostHighService, commentService: CommentService, homePageService: HomePageService, likeHighService: LikeHighService) => {
     const app = Router();
     app.post("/", loginMiddle(userLowService, sessionLowService), uploadMinIO.array('post-photos'), (req, res) => {
         const data = createPostDto.parse(req.body);
         if (!req.files) {
             return new BadRequestError("post has no images")
         }
-        handleExpresss(res, () => postService.createPost(data, req.files as Express.Multer.File[], req.user));
+        handleExpresss(res, () => postHighService.createPost(data, req.files as Express.Multer.File[], req.user));
     });
 
     app.get("/home", loginMiddle(userLowService, sessionLowService), (req, res) => {
@@ -37,12 +37,12 @@ export const makePostRouter = (userLowService: UserLowService, sessionLowService
 
     app.get("/user", loginMiddle(userLowService, sessionLowService), (req, res) => {
         const {limit, startTime} = getPostsDto.parse(req.query);
-        handleExpresss(res, () => postService.getPostsByUserId(req.user.id, limit, startTime ? startTime : new Date()));
+        handleExpresss(res, () => postHighService.getPostsByUserId(req.user.id, limit, startTime ? startTime : new Date()));
     });
 
     app.get("/:id", loginMiddle(userLowService, sessionLowService), (req, res) => {
         const {id} = getPostIdDto.parse(req.params);
-        handleExpresss(res, () => postService.getPostById(id));
+        handleExpresss(res, () => postHighService.getPostById(id));
     });
 
     app.post("/:id/comment", loginMiddle(userLowService, sessionLowService), (req, res) => {
