@@ -9,6 +9,9 @@ import {
 import { NotificationUser } from "./notification-user";
 import { NotificationPost } from "./notification-post";
 import { NotificationComment } from "./notification-comment";
+import { CommentId } from "../../post/comment/model/comment-id";
+import { PostId } from "../../post/model/post-id";
+import { UserId } from "../../user/model/user.id";
 
 const allNotificationTypes = [
     CommentNotificationType,
@@ -38,4 +41,12 @@ export interface NotificationInterface {
     post?: NotificationPost;
     comment?: NotificationComment;
     updatedAt: Date;
+}
+
+export interface CreateNotificationInterface {
+    interactingUserId: UserId;
+    interactedUserId: UserId;
+    type: NotificationType;
+    postId?: PostId;
+    commentId?: CommentId;
 }
