@@ -10,7 +10,7 @@ import { getPostsDto } from "../modules/post/dto/get-posts-dto";
 import { getPostIdDto } from "../modules/post/dto/get-post-id-dto";
 import { uploadMinIO } from "../utility/multer";
 import { BadRequestError } from "../utility/http-errors";
-import { BookMarkDto } from "../modules/bookmark/dto/create-book-mark.dto";
+import { CreateBookmarkDto } from "../modules/bookmark/dto/create-book-mark.dto";
 import { BookmarkService } from "../modules/bookmark/book-mark.service";
 import { GetBookMarkDto } from "../modules/bookmark/dto/get-book-mark.dto";
 
@@ -44,14 +44,14 @@ export const makePostRouter = (userService: UserService, postService: PostServic
 	app.post("/:id/bookmark", loginMiddle(userService), (req, res) => {
 		const userId = req.user.id
 		const postId = req.params.id
-		const dto = BookMarkDto.parse({ userId, postId })
+		const dto = CreateBookmarkDto.parse({ userId, postId })
 		handleExpresss(res, () => bookmarkService.bookmark(dto))
 	})
 
 	app.post("/:id/unbookmark", loginMiddle(userService), (req, res) => {
 		const userId = req.user.id
 		const postId = req.params.id
-		const dto = BookMarkDto.parse({ userId, postId })
+		const dto = CreateBookmarkDto.parse({ userId, postId })
 		handleExpresss(res, () => bookmarkService.unBookmark(dto))
 	})
 
