@@ -22,6 +22,10 @@ import { BlockRepository } from "./modules/block/block.repository";
 import {LikeRepository} from "./modules/post/like/like.repository";
 import {LikeService} from "./modules/post/like/like.service";
 import { HomePageService } from "./modules/post/home-page.service";
+import { UserInteractionRepository } from "./modules/user-interaction/user-interaction.repository";
+import { USerInteractionService } from "./modules/user-interaction/user-interaction.service";
+import { BookmarkService } from "./modules/bookmark/book-mark.service";
+import { BookmarkRepository as BookmarkRepository } from "./modules/bookmark/book-mark.repository";
 
 
 export const makeApp = (dataSource: DataSource) => {
@@ -52,6 +56,9 @@ export const makeApp = (dataSource: DataSource) => {
     const likeRepo = new LikeRepository(dataSource);
     const likeService = new LikeService(likeRepo, postService, userService, followRellService);
     app.use("/post", makePostRouter(userService, postService, commentService, homePageService,likeService));
+    const bookmarkRepo = new BookmarkRepository(dataSource)
+    const bookmarkService = new BookmarkService(bookmarkRepo, postService, userService, followRellService)
+    app.use("/post", makePostRouter(userService, postService, commentService, bookmarkService));
 
     app.use((req, res, next) => {
         next();
@@ -64,9 +71,9 @@ export const makeApp = (dataSource: DataSource) => {
         next,
     ) => {
         if (error instanceof ZodError) {
-            res.status(400).send({message: error.issues});
+            res.status(400).send({ message: error.issues });
         }
-        res.status(500).send({message: "خطایی رخ داده است. لطفا دوباره تلاش کنید."});
+        res.status(500).send({ message: "خطایی رخ داده است. لطفا دوباره تلاش کنید." });
     };
     app.use(zodErrorHanlder);
     return app

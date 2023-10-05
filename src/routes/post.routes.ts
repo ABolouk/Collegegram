@@ -13,9 +13,13 @@ import {BadRequestError} from "../utility/http-errors";
 import {likeDto} from "../modules/post/like/dto/like.dto";
 import {LikeService} from "../modules/post/like/like.service";
 import {homePageDto} from "../modules/post/dto/home-page.dto";
-import {HomePageService} from "../modules/post/home-page.service";
+import { HomePageService } from "../modules/post/home-page.service";
+import { CreateBookmarkDto } from "../modules/bookmark/dto/create-book-mark.dto";
+import { BookmarkService } from "../modules/bookmark/book-mark.service";
+import { GetBookMarkDto } from "../modules/bookmark/dto/get-book-mark.dto";
 
-export const makePostRouter = (userService: UserService, postService: PostService, commentService: CommentService, homePageService: HomePageService, likeService: LikeService) => {
+
+export const makePostRouter = (userService: UserService, postService: PostService, commentService: CommentService, homePageService: HomePageService, likeService: LikeService, bookmarkService: BookmarkService) => {
     const app = Router();
     app.post("/", loginMiddle(userService), uploadMinIO.array('post-photos'), (req, res) => {
         const data = createPostDto.parse(req.body);
@@ -64,5 +68,27 @@ export const makePostRouter = (userService: UserService, postService: PostServic
         handleExpresss(res, () => likeService.unlike(dto))
     })
 
-    return app;
+	app.post("/bookmark", loginMiddle(userService), (req, res) => {
+		const userId = req.user.id
+		const postId = req.body.id
+		const dto = CreateBookmarkDto.parse({ userId, postId })
+		handleExpresss(res, () => bookmarkService.bookmark(dto))
+	})
+
+	app.post("/unbookmark", loginMiddle(userService), (req, res) => {
+		const userId = req.user.id
+		const postId = req.body.id
+		const dto = CreateBookmarkDto.parse({ userId, postId })
+		handleExpresss(res, () => bookmarkService.unBookmark(dto))
+	})
+
+	app.get("/bookmarks", loginMiddle(userService), (req, res) => {
+		const userId = req.user.id
+		const limit = req.query.limit
+		const startTime = req.query.startTime ? req.query.startTime : new Date()
+		const dto = GetBookMarkDto.parse({ userId, limit, startTime })
+		handleExpresss(res, () => bookmarkService.getBookmarks(dto))
+	})
+
+	return app;
 };
