@@ -1,8 +1,8 @@
 import {Follow} from "./model/follow";
 import {BadRequestError, ConflictError, NotFoundError} from "../../utility/http-errors";
 import {followDtoType} from "./dto/follow.dto";
-import {UserService} from "../user/user.service";
-import {followRequestService} from "./follow.request.service";
+import {UserHighService} from "../user/user.high.service";
+import {FollowRequestLowService} from "./follow.request.low.service";
 import {FollowReqStatus} from "./model/follow.req.status";
 import {FollowRequest} from "./model/follow.request";
 import {unfollowDtoType} from "./dto/unfollow.dto";
@@ -12,10 +12,11 @@ import {cancellFollowReqType} from "./dto/followreq.cancel.dto";
 import {UserId} from "../user/model/user.id";
 import {blockEventEmmmiter} from "../../utility/event-handling";
 import {FollowLowService} from "./follow.low.service";
+import {UserLowService} from "../user/user.low.service";
 
 
 export class FollowHighService {
-    constructor(private followLowService: FollowLowService, private followRequestService: followRequestService, private userService: UserService) {
+    constructor(private followLowService: FollowLowService, private followRequestService: FollowRequestLowService, private userLowService: UserLowService ) {
 
         blockEventEmmmiter.on("block", async (blockerId: UserId, blockedId: UserId) => {
             await this.blockAction({blockerId, blockedId});
@@ -28,7 +29,7 @@ export class FollowHighService {
 
     async createFollowRelation(dto: followDtoType) {
         //TODO: BLOCK CHECK
-        const followingUser = await this.userService.getUserByUsername(dto.following);
+        const followingUser = await this.userLowService.getUserByUsername(dto.following);
         if (!followingUser) {
             throw new NotFoundError("User")
         }
@@ -64,7 +65,7 @@ export class FollowHighService {
     }
 
     async unfollow(dto: unfollowDtoType) {
-        const followingUser = await this.userService.getUserById(dto.follower);
+        const followingUser = await this.userLowService.getUserById(dto.follower);
         if (!followingUser) {
             throw new NotFoundError("User")
         }
@@ -79,7 +80,7 @@ export class FollowHighService {
     }
 
     async acceptFollowRequest(dto: acceptFollowReqType) {
-        const followerUser = await this.userService.getUserByUsername(dto.follower);
+        const followerUser = await this.userLowService.getUserByUsername(dto.follower);
         if (!followerUser) {
             throw new NotFoundError("User")
         }
@@ -90,7 +91,7 @@ export class FollowHighService {
     }
 
     async rejectFollowRequest(dto: rejectFollowReqType) {
-        const followerUser = await this.userService.getUserByUsername(dto.follower);
+        const followerUser = await this.userLowService.getUserByUsername(dto.follower);
         if (!followerUser) {
             throw new NotFoundError("User")
         }
@@ -101,7 +102,7 @@ export class FollowHighService {
     }
 
     async cancelFollowRequest(dto: cancellFollowReqType) {
-        const followingUser = await this.userService.getUserById(dto.follower);
+        const followingUser = await this.userLowService.getUserById(dto.follower);
         if (!followingUser) {
             throw new NotFoundError("User")
         }
