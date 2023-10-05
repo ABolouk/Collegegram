@@ -30,7 +30,7 @@ export class PostRepository {
         })
     }
 
-    async getPostsByUserId(userId: UserId, limit: number, startTime: Date): Promise<PostDao[]> {
+    async getPostsByUserId(userId: UserId, limit: number, startTime: Date): Promise<PostInterface[]> {
         const posts = await this.postRepo.find({
             relations: ['tags'],
             where: {
