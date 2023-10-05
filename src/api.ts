@@ -22,6 +22,9 @@ import { BlockRepository } from "./modules/block/block.repository";
 import {LikeRepository} from "./modules/post/like/like.repository";
 import {LikeService} from "./modules/post/like/like.service";
 import { HomePageService } from "./modules/post/home-page.service";
+import { makeNotificationRouter } from "./routes/notification.routes";
+import { NotificationService } from "./modules/notification/notification.service";
+import { NotificationRepository } from "./modules/notification/notification.repository";
 
 
 export const makeApp = (dataSource: DataSource) => {
@@ -52,6 +55,10 @@ export const makeApp = (dataSource: DataSource) => {
     const likeRepo = new LikeRepository(dataSource);
     const likeService = new LikeService(likeRepo, postService, userService, followRellService);
     app.use("/post", makePostRouter(userService, postService, commentService, homePageService,likeService));
+
+    const notificationRepo = new NotificationRepository(dataSource);
+    const notificationService = new NotificationService(notificationRepo, postService);
+    app.use("/notification", makeNotificationRouter(userService, notificationService))
 
     app.use((req, res, next) => {
         next();
