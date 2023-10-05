@@ -25,6 +25,12 @@ export class PostRepository {
         return post ? CreatePostDao(post) : null;
     }
 
+    async getTotalPostById(id: PostId) {
+        return await this.postRepo.findOne({
+            where: { id: id },
+        })
+    }
+
     async getPostsByUserId(userId: UserId, limit: number, startTime: Date): Promise<PostDao[]> {
         const posts = await this.postRepo.find({
             relations: ['tags'],

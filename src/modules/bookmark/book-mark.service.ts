@@ -13,7 +13,7 @@ export class BookmarkService {
 
 
   async bookmark(dto: BookmarkDtoType) {
-    const post = await this.postService.getPostById(dto.postId)
+    const post = await this.postService.getTotalPostById(dto.postId)
     if (!post) {
       throw new NotFoundError('Post');
     }
@@ -40,7 +40,7 @@ export class BookmarkService {
   }
 
   async unBookmark(dto: BookmarkDtoType) {
-    const post = await this.postService.getPostById(dto.postId)
+    const post = await this.postService.getTotalPostById(dto.postId)
     if (!post) {
       throw new NotFoundError('Post');
     }
