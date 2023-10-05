@@ -1,15 +1,16 @@
 import { PostService } from "./post.service";
 import { UserService } from "../user/user.service";
 import { homePageDtoType } from "./dto/home-page.dto";
-import { followService } from "../follow/follow.service";
+import { FollowHighService } from "../follow/follow.high.service";
+import {FollowLowService} from "../follow/follow.low.service";
 
 export class HomePageService {
-  constructor(private postService: PostService, private userService: UserService, private followService : followService) { }
+  constructor(private postService: PostService, private userService: UserService, private followLowService : FollowLowService) { }
   
   
 
   async getHome(dto: homePageDtoType) {
-    const followingUsersId = await this.followService.getFollowingsIdByUserId(dto.userId)
+    const followingUsersId = await this.followLowService.getFollowingsIdByUserId(dto.userId)
     const listOfFollowingUsersId = followingUsersId.map((x) => x.followingId)
     const result = (await this.postService.getPostsByUsersId(listOfFollowingUsersId, dto.limit, dto.startTime))
     const posts = result.posts

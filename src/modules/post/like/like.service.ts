@@ -2,14 +2,14 @@ import {LikeRepository} from "./like.repository";
 import {PostService} from "../post.service";
 import {LikeDtoType} from "./dto/like.dto";
 import {BadRequestError, NotFoundError} from "../../../utility/http-errors";
-import {followService} from "../../follow/follow.service";
+import {FollowHighService} from "../../follow/follow.high.service";
 import {UserService} from "../../user/user.service";
 import {blockEventEmmmiter, likeEventEmmmiter} from "../../../data/event-handling";
 import {UserId} from "../../user/model/user.id";
 import {User} from "../../user/model/user";
 
 export class LikeService {
-    constructor(private likeRepository: LikeRepository, private postService: PostService, private userService: UserService, private followRellService: followService) {
+    constructor(private likeRepository: LikeRepository, private postService: PostService, private userService: UserService, private followRellService: FollowHighService) {
         blockEventEmmmiter.on("block", (x, y) => this.blockAction({blockerId: x, blockedId: y}))
     }
 

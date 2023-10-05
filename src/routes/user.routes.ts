@@ -11,7 +11,7 @@ import {unfollowDto} from "../modules/follow/dto/unfollow.dto";
 import {JwtService} from "../modules/jwt/jwt.service";
 import {blockDto} from "../modules/block/dto/block.dto";
 import {getUserDto} from "../modules/user/dto/get.user.dto";
-import {followService} from "../modules/follow/follow.service";
+import {FollowHighService} from "../modules/follow/follow.high.service";
 import {acceptFollowReq} from "../modules/follow/dto/followreq.accept.dto";
 import {rejectFollowReq} from "../modules/follow/dto/followreq.reject.dto";
 import {uploadAvatarMinIO} from "../utility/multer";
@@ -19,7 +19,7 @@ import {uploadAvatarMinIO} from "../utility/multer";
 export const resetPasswordRoute = "reset_password"
 
 
-export const makeUserRouter = (userService: UserService, jwtService: JwtService, followService: followService) => {
+export const makeUserRouter = (userService: UserService, jwtService: JwtService, followService: FollowHighService) => {
     const app = Router();
     app.post("/login", (req, res) => {
         const dto = loginDto.parse(req.body);

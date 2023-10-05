@@ -19,7 +19,7 @@ import { UserId } from './model/user.id';
 import { EditProfileType } from "./dto/edit-profile.dto";
 import { UserAuth } from "./model/user.auth";
 import { followRequestService } from "../follow/follow.request.service";
-import { followService } from "../follow/follow.service";
+import { FollowHighService } from "../follow/follow.high.service";
 import { UserName } from "./model/user.username";
 import { BlockDtoType } from "../block/dto/block.dto";
 import { BlockService } from "../block/block.service";
