@@ -28,6 +28,8 @@ import {UserLowService} from "./modules/user/user.low.service";
 import {SessionLowService} from "./modules/user/session.low.service";
 import {PostLowService} from "./modules/post/post.low.service";
 import {LikeLowService} from "./modules/post/like/like.low.service";
+import {BookmarkService} from "./modules/bookmark/book-mark.service";
+import {BookmarkRepository} from "./modules/bookmark/book-mark.repository";
 
 
 export const makeApp = (dataSource: DataSource) => {
@@ -63,7 +65,9 @@ export const makeApp = (dataSource: DataSource) => {
     const commentService = new CommentService(commentRepo, postLowService);
     const homePageService = new HomePageService(postHighService, userLowService, followLowService);
     const likeHighService = new LikeHighService(likeLowService, postLowService, userLowService, followLowService);
-    app.use("/post", makePostRouter(userLowService, sessionLowService, postHighService, commentService, homePageService, likeHighService));
+    const bookmarkRepo = new BookmarkRepository(dataSource)
+    const bookmarkService = new BookmarkService(bookmarkRepo, postLowService , userLowService, followLowService)
+    app.use("/post", makePostRouter(userLowService, sessionLowService, postHighService, commentService, homePageService, likeHighService , bookmarkService));
 
     app.use((req, res, next) => {
         next();

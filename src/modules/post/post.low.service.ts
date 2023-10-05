@@ -35,4 +35,12 @@ export class PostLowService {
         }
         return author;
     }
+
+    async getTotalPostById(postId: PostId) {
+        const post = await this.postRepository.getTotalPostById(postId)
+        if (!post) {
+            throw new NotFoundError('Post');
+        }
+        return post;
+    }
 }

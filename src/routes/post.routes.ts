@@ -1,5 +1,4 @@
 import {Router} from "express";
-import {PostHighService} from "../modules/post/post.high.service";
 import {CommentService} from "../modules/post/comment/comment.service";
 import {createPostDto} from "../modules/post/dto/create-post.dto";
 import {handleExpresss} from "../utility/handle-express";
@@ -15,8 +14,12 @@ import {homePageDto} from "../modules/post/dto/home-page.dto";
 import {HomePageService} from "../modules/post/home-page.service";
 import {UserLowService} from "../modules/user/user.low.service";
 import {SessionLowService} from "../modules/user/session.low.service";
+import {CreateBookmarkDto} from "../modules/bookmark/dto/create-book-mark.dto";
+import {GetBookMarkDto} from "../modules/bookmark/dto/get-book-mark.dto";
+import {BookmarkService} from "../modules/bookmark/book-mark.service";
+import {PostHighService} from "../modules/post/post.high.service";
 
-export const makePostRouter = (userLowService: UserLowService, sessionLowService: SessionLowService, postHighService: PostHighService, commentService: CommentService, homePageService: HomePageService, likeHighService: LikeHighService) => {
+export const makePostRouter = (userLowService: UserLowService, sessionLowService: SessionLowService, postHighService: PostHighService, commentService: CommentService, homePageService: HomePageService, likeHighService: LikeHighService, bookmarkService : BookmarkService) => {
     const app = Router();
     app.post("/", loginMiddle(userLowService, sessionLowService), uploadMinIO.array('post-photos'), (req, res) => {
         const data = createPostDto.parse(req.body);
@@ -41,7 +44,7 @@ export const makePostRouter = (userLowService: UserLowService, sessionLowService
 
     app.get("/:id", loginMiddle(userLowService, sessionLowService), (req, res) => {
         const {id} = getPostIdDto.parse(req.params);
-        handleExpresss(res, () => postService.getPostById(id));
+        handleExpresss(res, () => postHighService.getPostById(id));
     });
 
     app.post("/:id/comment", loginMiddle(userLowService, sessionLowService), (req, res) => {
@@ -65,27 +68,27 @@ export const makePostRouter = (userLowService: UserLowService, sessionLowService
         handleExpresss(res, () => likeHighService.unlike(dto))
     })
 
-	app.post("/bookmark", loginMiddle(userService), (req, res) => {
-		const userId = req.user.id
-		const postId = req.body.id
-		const dto = CreateBookmarkDto.parse({ userId, postId })
-		handleExpresss(res, () => bookmarkService.bookmark(dto))
-	})
+    app.post("/bookmark", loginMiddle(userLowService, sessionLowService), (req, res) => {
+        const userId = req.user.id
+        const postId = req.body.id
+        const dto = CreateBookmarkDto.parse({userId, postId})
+        handleExpresss(res, () => bookmarkService.bookmark(dto))
+    })
 
-	app.post("/unbookmark", loginMiddle(userService), (req, res) => {
-		const userId = req.user.id
-		const postId = req.body.id
-		const dto = CreateBookmarkDto.parse({ userId, postId })
-		handleExpresss(res, () => bookmarkService.unBookmark(dto))
-	})
+    app.post("/unbookmark", loginMiddle(userLowService, sessionLowService), (req, res) => {
+        const userId = req.user.id
+        const postId = req.body.id
+        const dto = CreateBookmarkDto.parse({userId, postId})
+        handleExpresss(res, () => bookmarkService.unBookmark(dto))
+    })
 
-	app.get("/bookmarks", loginMiddle(userService), (req, res) => {
-		const userId = req.user.id
-		const limit = req.query.limit
-		const startTime = req.query.startTime ? req.query.startTime : new Date()
-		const dto = GetBookMarkDto.parse({ userId, limit, startTime })
-		handleExpresss(res, () => bookmarkService.getBookmarks(dto))
-	})
+    app.get("/bookmarks", loginMiddle(userLowService, sessionLowService), (req, res) => {
+        const userId = req.user.id
+        const limit = req.query.limit
+        const startTime = req.query.startTime ? req.query.startTime : new Date()
+        const dto = GetBookMarkDto.parse({userId, limit, startTime})
+        handleExpresss(res, () => bookmarkService.getBookmarks(dto))
+    })
 
-	return app;
+    return app;
 };

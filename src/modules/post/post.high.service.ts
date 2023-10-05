@@ -26,14 +26,6 @@ export class PostHighService {
         return post;
     }
 
-    async getTotalPostById(postId: PostId) {
-        const post = await this.postRepository.getTotalPostById(postId)
-        if (!post) {
-            throw new NotFoundError('Post');
-        }
-        return post;
-    }
-
     async getPostsByUserId(userId: UserId, limit: number, startTime: Date): Promise<PostsInterface> {
         const posts = await this.postLowService.getPostsByUserId(userId, limit, startTime);
         const nextOffset = posts.length === 0 ? new Date() : posts[posts.length - 1].createdAt;
