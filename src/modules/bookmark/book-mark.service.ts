@@ -1,7 +1,7 @@
 import { PostService } from "../post/post.service";
 import { UserService } from "../user/user.service";
 import { BadRequestError, NotFoundError } from "../../utility/http-errors";
-import { BookMarkDtoType } from "./dto/create-book-mark.dto";
+import { BookmarkDtoType } from "./dto/create-book-mark.dto";
 import { followService } from "../follow/follow.service";
 import { BookmarkRepository } from "./book-mark.repository";
 import { GetBookMarkDtoType } from "./dto/get-book-mark.dto";
@@ -12,12 +12,15 @@ export class BookmarkService {
   constructor(private bookmarkRepo: BookmarkRepository, private postService: PostService, private userService: UserService, private followService: followService) { }
 
 
-  async bookmark(dto: BookMarkDtoType) {
+  async bookmark(dto: BookmarkDtoType) {
     const post = await this.postService.getPostById(dto.postId)
     if (!post) {
       throw new NotFoundError('Post');
     }
     const author = await this.userService.getUserById(dto.userId);
+    if (!author) {
+      throw new NotFoundError("User")
+    }
     if (author.isPrivate) {
       const follow = await this.followService.getFollowRelation({
         followerId: dto.userId,
@@ -29,14 +32,14 @@ export class BookmarkService {
     }
 
     const bookmark = await this.bookmarkRepo.getBookmark({ userId: dto.userId, postId: dto.postId })
-    if (bookmark !== null) {
+    if (bookmark) {
       throw new BadRequestError("شما تاکنون این پست را سیو کرده‌اید")
     }
     await this.bookmarkRepo.createBookmark({ userId: dto.userId, postId: dto.postId })
     return { status: "bookmarked" }
   }
 
-  async unBookmark(dto: BookMarkDtoType) {
+  async unBookmark(dto: BookmarkDtoType) {
     const post = await this.postService.getPostById(dto.postId)
     if (!post) {
       throw new NotFoundError('Post');
