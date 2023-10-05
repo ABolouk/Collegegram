@@ -1,6 +1,6 @@
 import { z } from "zod"
-import { UserId } from "../../modules/user/model/user.id"
-import { PostId } from "../../modules/post/model/post-id"
+import { UserId } from "../../user/model/user.id"
+import { PostId } from "../../post/model/post-id"
 
 export const BookMarkDto = z.object({
   userId: UserId.zod,

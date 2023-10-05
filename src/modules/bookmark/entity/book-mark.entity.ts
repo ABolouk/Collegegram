@@ -1,8 +1,8 @@
 import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryColumn, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { UserId } from "../../modules/user/model/user.id";
-import { UserEntity } from "../../modules/user/entity/user.entity";
-import { PostId } from "../../modules/post/model/post-id";
-import { PostEntity } from "../../modules/post/entity/post.entity";
+import { UserId } from "../../user/model/user.id";
+import { UserEntity } from "../../user/entity/user.entity";
+import { PostId } from "../../post/model/post-id";
+import { PostEntity } from "../../post/entity/post.entity";
 import { BookMarkId } from "../model/book-mark-id";
 
 @Entity("bookmark")

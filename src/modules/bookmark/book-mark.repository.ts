@@ -1,10 +1,10 @@
 import { DataSource, LessThan, Repository } from "typeorm";
 import { BookmarkEntity } from "./entity/book-mark.entity";
 import { Bookmark, bookmarkInterface } from "./model/book-mark";
-import { PostEntity } from "../modules/post/entity/post.entity";
-import { UserId } from "../modules/user/model/user.id";
+import { PostEntity } from "../post/entity/post.entity";
+import { UserId } from "../user/model/user.id";
 import { zodbookmarkPostssDao } from "./dao/bookmark.dao";
-import {z} from "zod"
+import { z } from "zod"
 
 export class BookmarkRepository {
   private bookmarkRepo: Repository<BookmarkEntity>
@@ -41,7 +41,7 @@ export class BookmarkRepository {
   }
 
 
-  async getBookmarksByUserId(userId: UserId, limit: number, startTime: Date){
+  async getBookmarksByUserId(userId: UserId, limit: number, startTime: Date) {
     const [posts, count] = await this.bookmarkRepo.findAndCount(
       {
         where: {

@@ -19,8 +19,8 @@ import { JwtService } from "./modules/jwt/jwt.service";
 import cors from 'cors'
 import { UserInteractionRepository } from "./modules/user-interaction/user-interaction.repository";
 import { USerInteractionService } from "./modules/user-interaction/user-interaction.service";
-import { BookMarkService } from "./bookmark/book-mark.service";
-import { BookmarkRepository as BookmarkRepository } from "./bookmark/book-mark.repository";
+import { BookMarkService } from "./modules/bookmark/book-mark.service";
+import { BookmarkRepository as BookmarkRepository } from "./modules/bookmark/book-mark.repository";
 
 
 export const makeApp = (dataSource: DataSource) => {

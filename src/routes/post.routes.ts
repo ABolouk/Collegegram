@@ -10,9 +10,9 @@ import { getPostsDto } from "../modules/post/dto/get-posts-dto";
 import { getPostIdDto } from "../modules/post/dto/get-post-id-dto";
 import { uploadMinIO } from "../utility/multer";
 import { BadRequestError } from "../utility/http-errors";
-import { BookMarkDto } from "../bookmark/dto/create-book-mark.dto";
-import { BookmarkService } from "../bookmark/book-mark.service";
-import { GetBookMarkDto } from "../bookmark/dto/get-book-mark.dto";
+import { BookMarkDto } from "../modules/bookmark/dto/create-book-mark.dto";
+import { BookmarkService } from "../modules/bookmark/book-mark.service";
+import { GetBookMarkDto } from "../modules/bookmark/dto/get-book-mark.dto";
 
 export const makePostRouter = (userService: UserService, postService: PostService, commentService: CommentService, bookmarkService: BookmarkService) => {
 	const app = Router();

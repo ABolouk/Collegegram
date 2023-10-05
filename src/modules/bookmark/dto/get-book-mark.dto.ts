@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { UserId } from "../../modules/user/model/user.id"
+import { UserId } from "../../user/model/user.id"
 
 export const GetBookMarkDto = z.object({
   userId: UserId.zod,

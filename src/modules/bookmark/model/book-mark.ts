@@ -1,6 +1,6 @@
-import {z} from "zod"
-import { PostId } from "../../modules/post/model/post-id";
-import { UserId } from "../../modules/user/model/user.id";
+import { z } from "zod"
+import { PostId } from "../../post/model/post-id";
+import { UserId } from "../../user/model/user.id";
 import { BookMarkId } from "./book-mark-id";
 
 export interface Bookmark {
@@ -17,13 +17,13 @@ export interface bookmarkInterface {
 export type bookmarkPosts = bookmarkPostInterface[]
 
 export interface bookmarkPostInterface {
-  id: PostId
+  PostId: PostId
   photos: string[]
   createdAt: Date
 }
 export module bookmarkPost {
   export const zod = z.object({
-    id: PostId.zod,
+    PostId: PostId.zod,
     photos: z.array(z.string()),
     createdAt: z.date()
   })

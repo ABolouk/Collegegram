@@ -1,6 +1,6 @@
 import { z } from "zod";
-import { Brand } from "../../utility/brand";
-import { Int } from "../../data/int";
+import { Brand } from "../../../utility/brand";
+import { Int } from "../../../data/int";
 
 
 export type BookMarkId = Brand<Int, "BookMarkId">;

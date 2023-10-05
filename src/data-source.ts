@@ -10,7 +10,7 @@ import { UserInteractionEntity } from "./modules/user-interaction/entity/user-in
 import { BlockEntity } from "./modules/block/entity/block.entity";
 import { FollowEntity } from "./modules/follow/entity/follow.entity";
 import { FollowRequestEntity } from "./modules/follow/entity/follow-request.entity";
-import { BookmarkEntity } from "./bookmark/entity/book-mark.entity";
+import { BookmarkEntity } from "./modules/bookmark/entity/book-mark.entity";
 
 export const AppDataSource = new DataSource({
     url: process.env.DB_URL,

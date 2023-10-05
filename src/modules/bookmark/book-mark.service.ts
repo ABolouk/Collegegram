@@ -1,8 +1,8 @@
-import { PostService } from "../modules/post/post.service";
-import { UserService } from "../modules/user/user.service";
-import { BadRequestError, NotFoundError } from "../utility/http-errors";
+import { PostService } from "../post/post.service";
+import { UserService } from "../user/user.service";
+import { BadRequestError, NotFoundError } from "../../utility/http-errors";
 import { BookMarkDtoType } from "./dto/create-book-mark.dto";
-import { followService } from "../modules/follow/follow.service";
+import { followService } from "../follow/follow.service";
 import { BookmarkRepository } from "./book-mark.repository";
 import { GetBookMarkDtoType } from "./dto/get-book-mark.dto";
 
