@@ -18,6 +18,8 @@ export const zodUserDao = z
         email: Email.zod,
         password: HashedPassword.zod,
         postCount: WholeNumber.zod,
+        followerCount: WholeNumber.zod,
+        followingCount: WholeNumber.zod,
         bio: z.coerce.string(),
         firstName: z.nullable(zodFirstName),
         lastName: z.nullable(zodLastName),

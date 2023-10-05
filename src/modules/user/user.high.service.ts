@@ -98,6 +98,8 @@ export class UserHighService {
                 firstName: user.firstName,
                 lastName: user.lastName,
                 postCount: user.postCount,
+                followerCount: user.followerCount,
+                followingCount: user.followingCount,
                 avatar: user.avatar,
                 bio: user.bio,
                 isPrivate: user.isPrivate
