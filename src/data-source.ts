@@ -20,7 +20,7 @@ export const AppDataSource = new DataSource({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     logging: false,
-    entities: [UserEntity, SessionEntity, PostEntity, CommentEntity, TagEntity, FollowEntity, FollowRequestEntity, BlockEntity, BookmarkEntity],
+    entities: [UserEntity, SessionEntity, PostEntity, CommentEntity, TagEntity, FollowEntity, FollowRequestEntity, BlockEntity, BookmarkEntity , LikeEntity],
     migrations: ["./src/migrations/*.ts"],
     subscribers: [],
 });
