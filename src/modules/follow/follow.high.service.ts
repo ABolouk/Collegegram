@@ -1,9 +1,8 @@
-import {FollowRepository} from "./follow.repository";
 import {Follow} from "./model/follow";
 import {BadRequestError, ConflictError, NotFoundError} from "../../utility/http-errors";
 import {followDtoType} from "./dto/follow.dto";
-import {UserService} from "../user/user.service";
-import {followRequestService} from "./follow.request.service";
+import {UserHighService} from "../user/user.high.service";
+import {FollowRequestLowService} from "./follow.request.low.service";
 import {FollowReqStatus} from "./model/follow.req.status";
 import {FollowRequest} from "./model/follow.request";
 import {unfollowDtoType} from "./dto/unfollow.dto";
@@ -12,10 +11,12 @@ import {rejectFollowReqType} from "./dto/followreq.reject.dto";
 import {cancellFollowReqType} from "./dto/followreq.cancel.dto";
 import {UserId} from "../user/model/user.id";
 import {blockEventEmmmiter} from "../../utility/event-handling";
+import {FollowLowService} from "./follow.low.service";
+import {UserLowService} from "../user/user.low.service";
 
 
-export class followService {
-    constructor(private followRepo: FollowRepository, private followRequestService: followRequestService, private userService: UserService) {
+export class FollowHighService {
+    constructor(private followLowService: FollowLowService, private followRequestService: FollowRequestLowService, private userLowService: UserLowService ) {
 
         blockEventEmmmiter.on("block", async (blockerId: UserId, blockedId: UserId) => {
             await this.blockAction({blockerId, blockedId});
@@ -23,19 +24,19 @@ export class followService {
     }
 
     async getFollowRelation(followRelation: Follow) {
-        return await this.followRepo.getFollowRelation(followRelation);
+        return await this.followLowService.getFollowRelation(followRelation);
     }
 
     async createFollowRelation(dto: followDtoType) {
         //TODO: BLOCK CHECK
-        const followingUser = await this.userService.getUserByUsername(dto.following);
+        const followingUser = await this.userLowService.getUserByUsername(dto.following);
         if (!followingUser) {
             throw new NotFoundError("User")
         }
         if (followingUser.id === dto.follower) {
             throw new BadRequestError("Can't follow yourself")
         }
-        const followRelation = await this.followRepo.getFollowRelation({
+        const followRelation = await this.followLowService.getFollowRelation({
             followerId: dto.follower,
             followingId: followingUser.id
         });
@@ -56,7 +57,7 @@ export class followService {
                 status: FollowReqStatus.status.pending
             })
         }
-        await this.followRepo.createFollowRelation({
+        await this.followLowService.createFollowRelation({
             followerId: dto.follower,
             followingId: followingUser.id
         });
@@ -64,22 +65,22 @@ export class followService {
     }
 
     async unfollow(dto: unfollowDtoType) {
-        const followingUser = await this.userService.getUserById(dto.follower);
+        const followingUser = await this.userLowService.getUserById(dto.follower);
         if (!followingUser) {
             throw new NotFoundError("User")
         }
-        const res = (await this.followRepo.getFollowRelation({
+        const res = (await this.followLowService.getFollowRelation({
             followerId: dto.follower,
             followingId: followingUser.id
         }))
         if (!res) {
             throw new ConflictError("You are not following this user")
         }
-        return this.followRepo.deleteFollowRelation({followerId: dto.follower, followingId: followingUser.id})
+        return this.followLowService.deleteFollowRelation({followerId: dto.follower, followingId: followingUser.id})
     }
 
     async acceptFollowRequest(dto: acceptFollowReqType) {
-        const followerUser = await this.userService.getUserByUsername(dto.follower);
+        const followerUser = await this.userLowService.getUserByUsername(dto.follower);
         if (!followerUser) {
             throw new NotFoundError("User")
         }
@@ -90,7 +91,7 @@ export class followService {
     }
 
     async rejectFollowRequest(dto: rejectFollowReqType) {
-        const followerUser = await this.userService.getUserByUsername(dto.follower);
+        const followerUser = await this.userLowService.getUserByUsername(dto.follower);
         if (!followerUser) {
             throw new NotFoundError("User")
         }
@@ -101,7 +102,7 @@ export class followService {
     }
 
     async cancelFollowRequest(dto: cancellFollowReqType) {
-        const followingUser = await this.userService.getUserById(dto.follower);
+        const followingUser = await this.userLowService.getUserById(dto.follower);
         if (!followingUser) {
             throw new NotFoundError("User")
         }
@@ -119,7 +120,7 @@ export class followService {
         if (followReq.status === FollowReqStatus.status.pending) {
             if (followReqStatus === FollowReqStatus.status.accepted) {
                 await this.followRequestService.updateFollowRequest(followReq.id, followReqStatus);
-                await this.followRepo.createFollowRelation({
+                await this.followLowService.createFollowRelation({
                     followerId: followReq.followerId,
                     followingId: followReq.followingId,
                 })
@@ -138,12 +139,12 @@ export class followService {
     }
 
     async blockAction(dto: { blockerId: UserId, blockedId: UserId }) {
-        const followRelation = await this.followRepo.getFollowRelInTwoWay({
+        const followRelation = await this.followLowService.getFollowRelInTwoWay({
             followerId: dto.blockerId,
             followingId: dto.blockedId
         });
         if (followRelation) {
-            await this.followRepo.deleteFollowRelation({
+            await this.followLowService.deleteFollowRelation({
                 followerId: dto.blockerId,
                 followingId: dto.blockedId
             })
@@ -156,10 +157,5 @@ export class followService {
             await this.followRequestService.deleteFollowRequest(followRequest)
         }
         return {status: "blocked"};
-    }
-
-
-    async getFollowingsIdByUserId(userId: UserId) {
-        return this.followRepo.getFollowingsIdByUserId(userId)
     }
 }
