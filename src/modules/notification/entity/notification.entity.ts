@@ -38,7 +38,7 @@ export class NotificationEntity{
     commentId?: CommentId;
 
     @ManyToOne(() => CommentEntity, { onDelete: "CASCADE", nullable: true })
-    comment?: Comment;
+    comment?: CommentEntity;
 
     @CreateDateColumn()
     createdAt!: Date;
