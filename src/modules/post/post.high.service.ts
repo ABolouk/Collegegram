@@ -5,9 +5,11 @@ import {PostId} from "./model/post-id";
 import {PostsInterface} from "./model/post";
 import {User} from "../user/model/user";
 import {PostLowService} from "./post.low.service";
+import {UserName} from "../user/model/user.username";
+import {UserLowService} from "../user/user.low.service";
 
 export class PostHighService {
-    constructor(private postLowService: PostLowService) {
+    constructor(private postLowService: PostLowService, private userLowService: UserLowService) {
     }
 
     async createPost(dto: CreatePostDtoType, photos: Express.Multer.File[], loggedInUser: User) {
@@ -27,13 +29,11 @@ export class PostHighService {
     }
 
     async getPostsByUserId(userId: UserId, limit: number, startTime: Date): Promise<PostsInterface> {
-        const posts = await this.postLowService.getPostsByUserId(userId, limit, startTime);
-        const nextOffset = posts.length === 0 ? new Date() : posts[posts.length - 1].createdAt;
-        const hasMore = await this.postLowService.userHasMorePosts(userId, nextOffset)
+        const result = await this.postLowService.getPostsByUserId(userId, limit, startTime);
         return {
-            posts: posts,
-            nextOffset: nextOffset,
-            hasMore: hasMore,
+            posts: result.posts,
+            nextOffset: result.nextOffset,
+            hasMore: result.hasMore,
         }
     }
 
@@ -49,4 +49,13 @@ export class PostHighService {
         }
     }
 
+    async getPostsByUsername(username: UserName, limit: number, startTime: Date) {
+        const user = await this.userLowService.getUserByUsername(username)
+        const result = await this.postLowService.getPostsByUserId(user.id, limit, startTime);
+        return {
+            posts: result.posts,
+            nextOffset: result.nextOffset,
+            hasMore: result.hasMore,
+        }
+    }
  }
