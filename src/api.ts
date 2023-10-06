@@ -62,7 +62,7 @@ export const makeApp = (dataSource: DataSource) => {
     const likeRepo = new LikeRepository(dataSource);
     const likeLowService = new LikeLowService(likeRepo);
     const postHighService = new PostHighService(postLowService);
-    const commentService = new CommentService(commentRepo, postLowService);
+    const commentService = new CommentService(commentRepo, postLowService, userLowService, followLowService);
     const homePageService = new HomePageService(postHighService, userLowService, followLowService);
     const likeHighService = new LikeHighService(likeLowService, postLowService, userLowService, followLowService);
     const bookmarkRepo = new BookmarkRepository(dataSource)
