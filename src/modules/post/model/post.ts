@@ -2,6 +2,7 @@ import { UserId } from "../../user/model/user.id";
 import { CreateTagInterface } from "../tag/model/tag";
 import {Tags} from "../tag/dto/tag.dto";
 import {PostId} from "./post-id";
+import { WholeNumber } from "../../../data/whole-number";
 
 export interface PostInterface {
   id: PostId;
@@ -9,6 +10,9 @@ export interface PostInterface {
   description?: string;
   tags?: Tags;
   closeFriends: boolean;
+  likeCount: WholeNumber,
+  bookmarkCount: WholeNumber,
+  commentCount: WholeNumber,
   createdAt: Date;
 }
 
