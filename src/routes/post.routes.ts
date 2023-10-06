@@ -4,7 +4,7 @@ import {createPostDto} from "../modules/post/dto/create-post.dto";
 import {handleExpresss} from "../utility/handle-express";
 import {loginMiddle} from "../login.middleware";
 import {createCommentDto} from "../modules/post/comment/dto/create-comment.dto";
-import {getPostsDto} from "../modules/post/dto/get-posts-dto";
+import {getOtherUserPost, getPostsDto} from "../modules/post/dto/get-posts-dto";
 import {getPostIdDto} from "../modules/post/dto/get-post-id-dto";
 import {uploadMinIO} from "../utility/multer";
 import {BadRequestError} from "../utility/http-errors";
@@ -40,6 +40,14 @@ export const makePostRouter = (userLowService: UserLowService, sessionLowService
     app.get("/user", loginMiddle(userLowService, sessionLowService), (req, res) => {
         const {limit, startTime} = getPostsDto.parse(req.query);
         handleExpresss(res, () => postHighService.getPostsByUserId(req.user.id, limit, startTime ? startTime : new Date()));
+    });
+
+    app.get("/user/:username", loginMiddle(userLowService, sessionLowService), (req, res) => {
+        const username = req.params.username;
+        const limit = req.query.limit;
+        const startTime = req.query.startTime;
+        const dto = getOtherUserPost.parse({username, limit, startTime});
+        handleExpresss(res, () => postHighService.getPostsByUsername(dto.username, dto.limit, dto.startTime ? dto.startTime : new Date()));
     });
 
     app.get("/:id", loginMiddle(userLowService, sessionLowService), (req, res) => {
