@@ -29,7 +29,8 @@ export class CommentService {
             content: dto.content
         }
 
-        return await this.commentRepo.createComment(createdComment)
+        await this.commentRepo.createComment(createdComment)
+        return { status: "successful" }
     }
 
     async getComments(dto: GetCommentDtoType) {
