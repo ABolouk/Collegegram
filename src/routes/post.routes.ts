@@ -18,8 +18,10 @@ import {CreateBookmarkDto} from "../modules/bookmark/dto/create-book-mark.dto";
 import {GetBookMarkDto} from "../modules/bookmark/dto/get-book-mark.dto";
 import {BookmarkService} from "../modules/bookmark/book-mark.service";
 import {PostHighService} from "../modules/post/post.high.service";
+import {exploreDto} from "../modules/post/dto/explore.dto";
+import {ExploreService} from "../modules/post/explore.service";
 
-export const makePostRouter = (userLowService: UserLowService, sessionLowService: SessionLowService, postHighService: PostHighService, commentService: CommentService, homePageService: HomePageService, likeHighService: LikeHighService, bookmarkService : BookmarkService) => {
+export const makePostRouter = (userLowService: UserLowService, sessionLowService: SessionLowService, postHighService: PostHighService, commentService: CommentService, homePageService: HomePageService, likeHighService: LikeHighService, bookmarkService : BookmarkService, exploreService : ExploreService) => {
     const app = Router();
     app.post("/", loginMiddle(userLowService, sessionLowService), uploadMinIO.array('post-photos'), (req, res) => {
         const data = createPostDto.parse(req.body);
@@ -88,6 +90,14 @@ export const makePostRouter = (userLowService: UserLowService, sessionLowService
         const startTime = req.query.startTime ? req.query.startTime : new Date()
         const dto = GetBookMarkDto.parse({userId, limit, startTime})
         handleExpresss(res, () => bookmarkService.getBookmarks(dto))
+    })
+
+    app.get("/explore", loginMiddle(userLowService, sessionLowService), (req, res) => {
+        const userId = req.user.id
+        const limit = req.query.limit
+        const startTime = req.query.startTime ? req.query.startTime : new Date()
+        const dto = exploreDto.parse({userId, limit, startTime})
+        handleExpresss(res, () => exploreService.getExplore(dto))
     })
 
     return app;
