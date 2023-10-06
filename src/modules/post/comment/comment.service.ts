@@ -51,7 +51,7 @@ export class CommentService {
             }
         }
         const result = await this.commentRepo.getComments(dto.postId, dto.limit, dto.startTime)
-        if (!result.comments) {
+        if (!result.comments?.length) {
             return {
                 comments: [],
                 hasMore: false
