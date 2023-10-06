@@ -1,37 +1,37 @@
 import jwt from "jsonwebtoken";
-import {UserRepository} from './user.repository';
-import {BadRequestError, ConflictError, NotFoundError, UnauthorizedError} from '../../utility/http-errors';
-import {LoginDtoType} from './dto/login.dto';
-import {ForgetPasswordDto} from './dto/forget-password.dto';
-import {EmailService} from '../email/email.service';
-import {resetPasswordRoute} from '../../routes/user.routes';
+import { UserRepository } from './user.repository';
+import { BadRequestError, ConflictError, NotFoundError, UnauthorizedError } from '../../utility/http-errors';
+import { LoginDtoType } from './dto/login.dto';
+import { ForgetPasswordDto } from './dto/forget-password.dto';
+import { EmailService } from '../email/email.service';
+import { resetPasswordRoute } from '../../routes/user.routes';
 import {
     createMessageForOneTimeLink,
     createOneTimeLink,
     createOneTimeLinkSecret,
     PayloadType
 } from '../../utility/one-time-link';
-import {sessionRepository} from './session.repository';
-import {signupDto} from './dto/signup.dto';
-import {Password} from '../../utility/password-utils';
-import {randomBytes} from 'crypto';
-import {UserId} from './model/user.id';
-import {EditProfileType} from "./dto/edit-profile.dto";
-import {UserAuth} from "./model/user.auth";
-import {FollowRequestLowService} from "../follow/follow.request.low.service";
-import {FollowHighService} from "../follow/follow.high.service";
-import {UserName} from "./model/user.username";
-import {BlockDtoType} from "../block/dto/block.dto";
-import {BlockHighService} from "../block/block.high.service";
-import {BlockRelationInterface, UnblockRelationInterface} from "../block/model/block";
-import {GetUserDtoType} from "./dto/get.user.dto";
-import {User} from "./model/user";
-import {UserLowService} from "./user.low.service";
-import {BlockLowService} from "../block/block.low.service";
-import {SessionLowService} from "./session.low.service";
+import { sessionRepository } from './session.repository';
+import { signupDto } from './dto/signup.dto';
+import { Password } from '../../utility/password-utils';
+import { randomBytes } from 'crypto';
+import { UserId } from './model/user.id';
+import { EditProfileType } from "./dto/edit-profile.dto";
+import { UserAuth } from "./model/user.auth";
+import { FollowRequestLowService } from "../follow/follow.request.low.service";
+import { FollowHighService } from "../follow/follow.high.service";
+import { UserName } from "./model/user.username";
+import { BlockDtoType } from "../block/dto/block.dto";
+import { BlockHighService } from "../block/block.high.service";
+import { BlockRelationInterface, UnblockRelationInterface } from "../block/model/block";
+import { GetUserDtoType } from "./dto/get.user.dto";
+import { User } from "./model/user";
+import { UserLowService } from "./user.low.service";
+import { BlockLowService } from "../block/block.low.service";
+import { SessionLowService } from "./session.low.service";
 
 export class UserHighService {
-    constructor(private userLowService: UserLowService, private sessionLowService: SessionLowService, private emailService: EmailService) {
+    constructor(private userLowService: UserLowService, private sessionLowService: SessionLowService, private emailService: EmailService, private blockService: BlockHighService) {
     }
 
     async login(loginDto: LoginDtoType) {
@@ -44,11 +44,11 @@ export class UserHighService {
         if (!passwordsMatch) {
             throw new UnauthorizedError();
         }
-        const accessToken = jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET as string, {expiresIn: "5m"})
+        const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "5m" })
         const refreshToken = randomBytes(64).toString('hex')
         const time = loginDto.rememberMe ? 24 * 3600 * 1000 : 6 * 3600 * 1000;
         await this.sessionLowService.createSession(refreshToken, user.id, new Date(Date.now() + time));
-        return {accessToken, refreshToken};
+        return { accessToken, refreshToken };
     }
 
     async signup(dto: signupDto) {
@@ -82,15 +82,19 @@ export class UserHighService {
         };
 
         await this.userLowService.createUser(user);
-        const accessToken = jwt.sign({id: user.id}, process.env.ACCESS_TOKEN_SECRET as string, {expiresIn: "5m"})
+        const accessToken = jwt.sign({ id: user.id }, process.env.ACCESS_TOKEN_SECRET as string, { expiresIn: "5m" })
         const refreshToken = randomBytes(64).toString('hex')
-        return {accessToken, refreshToken};
+        return { accessToken, refreshToken };
     }
 
     async getUserProfile(dto: GetUserDtoType, userId: UserId) {
         const user = await this.userLowService.findByEmailOrUsername(dto.userName);
         if (!user) {
             throw new NotFoundError("User")
+        }
+        const blockRelation = await this.blockService.checkIfUsersBlockedEachOther({ userId: user.id, blockedUserId: userId })
+        if (blockRelation) {
+            return { status: "شما توسط این کاربر بلاک شده‌اید." }
         }
         if (user.id !== userId) {
             return {
@@ -129,7 +133,7 @@ export class UserHighService {
         }
     }
 
-    async forgetPassword({authenticator}: ForgetPasswordDto) {
+    async forgetPassword({ authenticator }: ForgetPasswordDto) {
         if (!UserAuth.is(authenticator)) {
             throw new UnauthorizedError();
         }
@@ -176,7 +180,7 @@ export class UserHighService {
         }
 
         this.userLowService.updatePasswordById(user.id, await Password.makeHashed(password1)); //???
-        return {success: true};
+        return { success: true };
     }
 
     async updateUserInfo(userId: UserId, editInfo: EditProfileType, file?: Express.Multer.File) {
@@ -190,7 +194,7 @@ export class UserHighService {
             throw new NotFoundError('User');
         }
         ;
-        const {confirmPassword, ...updateUserInfo} = {
+        const { confirmPassword, ...updateUserInfo } = {
             ...editInfo,
             avatar: file ? "https://collegegrammedia.darkube.app/collegegram-avatars/" + file.key : user.avatar,
             password: await editPass
