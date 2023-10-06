@@ -1,3 +1,4 @@
-import { BookmarkPosts } from "../model/book-mark";
+import { BookmarkPost, BookmarkPosts } from "../model/book-mark"
 
-export const zodbookmarkPostssDao = BookmarkPosts.zod.transform((x): BookmarkPosts => x)
+
+export const zodBookmarkPostsDao = BookmarkPosts.zod.transform((x): BookmarkPosts => x)
