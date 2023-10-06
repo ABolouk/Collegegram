@@ -4,7 +4,7 @@ export class HttpError {
 }
 
 
-type Fields = 'User' | 'Post' | 'Email' | 'Request'
+type Fields = 'User' | 'Post' | 'Email' | 'Request' | "Comment"
 const translate = (field: Fields) => {
     switch (field) {
         case 'Post':
@@ -15,6 +15,8 @@ const translate = (field: Fields) => {
             return 'ایمیل'
         case 'Request':
             return 'درخواست'
+        case 'Comment':
+            return 'نظر'
     }
 }
 
