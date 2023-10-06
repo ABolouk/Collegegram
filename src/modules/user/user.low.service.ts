@@ -4,6 +4,7 @@ import {UserName} from "./model/user.username";
 import {createUserInterface, updateUser, User} from "./model/user";
 import {BadRequestError, NotFoundError} from "../../utility/http-errors";
 import {UserId} from "./model/user.id";
+import {UserFollowingsId} from "../follow/model/follow";
 
 export class UserLowService {
     constructor(private userRepository: UserRepository) {
@@ -65,4 +66,7 @@ export class UserLowService {
         return this.userRepository.createUser(user)
     }
 
+    async getUsersNotFollowingAndNotBlocked(BlockedUsersId: UserId[], BlockerUsersId: UserId[], FollowingUserId: UserFollowingsId , limit: number , startTime: Date) {
+        return this.userRepository.getUsersNotFollowedNotblocked(BlockedUsersId ,BlockerUsersId , FollowingUserId , limit , startTime)
+    }
 }
