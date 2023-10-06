@@ -5,6 +5,8 @@ import {GetBookMarkDtoType} from "./dto/get-book-mark.dto";
 import {PostLowService} from "../post/post.low.service";
 import {UserLowService} from "../user/user.low.service";
 import {FollowLowService} from "../follow/follow.low.service";
+import { PostId } from "../post/model/post-id";
+import { UserId } from "../user/model/user.id";
 
 
 export class BookmarkService {
@@ -68,6 +70,20 @@ export class BookmarkService {
         return {status: "unbookmarked"}
 
     }
+
+
+    async isBookmarked(userId: UserId, postId: PostId): Promise<boolean> {
+        const bookmark = {
+            userId: userId,
+            postId: postId
+        }
+        const isBookmarked = this.bookmarkRepo.isBookmarked(bookmark);
+        if (!isBookmarked) {
+            return false
+        }
+        return true
+    }
+
 
     async getBookmarks(dto: GetBookMarkDtoType) {
         const result = await this.bookmarkRepo.getBookmarksByUserId(dto.userId, dto.limit, dto.startTime);

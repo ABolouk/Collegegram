@@ -1,6 +1,7 @@
 import {LikeRepository} from "./like.repository";
 import {likeInterface} from "./model/like";
 import {UserId} from "../../user/model/user.id";
+import { PostId } from "../model/post-id";
 
 export class LikeLowService {
     constructor(private likeRepository: LikeRepository) {
@@ -10,8 +11,12 @@ export class LikeLowService {
         return await this.likeRepository.create(like);
     }
 
-    async isLiked(like: likeInterface): Promise<likeInterface | null> {
-        return this.likeRepository.isLiked(like);
+    async isLiked(like: likeInterface): Promise<boolean> {
+        const isliked = await this.likeRepository.isLiked(like);
+        if (!isliked) {
+            return false
+        }
+        return true
     }
 
     async delete(like: likeInterface) {
