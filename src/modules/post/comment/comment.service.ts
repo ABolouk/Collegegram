@@ -52,7 +52,10 @@ export class CommentService {
         }
         const result = await this.commentRepo.getComments(dto.postId, dto.limit, dto.startTime)
         if (!result.comments) {
-            throw new NotFoundError("Comment")
+            return {
+                comments: [],
+                hasMore: false
+            }
         }
         const resultComments = await Promise.all(result.comments.map(async (x) => ({ id: x.id, familyName: await this.userLowService.getFamilyNameById(x.userId), userName: (await this.userLowService.getUserById(x.userId)).username, postId: x.postId, content: x.content, createdAt: x.createdAt })))
         const nextOffset = result.comments.length === 0 ? new Date() : result.comments[result.comments.length - 1].createdAt;
