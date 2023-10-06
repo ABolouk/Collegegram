@@ -9,6 +9,7 @@ import { CreatePostInterface, PostInterface } from "./model/post";
 import { TagEntity } from "./tag/entity/tag.entity";
 import { CreateTagInterface } from "./tag/model/tag";
 import { LessThan, In } from "typeorm";
+import { TagTitle } from "./tag/model/tag-title";
 
 export class PostRepository {
     private postRepo: Repository<PostEntity>;
@@ -56,6 +57,33 @@ export class PostRepository {
         const homePagePosts = zodHomePagePostsDao.parse(posts)
         const hasMore = count > limit
         return {homePagePosts, hasMore}
+    }
+
+    async getPostsByTagTitle(tagTitle: TagTitle, limit: number, startTime: Date) {
+        const [searchPosts, count] = await this.postRepo.findAndCount(
+            {
+                relations: ["tags"],
+                where: {
+                    tags: {
+                        title: tagTitle
+                    }
+                },
+                select: {
+                    tags: {
+                        title: true
+                    },
+                    id: true,
+                    likeCount: true,
+                    photos: true,
+                    createdAt: true
+                },
+                order: { createdAt: 'desc' },
+                take: limit
+
+            }
+        )
+        const hasMore = count > limit
+        return {searchPosts, hasMore}
     }
 
     async createPost(post: CreatePostInterface): Promise<PostInterface> {
