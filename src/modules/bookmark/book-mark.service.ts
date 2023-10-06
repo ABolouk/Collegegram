@@ -77,7 +77,7 @@ export class BookmarkService {
             userId: userId,
             postId: postId
         }
-        const isBookmarked = this.bookmarkRepo.isBookmarked(bookmark);
+        const isBookmarked = await this.bookmarkRepo.isBookmarked(bookmark);
         if (!isBookmarked) {
             return false
         }
