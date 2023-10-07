@@ -1,4 +1,4 @@
-import {DataSource, Repository} from "typeorm";
+import {DataSource, In, Repository} from "typeorm";
 import {FollowRequestEntity} from "./entity/follow-request.entity";
 import {createFollowRequest, followReqDao, followReqIdDao, FollowRequest} from "./model/follow.request";
 import {zodFollowReqDao, zodFollowReqIdDao} from "./dao/follow.req.dao";
@@ -6,6 +6,7 @@ import {FollowReqStatus} from "./model/follow.req.status";
 import status = FollowReqStatus.status;
 import {FollowReqId} from "./model/follow.req.id";
 import {z} from "zod";
+import {UserId} from "../user/model/user.id";
 
 export class followRequestRepository {
     private followRequestRepo: Repository<FollowRequestEntity>;
@@ -52,5 +53,23 @@ export class followRequestRepository {
                 ]
             }
         )
+    }
+
+    async blockAction(blockerId: UserId, blockedId: UserId) {
+        const followReqs = await this.followRequestRepo.find({
+            where: [
+                {
+                    followerId: blockerId,
+                    followingId: blockedId,
+                },
+                {
+                    followerId: blockedId,
+                    followingId: blockerId,
+                }
+            ]
+        })
+        await this.followRequestRepo.remove(followReqs)
+
+        return {status: "deleted"};
     }
 }
