@@ -12,6 +12,11 @@ import {rejectFollowReqType} from "./dto/followreq.reject.dto";
 import {cancellFollowReqType} from "./dto/followreq.cancel.dto";
 import {UserId} from "../user/model/user.id";
 import {blockEventEmmmiter} from "../../utility/event-handling";
+import {
+    acceptFollowRequestEventEmmmiter,
+    followEventEmmmiter,
+    followRequestEventEmmmiter
+} from "../../data/event-handling";
 
 
 export class followService {
@@ -50,16 +55,19 @@ export class followService {
             if (followRequest) {
                 throw new ConflictError("Follow request already exists");
             }
-            return await this.followRequestService.createFollowRequest({
+            const followReq = await this.followRequestService.createFollowRequest({
                 followerId: dto.follower,
                 followingId: followingUser.id,
                 status: FollowReqStatus.status.pending
             })
+            followRequestEventEmmmiter.emit("followRequest", followReq.followerId, followReq.followingId)
+            return {status: "requested"};
         }
-        await this.followRepo.createFollowRelation({
+        const newFollow = await this.followRepo.createFollowRelation({
             followerId: dto.follower,
             followingId: followingUser.id
         });
+        followEventEmmmiter.emit("follow", newFollow.followerId, newFollow.followingId)
         return {status: "followed"};
     }
 
@@ -83,7 +91,7 @@ export class followService {
         if (!followerUser) {
             throw new NotFoundError("User")
         }
-        return await this.followRequestAction({
+        const acceptFollowReq =  await this.followRequestAction({
             followerUserId: followerUser.id,
             followingUserId: dto.following
         }, FollowReqStatus.status.accepted)
@@ -119,11 +127,12 @@ export class followService {
         if (followReq.status === FollowReqStatus.status.pending) {
             if (followReqStatus === FollowReqStatus.status.accepted) {
                 await this.followRequestService.updateFollowRequest(followReq.id, followReqStatus);
-                await this.followRepo.createFollowRelation({
+                const acceptFollowReq = await this.followRepo.createFollowRelation({
                     followerId: followReq.followerId,
                     followingId: followReq.followingId,
                 })
-                return {status: "followed"};
+                acceptFollowRequestEventEmmmiter.emit("acceptFollowRequest", acceptFollowReq.followerId, acceptFollowReq.followingId)
+                return {status: "accepted"};
             }
             if (followReqStatus === FollowReqStatus.status.rejected) {
                 await this.followRequestService.updateFollowRequest(followReq.id, followReqStatus);
