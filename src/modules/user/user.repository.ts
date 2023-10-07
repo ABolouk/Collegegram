@@ -68,12 +68,10 @@ export class UserRepository {
         return this.userRepo.save(user)
     }
 
-    async getUsersNotFollowedNotblocked(blockedUsersId: UserId[], blockerUsersId: UserId[], following: UserFollowingsId , limit : number , startTime : Date) {
+    async getUsersNoIncluded(unWantedUser: UserId[] , limit : number , startTime : Date) {
         const [usersNotFollowedNotBlocked , count] = await this.userRepo.findAndCount({
             where: [
-                {id: Not(In(following.map((x) => x.followingId)))},
-                {id: Not(In(blockedUsersId))},
-                {id: Not(In(blockerUsersId))},
+                {id: Not(In(unWantedUser))},
                 {createdAt : LessThan(startTime)}
             ],
             order: {

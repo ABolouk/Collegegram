@@ -66,7 +66,7 @@ export class UserLowService {
         return this.userRepository.createUser(user)
     }
 
-    async getUsersNotFollowingAndNotBlocked(BlockedUsersId: UserId[], BlockerUsersId: UserId[], FollowingUserId: UserFollowingsId , limit: number , startTime: Date) {
-        return this.userRepository.getUsersNotFollowedNotblocked(BlockedUsersId ,BlockerUsersId , FollowingUserId , limit , startTime)
+    async getUserNotIncluded(unWantedUser: UserId[], limit: number, startTime: Date) {
+        return this.userRepository.getUsersNoIncluded(unWantedUser, limit, startTime)
     }
 }

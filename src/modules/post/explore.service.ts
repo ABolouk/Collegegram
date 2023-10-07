@@ -13,7 +13,8 @@ export class ExploreService {
         const blockedUsers = await this.blockLowService.findBlockedUsers(dto.userId)
         const blockerUsers = await this.blockLowService.findBlockerUsers(dto.userId)
         const userFollowing = await this.followLowService.getFollowingsIdByUserId(dto.userId)
-        const result = await this.userLowService.getUsersNotFollowingAndNotBlocked(blockedUsers, blockerUsers, userFollowing, dto.limit, dto.startTime)
+        const unWantedUser = [...blockedUsers, ...blockerUsers, ...userFollowing.map((x) => x.followingId)]
+        const result = await this.userLowService.getUserNotIncluded(unWantedUser, dto.limit, dto.startTime)
         const usersNotFollowingAndNotBlocked = result.users
         const hasMore = result.hasMore
         const nextOffset = usersNotFollowingAndNotBlocked.length > 0 ? usersNotFollowingAndNotBlocked[usersNotFollowingAndNotBlocked.length - 1].createdAt : new Date();
@@ -23,9 +24,7 @@ export class ExploreService {
             const posts = await this.postLowService.getPostsForExploreByUserId(user.id, 4)
             explorePage.push(
                 {
-                    user: user
-                },
-                {
+                    user: zodExploreUserDao.parse(user),
                     posts: posts
                 }
             )
