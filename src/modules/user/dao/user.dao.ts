@@ -30,7 +30,7 @@ export const zodUserDao = z
 
 export const zodMyCollegeGramUserDao = z.object({
         id: UserId.zod,
-        userName: UserName.zod,
+        username: UserName.zod,
         firstName: zodFirstName,
         lastName: zodLastName,
         avatar: z.coerce.string(),

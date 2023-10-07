@@ -46,7 +46,7 @@ export interface updateUser {
 
 export interface MyCollegeGramUserInterface {
     id: UserId;
-    userName: UserName,
+    username: UserName,
     firstName: string | null;
     lastName: string | null
     avatar: string,
