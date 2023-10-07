@@ -1,7 +1,4 @@
-import { PostHighService } from "./post.high.service";
 import { homePageDtoType } from "./dto/home-page.dto";
-import {FollowLowService} from "../follow/follow.low.service";
-import { UserLowService } from "../user/user.low.service";
 import { FollowLowService } from "../follow/follow.low.service";
 import { UserLowService } from "../user/user.low.service";
 import { LikeLowService } from "./like/like.low.service";

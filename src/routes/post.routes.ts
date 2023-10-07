@@ -51,6 +51,22 @@ export const makePostRouter = (userLowService: UserLowService, sessionLowService
         handleExpresss(res, () => searchService.search(dto))
     })
 
+    app.get("/bookmarks", loginMiddle(userLowService, sessionLowService), (req, res) => {
+        const userId = req.user.id
+        const limit = req.query.limit
+        const startTime = req.query.startTime ? req.query.startTime : new Date()
+        const dto = GetBookmarkDto.parse({ userId, limit, startTime })
+        handleExpresss(res, () => bookmarkService.getBookmarks(dto))
+    })
+
+    app.get("/explore", loginMiddle(userLowService, sessionLowService), (req, res) => {
+        const userId = req.user.id
+        const limit = req.query.limit
+        const startTime = req.query.startTime ? req.query.startTime : new Date()
+        const dto = exploreDto.parse({ userId, limit, startTime })
+        handleExpresss(res, () => exploreService.getExplore(dto))
+    })
+
     app.get("/user", loginMiddle(userLowService, sessionLowService), (req, res) => {
         const {limit, startTime} = getPostsDto.parse(req.query);
         handleExpresss(res, () => postHighService.getPostsByUserId(req.user.id, limit, startTime ? startTime : new Date()));
@@ -104,22 +120,6 @@ export const makePostRouter = (userLowService: UserLowService, sessionLowService
         const postId = req.body.id
         const dto = CreateBookmarkDto.parse({userId, postId})
         handleExpresss(res, () => bookmarkService.unBookmark(dto))
-    })
-
-	app.get("/bookmarks", loginMiddle(userLowService, sessionLowService), (req, res) => {
-		const userId = req.user.id
-		const limit = req.query.limit
-		const startTime = req.query.startTime ? req.query.startTime : new Date()
-		const dto = GetBookmarkDto.parse({ userId, limit, startTime })
-		handleExpresss(res, () => bookmarkService.getBookmarks(dto))
-	})
-
-    app.get("/explore", loginMiddle(userLowService, sessionLowService), (req, res) => {
-        const userId = req.user.id
-        const limit = req.query.limit
-        const startTime = req.query.startTime ? req.query.startTime : new Date()
-        const dto = exploreDto.parse({userId, limit, startTime})
-        handleExpresss(res, () => exploreService.getExplore(dto))
     })
 
     return app;

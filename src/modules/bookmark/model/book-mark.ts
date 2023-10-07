@@ -16,7 +16,7 @@ export interface BookmarkInterface {
 }
 
 export interface BookmarkPost {
-  id: BookMarkId,
+  //id: BookMarkId,
   post: {
     id: PostId
     photos: string[]
@@ -26,7 +26,7 @@ export interface BookmarkPost {
 
 export module BookmarkPost {
   export const zod = z.object({
-    id: BookMarkId.zod,
+   // id: BookMarkId.zod,
     post: z.object({
       id: PostId.zod,
       photos: z.array(z.string()),

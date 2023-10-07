@@ -1,7 +1,7 @@
 import {BadRequestError, NotFoundError} from "../../utility/http-errors";
 import {BookmarkDtoType} from "./dto/create-book-mark.dto";
 import {BookmarkRepository} from "./book-mark.repository";
-import {GetBookMarkDtoType} from "./dto/get-book-mark.dto";
+import { GetBookmarkDtoType } from "./dto/get-book-mark.dto";
 import {PostLowService} from "../post/post.low.service";
 import {UserLowService} from "../user/user.low.service";
 import {FollowLowService} from "../follow/follow.low.service";
@@ -85,12 +85,12 @@ export class BookmarkService {
     }
 
 
-    async getBookmarks(dto: GetBookMarkDtoType) {
+    async getBookmarks(dto: GetBookmarkDtoType) {
         const result = await this.bookmarkRepo.getBookmarksByUserId(dto.userId, dto.limit, dto.startTime);
         if (!result.bookmarkPosts) {
             throw new NotFoundError("Post")
         }
-        const bookmarkPosts = result.bookmarkPosts
+        const bookmarkPosts = result.bookmarkPosts.map((x) => x.post)
         const nextOffset = bookmarkPosts.length === 0 ? new Date() : bookmarkPosts[bookmarkPosts.length - 1].createdAt;
         const hasMore = result.hasMore
         return {
