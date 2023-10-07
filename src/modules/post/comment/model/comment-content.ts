@@ -6,8 +6,6 @@ export type Content = Brand<string, "Content">
 
 export module Content {
   export const is = (value: string): value is Content =>
-    typeof value === "string"
-
-  export const zod = z.coerce.string().nonempty().max(255).refine(is)
-
+    typeof value === 'string'  
+  export const zod = z.string ().nonempty().max(255).refine(is)
 }
