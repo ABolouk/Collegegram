@@ -32,7 +32,7 @@ export class UserEntity {
     isPrivate!: boolean;
 
     @Column({default: 0})
-    postCount!: WholeNumber;
+    postCount!: number;
 
     @Column({default: 0})
     followerCount!: WholeNumber;

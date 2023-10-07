@@ -1,4 +1,4 @@
-import {DataSource, In, LessThan, Not, Repository} from "typeorm";
+import {DataSource, In, Int32, LessThan, MoreThan, Not, Repository} from "typeorm";
 import {UserEntity} from "./entity/user.entity";
 import {createUserInterface, updateUser, User} from "./model/user";
 import {UserId} from "./model/user.id";
@@ -70,12 +70,11 @@ export class UserRepository {
 
     async getUsersNoIncluded(unWantedUser: UserId[] , limit : number , startTime : Date) {
         const [usersNotFollowedNotBlocked , count] = await this.userRepo.findAndCount({
-            where: [
-                {id: Not(In(unWantedUser))},
-                {createdAt : LessThan(startTime)}
-            ],
-            order: {
-                createdAt: "DESC",
+            where: {
+                id: Not(In(unWantedUser)),
+                isPrivate: false,
+                postCount: Not(0),
+                createdAt: LessThan(startTime),
             },
             take : limit,
         });
