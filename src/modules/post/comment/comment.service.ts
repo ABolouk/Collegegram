@@ -29,7 +29,8 @@ export class CommentService {
             content: dto.content
         }
 
-        return await this.commentRepo.createComment(createdComment)
+        await this.commentRepo.createComment(createdComment)
+        return { status: "successful" }
     }
 
     async getComments(dto: GetCommentDtoType) {
@@ -51,7 +52,7 @@ export class CommentService {
             }
         }
         const result = await this.commentRepo.getComments(dto.postId, dto.limit, dto.startTime)
-        if (!result.comments) {
+        if (!result.comments?.length) {
             return {
                 comments: [],
                 hasMore: false
