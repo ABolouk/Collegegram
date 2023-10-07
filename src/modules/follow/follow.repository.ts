@@ -1,10 +1,9 @@
 import {DataSource, Repository} from "typeorm";
 import {FollowEntity} from "./entity/follow.entity";
 import {Follow, createFollowRelation, followDao, followIdDao} from './model/follow';
-import {zodFollowIdDao, zodFollowRellDao, zodFollowingsId} from "./dao/follow.dao";
+import {zodFollowRellDao, zodFollowingsId} from "./dao/follow.dao";
 import {z} from "zod";
 import {UserId} from "../user/model/user.id";
-import {WholeNumber} from "../../data/whole-number";
 import {UserEntity} from "../user/entity/user.entity";
 
 
@@ -15,7 +14,7 @@ export class FollowRepository {
         this.followRepo = appDataSource.getRepository(FollowEntity);
     }
 
-    async createFollowRelation(followRelation: createFollowRelation): Promise<followIdDao> {
+    async createFollowRelation(followRelation: createFollowRelation): Promise<followDao> {
         return await this.appDataSource.manager.transaction(async manager => {
             const userRepo = manager.getRepository(UserEntity);
             const followRepo = manager.getRepository(FollowEntity);
@@ -31,7 +30,7 @@ export class FollowRepository {
                 {id: newFollow.followingId},
                 {followerCount: () => "followerCount + 1"}
             );
-            return zodFollowIdDao.parse(newFollow);
+            return zodFollowRellDao.parse(newFollow);
         });
     }
 
