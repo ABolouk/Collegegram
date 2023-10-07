@@ -40,4 +40,7 @@ export class BlockLowService {
         return false
     }
 
+    async getBlockedUsersById(userId: UserId, limit: number, startTime: Date) {
+        return this.blockRepo.getBlockedUsersById(userId, limit, startTime);
+    }
 }

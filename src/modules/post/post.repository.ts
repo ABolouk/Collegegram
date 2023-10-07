@@ -34,8 +34,8 @@ export class PostRepository {
         })
     }
 
-    async getPostsByUserId(userId: UserId, limit: number, startTime: Date): Promise<PostInterface[]> {
-        const posts = await this.postRepo.find({
+    async getPostsByUserId(userId: UserId, limit: number, startTime: Date) {
+        const [posts, count] = await this.postRepo.findAndCount({
             relations: ['tags'],
             where: {
                 userId: userId,
@@ -44,7 +44,11 @@ export class PostRepository {
             order: { createdAt: 'desc' },
             take: limit,
         });
-        return posts.map(post => zodPostDao.parse(post))
+        const hasMore = count > limit;
+        return {
+            posts: posts.map(post => zodPostDao.parse(post)),
+            hasMore: hasMore
+        }
     }
 
     async getPostsByusersId(usersId: UserId[], limit: number, startTime: Date) {

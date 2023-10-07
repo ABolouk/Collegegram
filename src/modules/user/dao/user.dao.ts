@@ -1,4 +1,4 @@
-import {User} from "../model/user";
+import {MyCollegeGramUserInterface, User} from "../model/user";
 import {Email} from "../model/user.email";
 import {UserId} from "../model/user.id";
 import {UserName} from "../model/user.username";
@@ -28,3 +28,10 @@ export const zodUserDao = z
 
     }).transform((x): User => x)
 
+export const zodMyCollegeGramUserDao = z.object({
+        id: UserId.zod,
+        userName: UserName.zod,
+        firstName: zodFirstName,
+        lastName: zodLastName,
+        avatar: z.coerce.string(),
+}).transform((user): MyCollegeGramUserInterface => user)
