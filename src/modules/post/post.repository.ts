@@ -9,6 +9,9 @@ import { CreatePostInterface, PostInterface } from "./model/post";
 import { TagEntity } from "./tag/entity/tag.entity";
 import { CreateTagInterface } from "./tag/model/tag";
 import { LessThan, In } from "typeorm";
+import { zodExplorePostDao } from "./dao/explore.dao";
+import { TagTitle } from "./tag/model/tag-title";
+
 
 export class PostRepository {
     private postRepo: Repository<PostEntity>;
@@ -57,9 +60,37 @@ export class PostRepository {
             order: { createdAt: 'desc' },
             take: limit,
         })
-        const homePagePosts = zodHomePagePostsDao.parse(posts)
+        const resultPosts = zodHomePagePostsDao.parse(posts)
         const hasMore = count > limit
-        return {homePagePosts, hasMore}
+        return { resultPosts: resultPosts, hasMore }
+    }
+
+    async getPostsByTagTitle(tagTitle: TagTitle, limit: number, startTime: Date) {
+        const [searchPosts, count] = await this.postRepo.findAndCount(
+            {
+                relations: ["tags"],
+                where: {
+                    tags: {
+                        title: tagTitle
+                    },
+                    createdAt: LessThan(startTime)
+                },
+                select: {
+                    tags: {
+                        title: true
+                    },
+                    id: true,
+                    likeCount: true,
+                    photos: true,
+                    createdAt: true,
+                },
+                order: { createdAt: 'desc' },
+                take: limit
+
+            }
+        )
+        const hasMore = count > limit
+        return { searchPosts, hasMore }
     }
 
     async createPost(post: CreatePostInterface): Promise<PostInterface> {
@@ -96,13 +127,24 @@ export class PostRepository {
 
     async userHasMorePosts(userId: UserId, startTime: Date): Promise<boolean> {
         const posts = await this.postRepo.find(
-            {where: {userId: userId, createdAt: LessThan(startTime)}}
+            { where: { userId: userId, createdAt: LessThan(startTime) } }
         )
         return posts.length !== 0;
     }
 
     async getAuthorById(postId: PostId): Promise<UserId | null> {
-        const post = await this.postRepo.findOne({where: {id: postId}})
+        const post = await this.postRepo.findOne({ where: { id: postId } })
         return post ? post.userId : null
+    }
+
+    async getPostsForExploreByUserId(userId: UserId , limit: number) {
+        const posts =  await this.postRepo.find({
+            relations: ['tags'],
+            where: {userId: userId},
+            order: {createdAt: 'DESC'},
+            take: limit,
+        })
+
+        return posts.map((x) => zodExplorePostDao.parse(x))
     }
 }
