@@ -149,4 +149,13 @@ export class FollowRepository {
             hasMore: hasMore,
         }
     }
+
+    async isFollwed(followRelation: Follow) {
+        return this.followRepo.findOne({
+            where: {
+                followerId: followRelation.followerId,
+                followingId: followRelation.followingId,
+            }
+        }).then((x) => z.nullable(zodFollowRellDao).parse(x));
+    }
 }
