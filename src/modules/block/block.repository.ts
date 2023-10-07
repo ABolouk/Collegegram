@@ -34,5 +34,14 @@ export class BlockRepository {
         return blockerUsers
     }
 
+    async findBlockRellInTwoWay(blockRelation: BlockRelationInterface): Promise<BlockInterface | null> {
+        return this.blockRepo
+            .findOneBy([
+                {userId: blockRelation.blockedUserId, blockedUserId: blockRelation.userId},
+                {userId: blockRelation.userId, blockedUserId: blockRelation.blockedUserId}
+            ])
+            .then((x) => z.nullable(zodBlockDao).parse(x))
+    }
+
 
 }
