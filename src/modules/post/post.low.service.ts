@@ -43,4 +43,9 @@ export class PostLowService {
         }
         return post;
     }
+
+    //TODO: add closeFriend
+    async getPostsForExploreByUserId(userId: UserId , limit: number) {
+        return await this.postRepository.getPostsForExploreByUserId(userId, limit)
+    }
 }

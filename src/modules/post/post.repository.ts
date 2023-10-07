@@ -9,6 +9,7 @@ import { CreatePostInterface, PostInterface } from "./model/post";
 import { TagEntity } from "./tag/entity/tag.entity";
 import { CreateTagInterface } from "./tag/model/tag";
 import { LessThan, In } from "typeorm";
+import {zodExplorePostDao} from "./dao/explore.dao";
 
 export class PostRepository {
     private postRepo: Repository<PostEntity>;
@@ -100,5 +101,16 @@ export class PostRepository {
     async getAuthorById(postId: PostId): Promise<UserId | null> {
         const post = await this.postRepo.findOne({where: {id: postId}})
         return post ? post.userId : null
+    }
+
+    async getPostsForExploreByUserId(userId: UserId , limit: number) {
+        const posts =  await this.postRepo.find({
+            relations: ['tags'],
+            where: {userId: userId},
+            order: {createdAt: 'DESC'},
+            take: limit,
+        })
+
+        return posts.map((x) => zodExplorePostDao.parse(x))
     }
 }
