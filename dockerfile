@@ -1,13 +1,12 @@
 FROM node:slim
 
-ENV NODE_ENV development
+WORKDIR /usr/src/app
 
-WORKDIR /app
+COPY package.json yarn.lock ./
+RUN yarn install --frozen-lockfile --production
 
-COPY . .
-
-RUN npm install
+COPY . ./
 
 EXPOSE 3000
 
-CMD [ "npm", "start" ]
+CMD [ "yarn", "start" ]
