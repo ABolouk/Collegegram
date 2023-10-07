@@ -4,6 +4,8 @@ import {BlockInterface, UnblockRelationInterface, BlockRelationInterface} from "
 import {z} from "zod"
 import {zodBlockDao, zodBlockRellDao} from "./dao/block.dao";
 import {UserId} from "../user/model/user.id";
+import {raw} from "express";
+import {User} from "../user/model/user";
 
 export class BlockRepository {
     private blockRepo: Repository<BlockEntity>;
@@ -31,8 +33,14 @@ export class BlockRepository {
     async findBlockerUsers(id: UserId) {
         const blockerUsers = await this.blockRepo
             .find({select: {userId: true}, where: {blockedUserId: id}})
-        return blockerUsers
+        return blockerUsers.map((x) => x.userId)
     }
 
+    async findBlockedUsers(id: UserId) {
+        const blockedUsers = await this.blockRepo.find(
+            {select: {blockedUserId: true}, where: {userId: id}}
+        )
+        return blockedUsers.map((x) => x.blockedUserId)
+    }
 
 }

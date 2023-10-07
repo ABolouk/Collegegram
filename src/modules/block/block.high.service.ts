@@ -68,8 +68,7 @@ export class BlockHighService {
     }
 
     async getBlockerUsers(id: UserId) {
-        const blockerUsers = await this.blockLowService.findBlockerUsers(id)
-        return blockerUsers.map((x) => x.userId)
+        return await this.blockLowService.findBlockerUsers(id)
     }
 
 }

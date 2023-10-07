@@ -30,6 +30,8 @@ import {PostLowService} from "./modules/post/post.low.service";
 import {LikeLowService} from "./modules/post/like/like.low.service";
 import {BookmarkService} from "./modules/bookmark/book-mark.service";
 import {BookmarkRepository} from "./modules/bookmark/book-mark.repository";
+import { ExploreService } from "./modules/post/explore.service";
+import { SearchService } from "./modules/post/search.service";
 import { makeNotificationRouter } from "./routes/notification.routes";
 import { NotificationService } from "./modules/notification/notification.service";
 import { NotificationRepository } from "./modules/notification/notification.repository";
@@ -64,13 +66,15 @@ export const makeApp = (dataSource: DataSource) => {
     const postLowService = new PostLowService(postRepo);
     const likeRepo = new LikeRepository(dataSource);
     const likeLowService = new LikeLowService(likeRepo);
-    const postHighService = new PostHighService(postLowService);
-    const commentService = new CommentService(commentRepo, postLowService);
-    const homePageService = new HomePageService(postHighService, userLowService, followLowService);
-    const likeHighService = new LikeHighService(likeLowService, postLowService, userLowService, followLowService);
     const bookmarkRepo = new BookmarkRepository(dataSource)
-    const bookmarkService = new BookmarkService(bookmarkRepo, postLowService , userLowService, followLowService)
-    app.use("/post", makePostRouter(userLowService, sessionLowService, postHighService, commentService, homePageService, likeHighService , bookmarkService));
+    const bookmarkService = new BookmarkService(bookmarkRepo, postLowService, userLowService, followLowService)
+    const postHighService = new PostHighService(postLowService, likeLowService, bookmarkService );
+    const commentService = new CommentService(commentRepo, postLowService, userLowService, followLowService);
+    const homePageService = new HomePageService(postLowService, userLowService, followLowService, likeLowService, bookmarkService);
+    const exploreService = new ExploreService(postLowService, userLowService, followLowService , blockLowService);
+    const likeHighService = new LikeHighService(likeLowService, postLowService, userLowService, followLowService);
+    const searchService = new SearchService(postLowService, likeLowService)
+    app.use("/post", makePostRouter(userLowService, sessionLowService, postHighService, commentService, homePageService, likeHighService, bookmarkService, searchService,exploreService));
 
     const notificationRepo = new NotificationRepository(dataSource);
     const notificationService = new NotificationService(notificationRepo, postLowService);
