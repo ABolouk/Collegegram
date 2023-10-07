@@ -3,7 +3,7 @@ import { BookmarkEntity } from "./entity/book-mark.entity";
 import { Bookmark, BookmarkInterface } from "./model/book-mark";
 import { PostEntity } from "../post/entity/post.entity";
 import { UserId } from "../user/model/user.id";
-import { zodbookmarkPostssDao } from "./dao/bookmark.dao";
+import { zodBookmarkPostsDao } from "./dao/bookmark.dao";
 import { z } from "zod"
 
 export class BookmarkRepository {
@@ -48,16 +48,24 @@ export class BookmarkRepository {
   async getBookmarksByUserId(userId: UserId, limit: number, startTime: Date) {
     const [posts, count] = await this.bookmarkRepo.findAndCount(
       {
+        relations: ["post"],
         where: {
           userId: userId,
           createdAt: LessThan(startTime)
+        },
+        select: {
+          post: {
+            id: true,
+            photos: true,
+            createdAt: true
+          }
         },
         order: { createdAt: 'desc' },
         take: limit
 
       }
     )
-    const bookmarkPosts = z.nullable(zodbookmarkPostssDao).parse(posts)
+    const bookmarkPosts = z.nullable(zodBookmarkPostsDao).parse(posts)
     const hasMore = count > limit
     return { bookmarkPosts: bookmarkPosts, hasMore: hasMore }
   }
