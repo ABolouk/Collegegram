@@ -15,7 +15,7 @@ import {HomePageService} from "../modules/post/home-page.service";
 import {UserLowService} from "../modules/user/user.low.service";
 import {SessionLowService} from "../modules/user/session.low.service";
 import {CreateBookmarkDto} from "../modules/bookmark/dto/create-book-mark.dto";
-import {GetBookMarkDto} from "../modules/bookmark/dto/get-book-mark.dto";
+import { GetBookmarkDto} from "../modules/bookmark/dto/get-book-mark.dto";
 import {BookmarkService} from "../modules/bookmark/book-mark.service";
 import {PostHighService} from "../modules/post/post.high.service";
 import {exploreDto} from "../modules/post/dto/explore.dto";
@@ -38,7 +38,7 @@ export const makePostRouter = (userLowService: UserLowService, sessionLowService
         const userId = req.user.id
         const limit = req.query.limit
         const startTime = req.query.startTime ? req.query.startTime : new Date()
-        const dto = homePageDto.parse({userId, limit, startTime})
+        const dto = homePageDto.parse({ userId, limit, startTime })
         handleExpresss(res, () => homePageService.getHome(dto))
     })
 
@@ -74,8 +74,9 @@ export const makePostRouter = (userLowService: UserLowService, sessionLowService
     })
 
     app.get("/:id", loginMiddle(userLowService, sessionLowService), (req, res) => {
+        const userId = req.user.id
         const {id} = getPostIdDto.parse(req.params);
-        handleExpresss(res, () => postHighService.getPostById(id));
+        handleExpresss(res, () => postHighService.getPostById(id, userId));
     });
 
     app.post("/:id/comment", loginMiddle(userLowService, sessionLowService), (req, res) => {
@@ -113,13 +114,13 @@ export const makePostRouter = (userLowService: UserLowService, sessionLowService
         handleExpresss(res, () => bookmarkService.unBookmark(dto))
     })
 
-    app.get("/bookmarks", loginMiddle(userLowService, sessionLowService), (req, res) => {
-        const userId = req.user.id
-        const limit = req.query.limit
-        const startTime = req.query.startTime ? req.query.startTime : new Date()
-        const dto = GetBookMarkDto.parse({userId, limit, startTime})
-        handleExpresss(res, () => bookmarkService.getBookmarks(dto))
-    })
+	app.get("/bookmarks", loginMiddle(userLowService, sessionLowService), (req, res) => {
+		const userId = req.user.id
+		const limit = req.query.limit
+		const startTime = req.query.startTime ? req.query.startTime : new Date()
+		const dto = GetBookmarkDto.parse({ userId, limit, startTime })
+		handleExpresss(res, () => bookmarkService.getBookmarks(dto))
+	})
 
     app.get("/explore", loginMiddle(userLowService, sessionLowService), (req, res) => {
         const userId = req.user.id
