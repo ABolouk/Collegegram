@@ -52,8 +52,8 @@ export class UserRepository {
     }
 
     //FIXME: this is not a good way to do this
-    updatePasswordById(id: UserId, password: string) {
-        this.userRepo.update(
+   async updatePasswordById(id: UserId, password: string) {
+        await this.userRepo.update(
             {id: id},
             {password: password},
         )

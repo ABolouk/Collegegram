@@ -1,8 +1,12 @@
-import {Repository, DataSource} from "typeorm";
-import {CommentEntity} from "./entity/comment.entity";
-import {CommentInterface} from "./model/comment";
-import {zodCommentDao} from "./dao/create-comment.dao";
-import {PostEntity} from "../entity/post.entity";
+import { Repository, DataSource, LessThan } from "typeorm";
+import { CommentEntity } from "./entity/comment.entity";
+import { CommentInterface } from "./model/comment";
+import { zodCommentDao } from "./dao/create-comment.dao";
+import { PostEntity } from "../entity/post.entity";
+import { UserId } from "../../user/model/user.id";
+import { PostId } from "../model/post-id";
+import { z } from "zod"
+import { zodGetCommentDao } from "./dao/get-comment.dao";
 
 export class CommentRepository {
     private commentRepo: Repository<CommentEntity>;
@@ -11,7 +15,7 @@ export class CommentRepository {
         this.commentRepo = appDataSource.getRepository(CommentEntity);
     }
 
-    async create(comment: CommentInterface): Promise<CommentInterface> {
+    async createComment(comment: CommentInterface): Promise<CommentInterface> {
         return this.appDataSource.manager.transaction(async (manager) => {
             const savedComment = await this.commentRepo.save(comment);
             const postRepo = manager.getRepository(PostEntity);
@@ -21,6 +25,23 @@ export class CommentRepository {
             );
             return zodCommentDao.parse(savedComment);
         });
+    }
+
+    async getComments(postId: PostId, limit: number, startTime: Date) {
+        const [comments, count] = await this.commentRepo.findAndCount(
+            {
+                where: {
+                    postId: postId,
+                    createdAt: LessThan(startTime)
+                },
+                order: { createdAt: 'desc' },
+                take: limit
+
+            }
+        )
+        const resultComments = z.nullable(zodGetCommentDao).parse(comments)
+        const hasMore = count > limit
+        return { comments: resultComments, hasMore: hasMore }
     }
 
 }

@@ -20,6 +20,7 @@ import {BookmarkService} from "../modules/bookmark/book-mark.service";
 import {PostHighService} from "../modules/post/post.high.service";
 import {exploreDto} from "../modules/post/dto/explore.dto";
 import {ExploreService} from "../modules/post/explore.service";
+import { GetCommentDto } from "../modules/post/comment/dto/get-comment.dto";
 
 export const makePostRouter = (userLowService: UserLowService, sessionLowService: SessionLowService, postHighService: PostHighService, commentService: CommentService, homePageService: HomePageService, likeHighService: LikeHighService, bookmarkService : BookmarkService, exploreService : ExploreService) => {
     const app = Router();
@@ -43,6 +44,15 @@ export const makePostRouter = (userLowService: UserLowService, sessionLowService
         const {limit, startTime} = getPostsDto.parse(req.query);
         handleExpresss(res, () => postHighService.getPostsByUserId(req.user.id, limit, startTime ? startTime : new Date()));
     });
+
+    app.get("/:id/comments", loginMiddle(userLowService, sessionLowService), (req, res) => {
+        const userId = req.user.id
+        const postId = req.params.id
+        const limit = req.query.limit
+        const startTime = req.query.startTime ? req.query.startTime : new Date()
+        const dto = GetCommentDto.parse({ userId, postId, limit, startTime })
+        handleExpresss(res, () => commentService.getComments(dto));
+    })
 
     app.get("/:id", loginMiddle(userLowService, sessionLowService), (req, res) => {
         const {id} = getPostIdDto.parse(req.params);
