@@ -94,7 +94,6 @@ export class FollowRepository {
         const [followers, count] = await this.followRepo.findAndCount({
             select: {
                 follower: {
-                    id: true,
                     username: true,
                     avatar: true,
                     firstName: true,
@@ -105,7 +104,7 @@ export class FollowRepository {
                 follower: true,
             },
             where: {
-                followerId: userId,
+                followingId: userId,
                 createdAt: LessThan(startTime)
             },
             order: { createdAt: 'desc' },
@@ -124,7 +123,6 @@ export class FollowRepository {
         const [followings, count] = await this.followRepo.findAndCount({
             select: {
                 following: {
-                    id: true,
                     username: true,
                     avatar: true,
                     firstName: true,

@@ -48,7 +48,6 @@ export class BlockRepository {
         const [blockedUsers, count] = await this.blockRepo.findAndCount({
             select: {
                 user: {
-                    id: true,
                     username: true,
                     avatar: true,
                     firstName: true,
