@@ -21,8 +21,10 @@ import {PostHighService} from "../modules/post/post.high.service";
 import {exploreDto} from "../modules/post/dto/explore.dto";
 import {ExploreService} from "../modules/post/explore.service";
 import { GetCommentDto } from "../modules/post/comment/dto/get-comment.dto";
+import { SearchDto } from "../modules/post/dto/search.dto";
+import { SearchService } from "../modules/post/search.service";
 
-export const makePostRouter = (userLowService: UserLowService, sessionLowService: SessionLowService, postHighService: PostHighService, commentService: CommentService, homePageService: HomePageService, likeHighService: LikeHighService, bookmarkService : BookmarkService, exploreService : ExploreService) => {
+export const makePostRouter = (userLowService: UserLowService, sessionLowService: SessionLowService, postHighService: PostHighService, commentService: CommentService, homePageService: HomePageService, likeHighService: LikeHighService, bookmarkService: BookmarkService, searchService: SearchService, exploreService: ExploreService) => {
     const app = Router();
     app.post("/", loginMiddle(userLowService, sessionLowService), uploadMinIO.array('post-photos'), (req, res) => {
         const data = createPostDto.parse(req.body);
@@ -38,6 +40,15 @@ export const makePostRouter = (userLowService: UserLowService, sessionLowService
         const startTime = req.query.startTime ? req.query.startTime : new Date()
         const dto = homePageDto.parse({userId, limit, startTime})
         handleExpresss(res, () => homePageService.getHome(dto))
+    })
+
+    app.get("/search", loginMiddle(userLowService, sessionLowService), (req, res) => {
+        const userId = req.user.id
+        const limit = req.query.limit
+        const startTime = req.query.startTime ? req.query.startTime : new Date()
+        const tag = req.query.tag
+        const dto = SearchDto.parse({ userId, tag, limit, startTime })
+        handleExpresss(res, () => searchService.search(dto))
     })
 
     app.get("/user", loginMiddle(userLowService, sessionLowService), (req, res) => {
