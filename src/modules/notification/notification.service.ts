@@ -11,7 +11,7 @@ import {PostId} from "../post/model/post-id";
 import {UserId} from "../user/model/user.id";
 import {LikeNotification, LikeNotificationType} from "./model/like-notification";
 import {GetNotificationsDto} from "./dto/get-notifications.dto";
-import {PostService} from "../post/post.service";
+import {PostLowService} from "../post/post.low.service";
 import {CommentNotification, CommentNotificationType} from "./model/comment-notification";
 import {FollowNotification, FollowNotificationType} from "./model/follow-notification";
 import {
@@ -23,7 +23,7 @@ import {
 export class NotificationService {
     constructor(
         private notificationRepository: NotificationRepository,
-        private postService: PostService,
+        private postService: PostLowService,
     ) {
         likeEventEmmmiter.on('like', async (userId: UserId, postId: PostId) => {
             await this.makeLikeNotification(userId, postId);

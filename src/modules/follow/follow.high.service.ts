@@ -1,8 +1,6 @@
-import {FollowRepository} from "./follow.repository";
 import {Follow} from "./model/follow";
 import {BadRequestError, ConflictError, NotFoundError} from "../../utility/http-errors";
 import {followDtoType} from "./dto/follow.dto";
-import {UserHighService} from "../user/user.high.service";
 import {FollowRequestLowService} from "./follow.request.low.service";
 import {FollowReqStatus} from "./model/follow.req.status";
 import {FollowRequest} from "./model/follow.request";
@@ -68,7 +66,7 @@ export class FollowHighService {
             followerId: dto.follower,
             followingId: followingUser.id
         });
-        followEventEmmmiter.emit("follow", newFollow.followerId, newFollow.followingId)
+        followEventEmmmiter.emit("follow", dto.follower, followingUser.id)
         return {status: "followed"};
     }
 
@@ -77,7 +75,7 @@ export class FollowHighService {
         if (!followingUser) {
             throw new NotFoundError("User")
         }
-        const res = (await this.followRepo.getFollowRelation({
+        const res = (await this.followLowService.getFollowRelation({
             followerId: dto.follower,
             followingId: followingUser.id
         }))
@@ -129,11 +127,11 @@ export class FollowHighService {
         if (followReq.status === FollowReqStatus.status.pending) {
             if (followReqStatus === FollowReqStatus.status.accepted) {
                 await this.followRequestService.updateFollowRequest(followReq.id, followReqStatus);
-                const acceptFollowReq =await this.followLowService.createFollowRelation({
+                const acceptFollowReq = await this.followLowService.createFollowRelation({
                     followerId: followReq.followerId,
                     followingId: followReq.followingId,
                 })
-                acceptFollowRequestEventEmmmiter.emit("acceptFollowRequest", acceptFollowReq.followerId, acceptFollowReq.followingId)
+                acceptFollowRequestEventEmmmiter.emit("acceptFollowRequest", followReq.followerId, followReq.followingId)
                 return {status: "accepted"};
             }
             if (followReqStatus === FollowReqStatus.status.rejected) {
@@ -171,6 +169,6 @@ export class FollowHighService {
 
 
     async getFollowingsIdByUserId(userId: UserId) {
-        return this.followRepo.getFollowingsIdByUserId(userId)
+        return this.followLowService.getFollowingsIdByUserId(userId)
     }
 }
