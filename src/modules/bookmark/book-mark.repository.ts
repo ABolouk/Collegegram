@@ -35,6 +35,10 @@ export class BookmarkRepository {
 
   }
 
+  async isBookmarked(bookmark: BookmarkInterface): Promise<Bookmark | null> {
+    return this.bookmarkRepo.findOneBy({ userId: bookmark.userId, postId: bookmark.postId });
+  }
+
   async getBookmark(bookmark: BookmarkInterface): Promise<Bookmark | null> {
     const getBookmark = await this.bookmarkRepo.findOneBy({ userId: bookmark.userId, postId: bookmark.postId })
     return getBookmark

@@ -14,6 +14,8 @@ export interface User {
     username: UserName;
     password: HashedPassword,
     postCount: WholeNumber;
+    followerCount: WholeNumber,
+    followingCount: WholeNumber,
     bio: string | null
     firstName: string | null;
     lastName: string | null
