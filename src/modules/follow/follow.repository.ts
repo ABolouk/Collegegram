@@ -114,7 +114,7 @@ export class FollowRepository {
         const nextOffset = followers.length > 0 ? followers[followers.length - 1].createdAt : new Date();
         const hasMore = count > limit;
         return {
-            followers: followers.map(follower => zodMyCollegeGramUserDao.parse(follower)),
+            followers: followers.map(follower => zodMyCollegeGramUserDao.parse(follower.follower)),
             nextOffset: nextOffset,
             hasMore: hasMore,
         }
@@ -144,7 +144,7 @@ export class FollowRepository {
         const nextOffset = followings.length > 0 ? followings[followings.length - 1].createdAt : new Date();
         const hasMore = count > limit;
         return {
-            followings: followings.map(follower => zodMyCollegeGramUserDao.parse(follower)),
+            followings: followings.map(following => zodMyCollegeGramUserDao.parse(following.following)),
             nextOffset: nextOffset,
             hasMore: hasMore,
         }
