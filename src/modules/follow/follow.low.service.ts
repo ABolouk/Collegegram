@@ -34,4 +34,12 @@ export class FollowLowService {
     async getFollowingsById(userId: UserId, limit: number, startTime: Date) {
         return this.followRepo.getFollowingsById(userId, limit, startTime);
     }
+
+    async isFollwed(followRelation: Follow) {
+        const followRell = this.followRepo.isFollwed(followRelation)
+        if(!followRell){
+            return false
+        }
+        return true
+    }
 }
