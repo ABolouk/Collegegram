@@ -44,3 +44,10 @@ export interface updateUser {
     isPrivate: boolean;
 }
 
+export interface MyCollegeGramUserInterface {
+    id: UserId;
+    userName: UserName,
+    firstName: string | null;
+    lastName: string | null
+    avatar: string,
+}
