@@ -1,9 +1,13 @@
+import { PostHighService } from "./post.high.service";
 import { homePageDtoType } from "./dto/home-page.dto";
+import {FollowLowService} from "../follow/follow.low.service";
+import { UserLowService } from "../user/user.low.service";
 import { FollowLowService } from "../follow/follow.low.service";
 import { UserLowService } from "../user/user.low.service";
 import { LikeLowService } from "./like/like.low.service";
 import { BookmarkService } from "../bookmark/book-mark.service";
 import { PostLowService } from "./post.low.service";
+
 
 export class HomePageService {
   constructor(private postService: PostLowService, private userLowService: UserLowService, private followLowService: FollowLowService, private likeService: LikeLowService, private bookmarkService: BookmarkService) { }

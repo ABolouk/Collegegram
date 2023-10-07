@@ -65,7 +65,7 @@ export class FollowHighService {
     }
 
     async unfollow(dto: unfollowDtoType) {
-        const followingUser = await this.userLowService.getUserById(dto.follower);
+        const followingUser = await this.userLowService.getUserByUsername(dto.following);
         if (!followingUser) {
             throw new NotFoundError("User")
         }
@@ -76,7 +76,8 @@ export class FollowHighService {
         if (!res) {
             throw new ConflictError("You are not following this user")
         }
-        return this.followLowService.deleteFollowRelation({followerId: dto.follower, followingId: followingUser.id})
+        await this.followLowService.deleteFollowRelation({ followerId: dto.follower, followingId: followingUser.id })
+        return { status: "unfollowed" };
     }
 
     async acceptFollowRequest(dto: acceptFollowReqType) {
