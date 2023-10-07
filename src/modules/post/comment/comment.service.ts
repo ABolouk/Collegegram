@@ -2,6 +2,7 @@ import {NotFoundError} from "../../../utility/http-errors";
 import {PostService} from "../post.service";
 import {CommentRepository} from "./comment.repository";
 import {createCommentDto} from "./dto/create-comment.dto";
+import {commentEventEmmmiter} from "../../../data/event-handling";
 
 
 export class CommentService {
@@ -24,6 +25,8 @@ export class CommentService {
             content: dto.content
         }
 
-        return await this.commentRepo.create(createdComment)
+        const newComment = await this.commentRepo.create(createdComment)
+        commentEventEmmmiter.emit("comment", newComment.userId, newComment.postId)
+        return newComment
     }
 }
