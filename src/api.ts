@@ -54,7 +54,7 @@ export const makeApp = (dataSource: DataSource) => {
     const followLowService = new FollowLowService(followRepo);
     const followRequestLowService = new FollowRequestLowService(followReqRepo);
     const blockHighService = new BlockHighService(blockLowService, userLowService)
-    const userHighService = new UserHighService(userLowService, sessionLowService, emailService, blockLowService);
+    const userHighService = new UserHighService(userLowService, sessionLowService, emailService, blockLowService , followLowService);
     const followHighService = new FollowHighService(followLowService, followRequestLowService, userLowService);
     app.use("/user", makeUserRouter(userHighService, sessionLowService, userLowService, jwtService, followHighService, blockHighService));
 
@@ -65,7 +65,7 @@ export const makeApp = (dataSource: DataSource) => {
     const likeLowService = new LikeLowService(likeRepo);
     const bookmarkRepo = new BookmarkRepository(dataSource)
     const bookmarkService = new BookmarkService(bookmarkRepo, postLowService, userLowService, followLowService, blockLowService)
-    const postHighService = new PostHighService(postLowService, likeLowService, bookmarkService, userLowService );
+    const postHighService = new PostHighService(postLowService, likeLowService, bookmarkService, userLowService , blockLowService);
     const commentService = new CommentService(commentRepo, postLowService, userLowService, followLowService, blockLowService);
     const homePageService = new HomePageService(postLowService, userLowService, followLowService, likeLowService, bookmarkService);
     const exploreService = new ExploreService(postLowService, userLowService, followLowService , blockLowService);
