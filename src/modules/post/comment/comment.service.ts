@@ -1,11 +1,13 @@
-import { BadRequestError, NotFoundError } from "../../../utility/http-errors";
-import { PostHighService } from "../post.high.service";
-import { CommentRepository } from "./comment.repository";
-import { createCommentDto } from "./dto/create-comment.dto";
-import { PostLowService } from "../post.low.service";
-import { GetCommentDtoType } from "./dto/get-comment.dto";
-import { UserLowService } from "../../user/user.low.service";
-import { FollowLowService } from "../../follow/follow.low.service";
+import {BadRequestError, NotFoundError} from "../../../utility/http-errors";
+import {PostHighService} from "../post.high.service";
+import {CommentRepository} from "./comment.repository";
+import {createCommentDto} from "./dto/create-comment.dto";
+import {PostLowService} from "../post.low.service";
+import {GetCommentDtoType} from "./dto/get-comment.dto";
+import {UserLowService} from "../../user/user.low.service";
+import {FollowLowService} from "../../follow/follow.low.service";
+import {blockEventEmmmiter} from "../../../data/event-handling";
+import {UserId} from "../../user/model/user.id";
 
 export class CommentService {
     constructor(
@@ -14,6 +16,7 @@ export class CommentService {
         private userLowService: UserLowService,
         private followLowService: FollowLowService
     ) {
+        blockEventEmmmiter.on("block", (x, y) => this.blockAction({blockerId: x, blockedId: y}))
     }
 
     async comment(dto: createCommentDto) {
@@ -57,13 +60,16 @@ export class CommentService {
                 hasMore: false
             }
         }
-        const resultComments = await Promise.all(result.comments.map(async (x) => ({ id: x.id, familyName: await this.userLowService.getFamilyNameById(x.userId), userName: (await this.userLowService.getUserById(x.userId)).username, postId: x.postId, content: x.content, createdAt: x.createdAt })))
+        const resultComments = await Promise.all(result.comments.map(async (x) => ({id: x.id, familyName: await this.userLowService.getFamilyNameById(x.userId), userName: (await this.userLowService.getUserById(x.userId)).username, postId: x.postId, content: x.content, createdAt: x.createdAt})))
         const nextOffset = result.comments.length === 0 ? new Date() : result.comments[result.comments.length - 1].createdAt;
         return {
             comments: resultComments,
             nextOffset: nextOffset,
             hasMore: result.hasMore,
         }
+    }
 
+    async blockAction(dto: { blockerId: UserId, blockedId: UserId }) {
+        return await this.commentRepo.blockAction(dto.blockerId, dto.blockedId)
     }
 }
