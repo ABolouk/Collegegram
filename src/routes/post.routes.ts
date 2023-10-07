@@ -66,8 +66,9 @@ export const makePostRouter = (userLowService: UserLowService, sessionLowService
     })
 
     app.get("/:id", loginMiddle(userLowService, sessionLowService), (req, res) => {
+        const userId = req.user.id
         const {id} = getPostIdDto.parse(req.params);
-        handleExpresss(res, () => postHighService.getPostById(id));
+        handleExpresss(res, () => postHighService.getPostById(id, userId));
     });
 
     app.post("/:id/comment", loginMiddle(userLowService, sessionLowService), (req, res) => {
