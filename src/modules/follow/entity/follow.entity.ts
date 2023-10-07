@@ -2,13 +2,11 @@ import {
     Column,
     CreateDateColumn,
     Entity,
-    JoinColumn, JoinTable,
     ManyToOne,
     PrimaryGeneratedColumn,
     UpdateDateColumn
 } from "typeorm";
 import {UserId} from "../../user/model/user.id";
-import {User} from "../../user/model/user";
 import {FollowId} from "../model/follow.id";
 import {UserEntity} from "../../user/entity/user.entity";
 
