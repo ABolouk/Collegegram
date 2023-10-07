@@ -66,7 +66,8 @@ export class PostRepository {
                 where: {
                     tags: {
                         title: tagTitle
-                    }
+                    },
+                    createdAt: LessThan(startTime)
                 },
                 select: {
                     tags: {
@@ -75,7 +76,7 @@ export class PostRepository {
                     id: true,
                     likeCount: true,
                     photos: true,
-                    createdAt: true
+                    createdAt: true,
                 },
                 order: { createdAt: 'desc' },
                 take: limit
