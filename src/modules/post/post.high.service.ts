@@ -43,18 +43,6 @@ export class PostHighService {
         }
     }
 
-    async getPostsByUsersId(usersId: UserId[], limit: number, startTime: Date) {
-        const result = await this.postLowService.getPostsByusersId(usersId, limit, startTime)
-        const nextOffset = result.homePagePosts.length === 0 ? new Date() : result.homePagePosts[result.homePagePosts.length - 1].createdAt
-        const hasMore = result.hasMore
-        const homePagePosts = result.homePagePosts
-        return {
-            posts: homePagePosts,
-            nextOffset: nextOffset,
-            hasMore: hasMore,
-        }
-    }
-
     async getPostsByUsername(username: UserName, limit: number, startTime: Date) {
         const user = await this.userLowService.getUserByUsername(username)
         const result = await this.postLowService.getPostsByUserId(user.id, limit, startTime);
