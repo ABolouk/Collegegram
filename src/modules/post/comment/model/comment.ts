@@ -1,6 +1,6 @@
-import { firstName } from "../../../user/model/user.firstName";
+import { FirstName } from "../../../user/model/user.firstName";
 import { UserId } from "../../../user/model/user.id";
-import { lastName } from "../../../user/model/user.lastName";
+import { LastName } from "../../../user/model/user.lastName";
 import { UserName } from "../../../user/model/user.username";
 import { PostId } from "../../model/post-id";
 import { Content } from "./comment-content";
@@ -42,8 +42,8 @@ export module Comments {
 
 export interface GetComment {
   id: CommentId,
-  firstName: firstName,
-  lastName: lastName,
+  firstName: FirstName,
+  lastName: LastName,
   userName: UserName
   postId: PostId,
   content: Content,
