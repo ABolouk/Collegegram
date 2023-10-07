@@ -5,9 +5,12 @@ import {followRequestRepository} from "./follow-request.repository";
 import {FollowHighService} from "./follow.high.service";
 import {FollowReqId} from "./model/follow.req.id";
 import {FollowRequestEntity} from "./entity/follow-request.entity";
+import {blockEventEmmmiter} from "../../data/event-handling";
+import {UserId} from "../user/model/user.id";
 
 export class FollowRequestLowService {
     constructor(private followReqRepo: followRequestRepository) {
+        blockEventEmmmiter.on("block", (x, y) => this.blockAction({blockerId: x, blockedId: y}))
     }
 
     async createFollowRequest(followRequest: createFollowRequest) {
@@ -41,6 +44,10 @@ export class FollowRequestLowService {
 
     async getFollowRequestInTwoWay(followRequest: FollowRequest) {
         return await this.followReqRepo.getFollowRequestInTwoWay(followRequest);
+    }
+
+    async blockAction(block: { blockerId: UserId, blockedId: UserId }) {
+        return await this.followReqRepo.blockAction(block.blockerId, block.blockedId);
     }
 
 }
