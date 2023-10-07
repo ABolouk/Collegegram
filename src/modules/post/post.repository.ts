@@ -1,4 +1,4 @@
-import { DataSource, Repository } from "typeorm";
+import { DataSource, FindOperator, Not, Repository } from "typeorm";
 import { PostEntity } from "./entity/post.entity";
 import { PostId } from "./model/post-id";
 import { UserId } from "../user/model/user.id";
@@ -11,6 +11,7 @@ import { CreateTagInterface } from "./tag/model/tag";
 import { LessThan, In } from "typeorm";
 import { zodExplorePostDao } from "./dao/explore.dao";
 import { TagTitle } from "./tag/model/tag-title";
+import { FollowingId } from "../follow/model/follow";
 
 
 export class PostRepository {
@@ -65,16 +66,29 @@ export class PostRepository {
         return { resultPosts: resultPosts, hasMore }
     }
 
-    async getPostsByTagTitle(tagTitle: TagTitle, limit: number, startTime: Date) {
+    async getPostsByTagTitle(unWantedUsers: UserId[], followingUsers: FollowingId[], tagTitle: TagTitle, limit: number, startTime: Date) {
         const [searchPosts, count] = await this.postRepo.findAndCount(
             {
-                relations: ["tags"],
-                where: {
+                relations: ["tags", "user"],
+                where: [{
                     tags: {
                         title: tagTitle
                     },
+                    user: {
+                        id: Not(In(unWantedUsers)),
+                        isPrivate: false
+                    },
                     createdAt: LessThan(startTime)
-                },
+                }, {
+                    tags: {
+                        title: tagTitle
+                    },
+                    user: {
+                        id: In(followingUsers),
+                        isPrivate: true
+                    },
+                    createdAt: LessThan(startTime)
+                }],
                 select: {
                     tags: {
                         title: true
@@ -148,3 +162,4 @@ export class PostRepository {
         return posts.map((x) => zodExplorePostDao.parse(x))
     }
 }
+

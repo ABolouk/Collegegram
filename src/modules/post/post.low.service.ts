@@ -4,6 +4,7 @@ import { CreatePostInterface, PostInterface } from "./model/post";
 import { UserId } from "../user/model/user.id";
 import { NotFoundError } from "../../utility/http-errors";
 import { TagTitle } from "./tag/model/tag-title";
+import { FollowingId } from "../follow/model/follow";
 
 export class PostLowService {
     constructor(private postRepository: PostRepository) {
@@ -37,8 +38,8 @@ export class PostLowService {
         }
     }
 
-    async getPostsByTagTitle(tagTitle: TagTitle, limit: number, startTime: Date) {
-        return await this.postRepository.getPostsByTagTitle(tagTitle, limit, startTime)
+    async getPostsByTagTitle(unWantedUsers: UserId[], followingUsers: FollowingId[], tagTitle: TagTitle, limit: number, startTime: Date) {
+        return await this.postRepository.getPostsByTagTitle(unWantedUsers, followingUsers, tagTitle, limit, startTime)
     }
 
     async userHasMorePosts(userId: UserId, startTime: Date): Promise<boolean> {

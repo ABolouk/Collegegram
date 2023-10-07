@@ -7,9 +7,10 @@ import {UserLowService} from "../../user/user.low.service";
 import {FollowLowService} from "../../follow/follow.low.service";
 import {PostLowService} from "../post.low.service";
 import {LikeLowService} from "./like.low.service";
+import { BlockLowService } from "../../block/block.low.service";
 
 export class LikeHighService {
-    constructor(private likeLowService: LikeLowService, private postLowService: PostLowService, private userLowService: UserLowService, private followLowService: FollowLowService) {
+    constructor(private likeLowService: LikeLowService, private postLowService: PostLowService, private userLowService: UserLowService, private followLowService: FollowLowService, private blocksService: BlockLowService) {
         blockEventEmmmiter.on("block", (x, y) => this.blockAction({blockerId: x, blockedId: y}))
     }
 
@@ -22,10 +23,15 @@ export class LikeHighService {
         if (postAuthorId === dto.userId) {
             throw new BadRequestError('You can not like your own post');
         }
+
+        const checkBlock = await this.blocksService.checkIfUsersBlockedEachOther({ userId: dto.userId, blockedUserId: postAuthorId })
+        if (checkBlock) {
+            return {status : checkBlock}
+        }
         const author = await this.userLowService.getUserById(postAuthorId);
         if (author.isPrivate) {
             const follow = await this.followLowService.getFollowRelation({
-                followerId: dto.userId,
+            followerId: dto.userId,
                 followingId: author.id
             });
             if (!follow) {
