@@ -1,7 +1,6 @@
 import {Follow} from "./model/follow";
 import {BadRequestError, ConflictError, NotFoundError} from "../../utility/http-errors";
 import {followDtoType} from "./dto/follow.dto";
-import {UserHighService} from "../user/user.high.service";
 import {FollowRequestLowService} from "./follow.request.low.service";
 import {FollowReqStatus} from "./model/follow.req.status";
 import {FollowRequest} from "./model/follow.request";
@@ -16,7 +15,11 @@ import {UserLowService} from "../user/user.low.service";
 
 
 export class FollowHighService {
-    constructor(private followLowService: FollowLowService, private followRequestService: FollowRequestLowService, private userLowService: UserLowService ) {
+    constructor(
+        private followLowService: FollowLowService,
+        private followRequestService: FollowRequestLowService,
+        private userLowService: UserLowService
+    ) {
 
         blockEventEmmmiter.on("block", async (blockerId: UserId, blockedId: UserId) => {
             await this.blockAction({blockerId, blockedId});
@@ -158,5 +161,13 @@ export class FollowHighService {
             await this.followRequestService.deleteFollowRequest(followRequest)
         }
         return {status: "blocked"};
+    }
+
+    async getFollowersById(userId: UserId, limit: number, startTime: Date) {
+        return this.followLowService.getFollowersById(userId, limit, startTime);
+    }
+
+    async getFollowingsById(userId: UserId, limit: number, startTime: Date) {
+        return this.followLowService.getFollowingsById(userId, limit, startTime);
     }
 }

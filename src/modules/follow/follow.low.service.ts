@@ -27,4 +27,11 @@ export class FollowLowService {
         return this.followRepo.getFollowRelInTwoWay(followRelation)
     }
 
+    async getFollowersById(userId: UserId, limit: number, startTime: Date) {
+        return this.followRepo.getFollowersById(userId, limit, startTime);
+    }
+
+    async getFollowingsById(userId: UserId, limit: number, startTime: Date) {
+        return this.followRepo.getFollowingsById(userId, limit, startTime);
+    }
 }

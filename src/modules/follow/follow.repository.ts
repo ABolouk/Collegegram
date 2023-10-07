@@ -1,11 +1,11 @@
-import {DataSource, Repository} from "typeorm";
+import {DataSource, LessThan, Repository} from "typeorm";
 import {FollowEntity} from "./entity/follow.entity";
 import {Follow, createFollowRelation, followDao, followIdDao} from './model/follow';
 import {zodFollowIdDao, zodFollowRellDao, zodFollowingsId} from "./dao/follow.dao";
 import {z} from "zod";
 import {UserId} from "../user/model/user.id";
-import {WholeNumber} from "../../data/whole-number";
 import {UserEntity} from "../user/entity/user.entity";
+import {zodMyCollegeGramUserDao} from "../user/dao/user.dao";
 
 
 export class FollowRepository {
@@ -88,5 +88,65 @@ export class FollowRepository {
                 followerId: userId
             }
         }).then((x) => zodFollowingsId.parse(x))
+    }
+
+    async getFollowersById(userId: UserId, limit: number, startTime: Date) {
+        const [followers, count] = await this.followRepo.findAndCount({
+            select: {
+                follower: {
+                    id: true,
+                    username: true,
+                    avatar: true,
+                    firstName: true,
+                    lastName: true,
+                }
+            },
+            relations: {
+                follower: true,
+            },
+            where: {
+                followerId: userId,
+                createdAt: LessThan(startTime)
+            },
+            order: { createdAt: 'desc' },
+            take: limit,
+        })
+        const nextOffset = followers.length > 0 ? followers[followers.length - 1].createdAt : new Date();
+        const hasMore = count > limit;
+        return {
+            followers: followers.map(follower => zodMyCollegeGramUserDao.parse(follower)),
+            nextOffset: nextOffset,
+            hasMore: hasMore,
+        }
+    }
+
+    async getFollowingsById(userId: UserId, limit: number, startTime: Date) {
+        const [followings, count] = await this.followRepo.findAndCount({
+            select: {
+                following: {
+                    id: true,
+                    username: true,
+                    avatar: true,
+                    firstName: true,
+                    lastName: true,
+                }
+            },
+            relations: {
+                following: true,
+            },
+            where: {
+                followerId: userId,
+                createdAt: LessThan(startTime)
+            },
+            order: { createdAt: 'desc' },
+            take: limit,
+        })
+        const nextOffset = followings.length > 0 ? followings[followings.length - 1].createdAt : new Date();
+        const hasMore = count > limit;
+        return {
+            followings: followings.map(follower => zodMyCollegeGramUserDao.parse(follower)),
+            nextOffset: nextOffset,
+            hasMore: hasMore,
+        }
     }
 }
