@@ -29,9 +29,8 @@ export const zodUserDao = z
     }).transform((x): User => x)
 
 export const zodMyCollegeGramUserDao = z.object({
-        id: UserId.zod,
         username: UserName.zod,
-        firstName: zodFirstName,
-        lastName: zodLastName,
+        firstName: z.nullable(zodFirstName),
+        lastName: z.nullable(zodLastName),
         avatar: z.coerce.string(),
 }).transform((user): MyCollegeGramUserInterface => user)
