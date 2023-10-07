@@ -22,5 +22,8 @@ export class BlockLowService {
         return this.blockRepo.findBlockerUsers(id)
     }
 
+    async findBlockRellInTwoWay(blockRelation: BlockRelationInterface): Promise<BlockInterface | null> {
+        return this.blockRepo.findBlockRellInTwoWay(blockRelation)
+    }
 
 }
