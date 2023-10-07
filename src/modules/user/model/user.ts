@@ -1,28 +1,53 @@
-import { UserEmail } from "./user.email";
+import { Email } from './user.email';
 import { UserId } from "./user.id";
-import { userName } from "./user.username";
+import { UserName } from "./user.username";
+import { firstName } from './user.firstName';
+import { lastName } from './user.lastName';
+import { HashedPassword, Password } from '../../../utility/password-utils';
+import {WholeNumber} from "../../../data/whole-number";
 
+
+// User Interface type:??????
 export interface User {
     id: UserId;
-    email: UserEmail;
-    username: userName;
-    password: string;
-    bio?: string;
-    firstName?: string;
-    lastName?: string;
-    avatar?: string;
+    email: Email;
+    username: UserName;
+    password: HashedPassword,
+    postCount: WholeNumber;
+    followerCount: WholeNumber,
+    followingCount: WholeNumber,
+    bio: string | null
+    firstName: string | null;
+    lastName: string | null
+    avatar: string;
     isPrivate: boolean;
 }
 
 
-export interface CreateUserInterface{
+
+export interface createUserInterface {
     id: UserId;
-    email: UserEmail;
-    username: userName;
+    email: Email;
+    username: UserName;
     password: string;
     isPrivate: boolean;
 }
 
-type tempOmit = 'password' | 'id';
-export interface UserInformation extends Omit<User, tempOmit> {}
 
+export interface updateUser {
+    email: Email;
+    password: string;
+    firstName: firstName;
+    lastName: lastName;
+    avatar: string;
+    bio: string;
+    isPrivate: boolean;
+}
+
+export interface MyCollegeGramUserInterface {
+    id: UserId;
+    userName: UserName,
+    firstName: string | null;
+    lastName: string | null
+    avatar: string,
+}

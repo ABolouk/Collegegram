@@ -1,8 +1,6 @@
 import { Column, CreateDateColumn, Entity, PrimaryColumn, UpdateDateColumn } from "typeorm";
 import { UserId } from "../model/user.id";
-import { UserEmail } from "../model/user.email";
-import { userName } from "../model/user.username";
-
+import { WholeNumber } from "../../../data/whole-number";
 
 @Entity("users")
 export class UserEntity {
@@ -10,29 +8,37 @@ export class UserEntity {
     id!: UserId;
 
     @Column()
-    email!: UserEmail;
+    email!: string;
 
     @Column()
-    username!: userName;
+    username!: string;
 
     @Column()
     password!: string;
 
     @Column({ nullable: true })
-    firsrName?: string;
+    firstName?: string;
 
     @Column({ nullable: true })
     lastName?: string;
 
-
     @Column({ nullable: true })
     bio?: string;
 
-    @Column({ nullable: true })
+    @Column({ nullable: true  , default: "https://collegegram-avatars.darkube.app/default-avatar.png"})
     avatar?: string;
 
     @Column('boolean', { default: false })
     isPrivate!: boolean;
+
+    @Column({default: 0})
+    postCount!: number;
+
+    @Column({default: 0})
+    followerCount!: WholeNumber;
+
+    @Column({default: 0})
+    followingCount!: WholeNumber;
 
     @CreateDateColumn()
     createdAt!: Date;

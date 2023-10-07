@@ -6,8 +6,13 @@ import { UUID } from "../../../data/uuid";
 
 export type UserId = Brand<UUID, "UserId">;
 
-export const isUserId = (value: string): value is UserId => isUUID(value);
+export module UserId {
+  export const is = (value: string): value is UserId =>
+    isUUID(value)
 
-export const zodUserId = z.string().refine(isUserId);
+  export const zod = z.string().refine(is);
 
-export const makeUserId = () => new Date().getTime() + v4() as UserId;
+  export type Unique = Brand<UserId, "UserIdUnique">;
+
+  export const make = () => v4() as UserId;
+}

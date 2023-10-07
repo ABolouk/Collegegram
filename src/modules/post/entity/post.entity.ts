@@ -1,38 +1,61 @@
-import { Column, CreateDateColumn, Entity, JoinTable, ManyToMany, ManyToOne, OneToMany, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
-import { UserEntity } from "../../user/entity/user.entity";
-import { CommentEntity } from "../comment/entity/comment.entity";
-import { TagEntity } from "../tag/entity/tag.entity";
-
+import {
+    Column,
+    CreateDateColumn,
+    Entity,
+    JoinTable,
+    ManyToMany,
+    ManyToOne,
+    OneToMany,
+    PrimaryGeneratedColumn,
+    UpdateDateColumn
+} from "typeorm";
+import {UserEntity} from "../../user/entity/user.entity";
+import {CommentEntity} from "../comment/entity/comment.entity";
+import {TagEntity} from "../tag/entity/tag.entity";
+import {UserId} from "../../user/model/user.id";
+import {WholeNumber} from "../../../data/whole-number";
 
 
 @Entity("posts")
 export class PostEntity {
-  @PrimaryGeneratedColumn()
-  id!: number;
+    @PrimaryGeneratedColumn()
+    id!: number;
 
-  @ManyToOne(() => UserEntity)
-  user!: UserEntity
+    @Column()
+    userId!: UserId;
 
-  @Column('varchar', { array: true })
-  photos!: string[]
+    @ManyToOne(() => UserEntity)
+    user!: UserEntity
 
-  @Column()
-  description?: string
+    @Column('varchar', {array: true})
+    photos!: string[]
 
-  @OneToMany(() => CommentEntity, (comment) => comment.post)
-  comments?: CommentEntity[]
+    @Column()
+    description?: string
 
-  @ManyToMany(() => TagEntity)
-  @JoinTable()
-  tags?: TagEntity[]
+    @OneToMany(() => CommentEntity, (comment) => comment.post)
+    comments?: CommentEntity[]
 
-  @Column('boolean', { default: false })
-  closeFriends!: boolean;
+    @ManyToMany(() => TagEntity)
+    @JoinTable()
+    tags?: TagEntity[]
 
-  @CreateDateColumn()
-  createAt!: Date;
+    @Column('boolean', {default: false})
+    closeFriends!: boolean;
 
-  @UpdateDateColumn()
-  updatedAt!: Date;
+    @Column({default: 0})
+    likeCount!: WholeNumber;
+
+    @Column({default: 0})
+    commentCount!: WholeNumber;
+
+    @Column({ default: 0 })
+    bookmarkCount!: WholeNumber;
+
+    @CreateDateColumn()
+    createdAt!: Date;
+
+    @UpdateDateColumn()
+    updatedAt!: Date;
 
 }

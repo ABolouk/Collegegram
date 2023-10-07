@@ -1,22 +1,22 @@
 import jwt from "jsonwebtoken";
-import { UserInterface } from "../modules/user/model/user";
+import { User } from "../modules/user/model/user";
 import { UserId } from "../modules/user/model/user.id";
-import { userName } from "../modules/user/model/user.username";
-import { UserEmail } from "../modules/user/model/user.email";
+import { UserName } from "../modules/user/model/user.username";
+import { Email } from "../modules/user/model/user.email";
 import 'dotenv-flow/config';
 import { BadRequestError } from "./http-errors";
 
 export type PayloadType = {
     userId: UserId,
-    username: userName,
-    email: UserEmail,
+    username: UserName,
+    email: Email,
 }
 
-export const createOneTimeLinkSecret = (user: UserInterface): string => {
+export const createOneTimeLinkSecret = (user: User): string => {
     return process.env.JWT_SECRET + user.username;
 }
 
-export const createOneTimeLink = (route: string, user: UserInterface, expiresInMinute: number) => {
+export const createOneTimeLink = (route: string, user: User, expiresInMinute: number) => {
     const payload: PayloadType = {
         userId: user.id,
         username: user.username,

@@ -1,32 +1,37 @@
-import { UserEntity } from "../entity/user.entity";
-import { User } from "../model/user";
-import { UserEmail } from "../model/user.email";
-import { userName } from "../model/user.username";
+import {MyCollegeGramUserInterface, User} from "../model/user";
+import {Email} from "../model/user.email";
+import {UserId} from "../model/user.id";
+import {UserName} from "../model/user.username";
+import {z} from "zod";
+import {HashedPassword} from "../../../utility/password-utils";
+import {isFirstName} from "../model/user.firstName";
+import {zodFirstName} from "../model/user.firstName";
+import {zodLastName} from "../model/user.lastName";
+import {WholeNumber} from "../../../data/whole-number";
 
+// Zod Dao:
 
-export type UserOutput = {
-  username: string
-  email: string
-}
+export const zodUserDao = z
+    .object({
+        id: UserId.zod,
+        username: UserName.zod,
+        email: Email.zod,
+        password: HashedPassword.zod,
+        postCount: WholeNumber.zod,
+        followerCount: WholeNumber.zod,
+        followingCount: WholeNumber.zod,
+        bio: z.coerce.string(),
+        firstName: z.nullable(zodFirstName),
+        lastName: z.nullable(zodLastName),
+        avatar: z.coerce.string(),
+        isPrivate: z.boolean()
 
-export type UserOutputFull = {
-  email: UserEmail;
-  username: userName;
-  bio?: string;
-  firstName?: string;
-  lastName?: string;
-  avatar?: string;
-  isPrivate: boolean;
-}
+    }).transform((x): User => x)
 
-
-export const CreateFullUserDao = (user: User): UserOutputFull => ({
-  username: user.username,
-  email: user.email,
-  bio: user.bio,
-  firstName: user.firstName,
-  lastName: user.lastName,
-  avatar: user.avatar,
-  isPrivate: user.isPrivate
-
-})
+export const zodMyCollegeGramUserDao = z.object({
+        id: UserId.zod,
+        userName: UserName.zod,
+        firstName: zodFirstName,
+        lastName: zodLastName,
+        avatar: z.coerce.string(),
+}).transform((user): MyCollegeGramUserInterface => user)

@@ -1,12 +1,13 @@
-import {z} from 'zod';
-import { isUserEmail } from '../model/user.email';
-import { isUserName } from '../model/user.username';
+import { z } from 'zod';
+import { Email } from '../model/user.email';
+import { UserName } from '../model/user.username';
+import { Password } from '../../../utility/password-utils';
 
 export const signupDto = z.object({
-    email: z.string().email().nonempty().refine(isUserEmail),
-    username: z.string().min(4).max(64).nonempty().regex(/^[a-zA-Z0-9][a-zA-Z0-9\_]*$/).refine(isUserName),
-    password: z.string().min(8).max(32).regex(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/),
-    confirmPassword: z.string().min(8).max(32).regex(/(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/),
+    email: Email.zod,
+    username: UserName.zod,
+    password: Password.zod,
+    confirmPassword: Password.zod
 });
 
 export type signupDto = z.infer<typeof signupDto>;
