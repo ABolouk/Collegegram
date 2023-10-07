@@ -33,6 +33,7 @@ export const AppDataSource = new DataSource({
         BookmarkEntity,
         LikeEntity,
         NotificationEntity,
+        LikeEntity,
     ],
     migrations: ["./src/migrations/*.ts"],
     subscribers: [],
