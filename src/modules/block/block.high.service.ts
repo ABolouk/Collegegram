@@ -71,4 +71,8 @@ export class BlockHighService {
         return await this.blockLowService.findBlockerUsers(id)
     }
 
+    async getBlockedUsersById(userId: UserId, limit: number, startTime: Date) {
+        return this.blockLowService.getBlockedUsersById(userId, limit, startTime);
+    }
+
 }
