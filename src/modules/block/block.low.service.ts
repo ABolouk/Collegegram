@@ -1,6 +1,6 @@
 import {BlockRepository} from "./block.repository";
-import {BlockInterface, BlockRelationInterface, UnblockRelationInterface} from "./model/block";
-import {UserId} from "../user/model/user.id";
+import { BlockInterface, BlockRelationInterface, UnblockRelationInterface, BlockStatus } from "./model/block";
+import { UserId } from "../user/model/user.id";
 
 export class BlockLowService {
     constructor(private blockRepo: BlockRepository) {
@@ -26,5 +26,18 @@ export class BlockLowService {
         return this.blockRepo.findBlockedUsers(userId)
     }
 
+    async checkIfUsersBlockedEachOther(relation: BlockRelationInterface) {
+        const blockRelation1 = await this.blockRepo.findBlock({userId: relation.userId, blockedUserId: relation.blockedUserId})
+        if (blockRelation1) {
+            const status: BlockStatus = "isBlocked"
+            return status
+        }
+        const blockRelation2 = await this.blockRepo.findBlock({ userId: relation.blockedUserId, blockedUserId: relation.userId })
+        if (blockRelation2) {
+            const status: BlockStatus = "youAreBlocked"
+            return status
+        }
+        return false
+    }
 
 }
