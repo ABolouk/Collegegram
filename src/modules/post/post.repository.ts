@@ -158,7 +158,4 @@ export class PostRepository {
         return posts.map((x) => zodExplorePostDao.parse(x))
     }
 }
-function NOT(arg0: FindOperator<any>): NonNullable<UserId> | import("typeorm").FindOperator<NonNullable<UserId>> | undefined {
-    throw new Error("Function not implemented.");
-}
 
