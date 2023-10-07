@@ -30,6 +30,7 @@ export const AppDataSource = new DataSource({
         FollowRequestEntity,
         BlockEntity,
         NotificationEntity,
+        LikeEntity,
     ],
     migrations: ["./src/migrations/*.ts"],
     subscribers: [],
