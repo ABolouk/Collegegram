@@ -30,6 +30,9 @@ import {PostLowService} from "./modules/post/post.low.service";
 import {LikeLowService} from "./modules/post/like/like.low.service";
 import {BookmarkService} from "./modules/bookmark/book-mark.service";
 import {BookmarkRepository} from "./modules/bookmark/book-mark.repository";
+import {CloseFriendRepository} from "./modules/user/closeFriend/close-friend.repository";
+import {CloseFriendLowService} from "./modules/user/closeFriend/close-friend.low.service";
+import {CloseFriendHighService} from "./modules/user/closeFriend/close-Friend.high.service";
 
 
 export const makeApp = (dataSource: DataSource) => {
@@ -44,6 +47,7 @@ export const makeApp = (dataSource: DataSource) => {
     const followRepo = new FollowRepository(dataSource);
     const followReqRepo = new followRequestRepository(dataSource);
     const blockRepo = new BlockRepository(dataSource)
+    const closeFriendRepo = new CloseFriendRepository(dataSource)
     const sessionLowService = new SessionLowService(sessionRepo)
     const jwtService = new JwtService(sessionRepo);
     const emailService = new EmailService()
@@ -51,10 +55,12 @@ export const makeApp = (dataSource: DataSource) => {
     const userLowService = new UserLowService(userRepo)
     const followLowService = new FollowLowService(followRepo);
     const followRequestLowService = new FollowRequestLowService(followReqRepo);
+    const closeFriendLowService = new CloseFriendLowService(closeFriendRepo);
+    const closeFriendHighService = new CloseFriendHighService(closeFriendLowService, userLowService, blockLowService)
     const blockHighService = new BlockHighService(blockLowService, userLowService)
     const userHighService = new UserHighService(userLowService, sessionLowService, emailService);
     const followHighService = new FollowHighService(followLowService, followRequestLowService, userLowService);
-    app.use("/user", makeUserRouter(userHighService, sessionLowService, userLowService, jwtService, followHighService, blockHighService));
+    app.use("/user", makeUserRouter(userHighService, sessionLowService, userLowService, jwtService, followHighService, blockHighService , closeFriendHighService));
 
     const postRepo = new PostRepository(dataSource);
     const commentRepo = new CommentRepository(dataSource);
