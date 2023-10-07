@@ -34,8 +34,8 @@ export const makeUserRouter = (userHighService: UserHighService, sessionLowServi
         handleExpresss(res, () => userHighService.signup(dto), 201)
     })
 
-    app.post("/getUserProfile", loginMiddle(userLowService, sessionLowService), (req, res) => {
-        const dto = getUserDto.parse(req.body);
+    app.get("/getUserProfile/:UserName", loginMiddle(userLowService, sessionLowService), (req, res) => {
+        const dto = getUserDto.parse(req.params);
         handleExpresss(res, () => userHighService.getUserProfile(dto, req.user.id));
     });
 
