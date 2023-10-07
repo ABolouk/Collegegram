@@ -7,10 +7,16 @@ import {User} from "../user/model/user";
 import {PostLowService} from "./post.low.service";
 import { LikeLowService } from "./like/like.low.service";
 import { BookmarkService } from "../bookmark/book-mark.service";
+import {UserName} from "../user/model/user.username";
+import {UserLowService} from "../user/user.low.service";
 
 export class PostHighService {
-    constructor(private postLowService: PostLowService, private likeService: LikeLowService, private bookmarkService: BookmarkService) {
-    }
+    constructor(
+        private postLowService: PostLowService,
+        private likeService: LikeLowService,
+        private bookmarkService: BookmarkService,
+        private userLowService: UserLowService
+    ) {}
 
     async createPost(dto: CreatePostDtoType, photos: Express.Multer.File[], loggedInUser: User) {
         // TODO: maybe some validations
@@ -29,15 +35,21 @@ export class PostHighService {
     }
 
     async getPostsByUserId(userId: UserId, limit: number, startTime: Date): Promise<PostsInterface> {
-        const posts = await this.postLowService.getPostsByUserId(userId, limit, startTime);
-        const resultPosts = await Promise.all(posts.map(async (post) => ({ ...post, isLiked: await this.likeService.isLiked({ userId: userId, postId: post.id }), isBookmarked: await this.bookmarkService.isBookmarked(userId, post.id)})))
-        const nextOffset = posts.length === 0 ? new Date() : posts[posts.length - 1].createdAt;
-        const hasMore = await this.postLowService.userHasMorePosts(userId, nextOffset)
+        const result = await this.postLowService.getPostsByUserId(userId, limit, startTime);
         return {
-            posts: resultPosts,
-            nextOffset: nextOffset,
-            hasMore: hasMore,
+            posts: result.posts,
+            nextOffset: result.nextOffset,
+            hasMore: result.hasMore,
         }
     }
 
+    async getPostsByUsername(username: UserName, limit: number, startTime: Date) {
+        const user = await this.userLowService.getUserByUsername(username)
+        const result = await this.postLowService.getPostsByUserId(user.id, limit, startTime);
+        return {
+            posts: result.posts,
+            nextOffset: result.nextOffset,
+            hasMore: result.hasMore,
+        }
+    }
  }

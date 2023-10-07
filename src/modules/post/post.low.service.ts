@@ -27,8 +27,14 @@ export class PostLowService {
             hasMore: hasMore,
         }
     }
-    async getPostsByUserId(userId: UserId, limit: number, startTime: Date): Promise<PostInterface[]> {
-        return await this.postRepository.getPostsByUserId(userId, limit, startTime);
+
+    async getPostsByUserId(userId: UserId, limit: number, startTime: Date) {
+        const result = await this.postRepository.getPostsByUserId(userId, limit, startTime);
+        return {
+            posts: result.posts,
+            hasMore: result.hasMore,
+            nextOffset: result.posts.length > 0 ? result.posts[result.posts.length - 1].createdAt : new Date,
+        }
     }
 
     async getPostsByTagTitle(tagTitle: TagTitle, limit: number, startTime: Date) {
