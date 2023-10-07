@@ -68,7 +68,7 @@ export class BlockRepository {
         const nextOffset = blockedUsers.length > 0 ? blockedUsers[blockedUsers.length - 1].createdAt : new Date();
         const hasMore = count > limit;
         return {
-            blockedUsers: blockedUsers.map(follower => zodMyCollegeGramUserDao.parse(follower)),
+            blockedUsers: blockedUsers.map(blockedUser => zodMyCollegeGramUserDao.parse(blockedUser.user)),
             nextOffset: nextOffset,
             hasMore: hasMore,
         }
