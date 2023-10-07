@@ -1,4 +1,4 @@
-import {DataSource, Repository} from "typeorm";
+import {DataSource, LessThan, Repository} from "typeorm";
 import {BlockEntity} from "./entity/block.entity";
 import {BlockInterface, UnblockRelationInterface, BlockRelationInterface} from "./model/block";
 import {z} from "zod"
@@ -6,6 +6,7 @@ import {zodBlockDao, zodBlockRellDao} from "./dao/block.dao";
 import {UserId} from "../user/model/user.id";
 import {raw} from "express";
 import {User} from "../user/model/user";
+import {zodMyCollegeGramUserDao} from "../user/dao/user.dao";
 
 export class BlockRepository {
     private blockRepo: Repository<BlockEntity>;
@@ -43,4 +44,33 @@ export class BlockRepository {
         return blockedUsers.map((x) => x.blockedUserId)
     }
 
+    async getBlockedUsersById(userId: UserId, limit: number, startTime: Date) {
+        const [blockedUsers, count] = await this.blockRepo.findAndCount({
+            select: {
+                user: {
+                    id: true,
+                    username: true,
+                    avatar: true,
+                    firstName: true,
+                    lastName: true,
+                }
+            },
+            relations: {
+                user: true,
+            },
+            where: {
+                userId: userId,
+                createdAt: LessThan(startTime)
+            },
+            order: { createdAt: 'desc' },
+            take: limit,
+        })
+        const nextOffset = blockedUsers.length > 0 ? blockedUsers[blockedUsers.length - 1].createdAt : new Date();
+        const hasMore = count > limit;
+        return {
+            blockedUsers: blockedUsers.map(follower => zodMyCollegeGramUserDao.parse(follower)),
+            nextOffset: nextOffset,
+            hasMore: hasMore,
+        }
+    }
 }

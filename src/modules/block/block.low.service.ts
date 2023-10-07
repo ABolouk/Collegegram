@@ -26,5 +26,7 @@ export class BlockLowService {
         return this.blockRepo.findBlockedUsers(userId)
     }
 
-
+    async getBlockedUsersById(userId: UserId, limit: number, startTime: Date) {
+        return this.blockRepo.getBlockedUsersById(userId, limit, startTime);
+    }
 }
