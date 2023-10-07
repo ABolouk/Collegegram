@@ -66,7 +66,7 @@ export const makeApp = (dataSource: DataSource) => {
     const bookmarkService = new BookmarkService(bookmarkRepo, postLowService, userLowService, followLowService)
     const postHighService = new PostHighService(postLowService, likeLowService, bookmarkService );
     const commentService = new CommentService(commentRepo, postLowService, userLowService, followLowService);
-    const homePageService = new HomePageService(postHighService, userLowService, followLowService, likeLowService, bookmarkService);
+    const homePageService = new HomePageService(postLowService, userLowService, followLowService, likeLowService, bookmarkService);
     const likeHighService = new LikeHighService(likeLowService, postLowService, userLowService, followLowService);
     const searchService = new SearchService(postLowService, likeLowService)
     app.use("/post", makePostRouter(userLowService, sessionLowService, postHighService, commentService, homePageService, likeHighService , bookmarkService, searchService));
