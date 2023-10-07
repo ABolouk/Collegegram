@@ -5,11 +5,14 @@ import {GetBookMarkDtoType} from "./dto/get-book-mark.dto";
 import {PostLowService} from "../post/post.low.service";
 import {UserLowService} from "../user/user.low.service";
 import {FollowLowService} from "../follow/follow.low.service";
+import {blockEventEmmmiter} from "../../data/event-handling";
+import {UserId} from "../user/model/user.id";
 
 
 export class BookmarkService {
 
     constructor(private bookmarkRepo: BookmarkRepository, private postLowService: PostLowService, private userLowService: UserLowService, private followLowService: FollowLowService) {
+        blockEventEmmmiter.on("block", (x, y) => this.blockAction({blockerId: x, blockedId: y}))
     }
 
 
@@ -82,6 +85,9 @@ export class BookmarkService {
             nextOffset: nextOffset,
             hasMore: hasMore,
         }
+    }
 
+    async blockAction(dto: { blockerId: UserId, blockedId: UserId }) {
+        return await this.bookmarkRepo.blockAction(dto.blockerId, dto.blockedId)
     }
 }
