@@ -8,7 +8,10 @@ import {zodPostDao} from "../../post/dao/post.dao";
 import {zodCommentDao} from "../../post/comment/dao/create-comment.dao";
 import {CommentNotification} from "../model/comment-notification";
 import {LikeNotification} from "../model/like-notification";
-import {createNotificationContent} from "../../../utility/create-notification-content";
+import {
+    createMyFriendsNotificationContent,
+    createMyNotificationContent
+} from "../../../utility/create-notification-content";
 
 const baseZodNotificationDao = z.object({
     interactingUserId: UserId.zod,
@@ -28,11 +31,23 @@ export type BaseZodNotificationDaoType = z.infer<typeof baseZodNotificationDao>;
 export const zodMyNotificationDao =
     baseZodNotificationDao
         .transform((x): FrontEndNotificationInterface => ({
-            content: createNotificationContent(x),
+            content: createMyNotificationContent(x),
             postId: x.postId,
             photo: x.type in [CommentNotification, LikeNotification] ? x.post?.photos[0] : x.interactedUser.avatar,
             type: x.type,
             updatedAt: x.updatedAt,
         }));
 
-export type ZodNotificationDaoType = z.infer<typeof zodMyNotificationDao>;
+export type ZodMyNotificationDaoType = z.infer<typeof zodMyNotificationDao>;
+
+export const zodMyFriendsNotificationDao =
+    baseZodNotificationDao
+        .transform((x): FrontEndNotificationInterface => ({
+            content: createMyFriendsNotificationContent(x),
+            postId: x.postId,
+            photo: x.type in [CommentNotification, LikeNotification] ? x.post?.photos[0] : x.interactedUser.avatar,
+            type: x.type,
+            updatedAt: x.updatedAt,
+        }));
+
+export type ZodMyFriendsNotificationDao = z.infer<typeof zodMyFriendsNotificationDao>;
