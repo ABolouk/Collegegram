@@ -44,7 +44,7 @@ export class NotificationService {
     }
 
     async getMyNotifications(dto: GetNotificationsDto) {
-        return await this.notificationRepository.getNotificationsByUserId(dto);
+        return await this.notificationRepository.getMyNotificationsByUserId(dto);
     }
 
     async makeLikeNotification(userId: UserId, postId: PostId) {
