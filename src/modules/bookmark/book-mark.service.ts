@@ -29,12 +29,12 @@ export class BookmarkService {
         if (checkBlock) {
             return { status: checkBlock }
         }
-        if (author.isPrivate && author.id !== dto.userId) {
+        if (author.isPrivate) {
             const follow = await this.followLowService.getFollowRelation({
                 followerId: dto.userId,
                 followingId: author.id
             });
-            if (!follow) {
+            if (!follow && author.id !== dto.userId) {
                 throw new BadRequestError('شما نمی‌توانید این پست را سیو کنید.');
             }
         }
