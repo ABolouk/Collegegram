@@ -77,7 +77,7 @@ export const makePostRouter = (userLowService: UserLowService, sessionLowService
         const limit = req.query.limit;
         const startTime = req.query.startTime;
         const dto = getOtherUserPost.parse({username, limit, startTime});
-        handleExpresss(res, () => postHighService.getPostsByUsername(dto.username, dto.limit, dto.startTime ? dto.startTime : new Date()));
+        handleExpresss(res, () => postHighService.getPostsByUsername(dto.username, dto.limit, dto.startTime ? dto.startTime : new Date() , req.user.id));
     });
 
     app.get("/:id/comments", loginMiddle(userLowService, sessionLowService), (req, res) => {

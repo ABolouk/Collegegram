@@ -29,9 +29,10 @@ import {User} from "./model/user";
 import {UserLowService} from "./user.low.service";
 import {BlockLowService} from "../block/block.low.service";
 import {SessionLowService} from "./session.low.service";
+import {FollowLowService} from "../follow/follow.low.service";
 
 export class UserHighService {
-    constructor(private userLowService: UserLowService, private sessionLowService: SessionLowService, private emailService: EmailService, private blockService: BlockLowService) {
+    constructor(private userLowService: UserLowService, private sessionLowService: SessionLowService, private emailService: EmailService, private blockService: BlockLowService , private followLowService: FollowLowService) {
     }
 
     async login(loginDto: LoginDtoType) {
@@ -93,9 +94,14 @@ export class UserHighService {
             throw new NotFoundError("User")
         }
         const checkBlock = await this.blockService.checkIfUsersBlockedEachOther({ userId: userId, blockedUserId: user.id })
+        const checkFollow = await this.followLowService.isFollwed({
+            followerId: userId,
+            followingId: user.id
+        });
         if (checkBlock) {
             return {
                 blockStatus: checkBlock,
+                isFollowed: checkFollow,
                 username: user.username,
                 firstName: user.firstName,
                 lastName: user.lastName,
