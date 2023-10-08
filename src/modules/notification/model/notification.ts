@@ -12,6 +12,7 @@ import { NotificationComment } from "./notification-comment";
 import { CommentId } from "../../post/comment/model/comment-id";
 import { PostId } from "../../post/model/post-id";
 import { UserId } from "../../user/model/user.id";
+import {UserName} from "../../user/model/user.username";
 
 const allNotificationTypes = [
     CommentNotificationType,
@@ -45,7 +46,8 @@ export interface NotificationInterface {
 
 export interface FrontEndNotificationInterface {
     content: string;
-    postId?: PostId;
+    postId?: PostId | null;
+    username: UserName;
     photo: string | undefined;
     type: NotificationType;
     updatedAt: Date;
