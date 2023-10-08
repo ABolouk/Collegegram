@@ -36,7 +36,7 @@ export class NotificationService {
             await this.makeFollowNotification(followerId, followingId);
         })
         followRequestEventEmitter.on('followRequest', async (followerId: UserId, followingId: UserId) => {
-            await this.makeFollowRequstNotification(followerId, followingId);
+            await this.makeFollowRequestNotification(followerId, followingId);
         })
         acceptFollowRequestEventEmitter.on('acceptFollowRequest', async (followerId: UserId, followingId: UserId) => {
             await this.makeAcceptFollowNotification(followerId, followingId);
@@ -83,7 +83,7 @@ export class NotificationService {
         await this.notificationRepository.create(newNotification);
     }
 
-    async makeFollowRequstNotification(followerId: UserId, followingId: UserId) {
+    async makeFollowRequestNotification(followerId: UserId, followingId: UserId) {
         const interactingUserId = followerId;
         const interactedUserId = followingId;
         const newNotification: CreateNotificationInterface = {
