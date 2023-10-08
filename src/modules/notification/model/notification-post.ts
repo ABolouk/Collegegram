@@ -9,6 +9,6 @@ export interface NotificationPost {
 export module NotificationPost {
     export const zod = z.object({
         id: PostId.zod,
-        photo: z.string(),
+        photos: z.array(z.string()),
     })
 }
