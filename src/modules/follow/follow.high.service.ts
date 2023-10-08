@@ -19,7 +19,11 @@ import {
 } from "../../data/event-handling";
 
 export class FollowHighService {
-    constructor(private followLowService: FollowLowService, private followRequestService: FollowRequestLowService, private userLowService: UserLowService ) {
+    constructor(
+        private followLowService: FollowLowService,
+        private followRequestService: FollowRequestLowService,
+        private userLowService: UserLowService
+    ) {
 
         blockEventEmmmiter.on("block", async (blockerId: UserId, blockedId: UserId) => {
             await this.blockAction({blockerId, blockedId});
@@ -66,7 +70,7 @@ export class FollowHighService {
             followerId: dto.follower,
             followingId: followingUser.id
         });
-        followEventEmmmiter.emit("follow", dto.follower, followingUser.id)
+        followEventEmmmiter.emit("follow", dto.follower, followingUser.id);
         return {status: "followed"};
     }
 
@@ -131,7 +135,7 @@ export class FollowHighService {
                     followerId: followReq.followerId,
                     followingId: followReq.followingId,
                 })
-                acceptFollowRequestEventEmmmiter.emit("acceptFollowRequest", followReq.followerId, followReq.followingId)
+                acceptFollowRequestEventEmmmiter.emit("acceptFollowRequest", followReq.followerId, followReq.followingId);
                 return {status: "accepted"};
             }
             if (followReqStatus === FollowReqStatus.status.rejected) {
@@ -167,6 +171,13 @@ export class FollowHighService {
         return {status: "blocked"};
     }
 
+    async getFollowersById(userId: UserId, limit: number, startTime: Date) {
+        return this.followLowService.getFollowersById(userId, limit, startTime);
+    }
+
+    async getFollowingsById(userId: UserId, limit: number, startTime: Date) {
+        return this.followLowService.getFollowingsById(userId, limit, startTime);
+    }
 
     async getFollowingsIdByUserId(userId: UserId) {
         return this.followLowService.getFollowingsIdByUserId(userId)

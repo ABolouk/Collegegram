@@ -21,3 +21,6 @@ export interface BlockedUsersInterface {
     userId: UserId,
     blockedUser: UserId[]
 }
+
+export type BlockStatus = "youAreBlocked" | "isBlocked"
+

@@ -18,11 +18,19 @@ import { uploadAvatarMinIO } from "../utility/multer";
 import { UserLowService } from "../modules/user/user.low.service";
 import { SessionLowService } from "../modules/user/session.low.service";
 import { BlockHighService } from "../modules/block/block.high.service";
+import {getMyCollegeGramUserDto} from "../modules/user/dto/get-my-collgegram-user.dto";
 
 export const resetPasswordRoute = "reset_password"
 
 
-export const makeUserRouter = (userHighService: UserHighService, sessionLowService: SessionLowService, userLowService: UserLowService, jwtService: JwtService, followHighService: FollowHighService, blockHighService: BlockHighService) => {
+export const makeUserRouter = (
+    userHighService: UserHighService,
+    sessionLowService: SessionLowService,
+    userLowService: UserLowService,
+    jwtService: JwtService,
+    followHighService: FollowHighService,
+    blockHighService: BlockHighService
+) => {
     const app = Router();
     app.post("/login", (req, res) => {
         const dto = loginDto.parse(req.body);
@@ -34,8 +42,9 @@ export const makeUserRouter = (userHighService: UserHighService, sessionLowServi
         handleExpresss(res, () => userHighService.signup(dto), 201)
     })
 
-    app.get("/getUserProfile/:UserName", loginMiddle(userLowService, sessionLowService), (req, res) => {
-        const dto = getUserDto.parse(req.params);
+    app.get("/getUserProfile/:userName", loginMiddle(userLowService, sessionLowService), (req, res) => {
+        const userName = req.params.userName
+        const dto = getUserDto.parse({userName});
         handleExpresss(res, () => userHighService.getUserProfile(dto, req.user.id));
     });
 
@@ -104,6 +113,31 @@ export const makeUserRouter = (userHighService: UserHighService, sessionLowServi
         const following = req.body.userName
         const dto = blockDto.parse({ follower, following })
         handleExpresss(res, () => blockHighService.unblock(dto))
+    })
+
+    app.get('/followers', loginMiddle(userLowService, sessionLowService), (req, res) => {
+        const limit = req.query.limit;
+        const startTime = req.query.startTime ? req.query.startTime : new Date();
+        const dto = getMyCollegeGramUserDto.parse({ limit, startTime });
+        handleExpresss(res, () => followHighService.getFollowersById(req.user.id, dto.limit, dto.startTime));
+    })
+
+    app.get('/followings', loginMiddle(userLowService, sessionLowService), (req, res) => {
+        const limit = req.query.limit;
+        const startTime = req.query.startTime ? req.query.startTime : new Date();
+        const dto = getMyCollegeGramUserDto.parse({ limit, startTime });
+        handleExpresss(res, () => followHighService.getFollowingsById(req.user.id, dto.limit, dto.startTime));
+    })
+
+    app.get('/blockedUsers', loginMiddle(userLowService, sessionLowService), (req, res) => {
+        const limit = req.query.limit;
+        const startTime = req.query.startTime ? req.query.startTime : new Date();
+        const dto = getMyCollegeGramUserDto.parse({ limit, startTime });
+        handleExpresss(res, () => blockHighService.getBlockedUsersById(req.user.id, dto.limit, dto.startTime));
+    })
+
+    app.get('/closeFriends', loginMiddle(userLowService, sessionLowService), (req, res) => {
+        // TODO: After adding CloseFriend this route will be a lot like the three last routes.
     })
 
     return app

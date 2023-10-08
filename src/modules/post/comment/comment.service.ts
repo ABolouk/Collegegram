@@ -6,6 +6,7 @@ import { PostLowService } from "../post.low.service";
 import { GetCommentDtoType } from "./dto/get-comment.dto";
 import { UserLowService } from "../../user/user.low.service";
 import { FollowLowService } from "../../follow/follow.low.service";
+import { BlockLowService } from "../../block/block.low.service";
 import {commentEventEmmmiter} from "../../../data/event-handling";
 
 
@@ -14,17 +15,22 @@ export class CommentService {
         private commentRepo: CommentRepository,
         private postLowService: PostLowService,
         private userLowService: UserLowService,
-        private followLowService: FollowLowService
+        private followLowService: FollowLowService,
+        private blockService : BlockLowService,
     ) {
     }
 
     async comment(dto: createCommentDto) {
-        const post = await this.postLowService.getPostById(dto.postId)
+        const post = await this.postLowService.getTotalPostById(dto.postId)
 
         if (!post) {
             throw new NotFoundError("Post");
         }
 
+        const checkBlock = await this.blockService.checkIfUsersBlockedEachOther({ userId: dto.userId, blockedUserId: post.userId })
+        if (checkBlock) {
+            return { status: checkBlock }
+        }
         const createdComment = {
             userId: dto.userId,
             postId: dto.postId,
@@ -50,7 +56,7 @@ export class CommentService {
                 followerId: dto.userId,
                 followingId: author.id
             });
-            if (!follow) {
+            if (!follow && author.id !== dto.userId) {
                 throw new BadRequestError('شما نمی‌توانید نظرات این پست را ببینید.');
             }
         }

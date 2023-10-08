@@ -34,7 +34,7 @@ export class BlockHighService {
         blockEventEmmmiter.emit("block", newBlockRelation.userId, newBlockRelation.blockedUserId)
         return {status: "blocked"}
         //NOTE: follow userid: followingid, followerid
-    }
+    } 
 
     async unblock(dto: BlockDtoType) {
         const unBlockedUser = await this.userLowService.findByEmailOrUsername(dto.blockedUserName)
@@ -58,17 +58,12 @@ export class BlockHighService {
         return {status: "unblocked"}
     }
 
-
-    async checkIfUsersBlockedEachOther(relation: BlockRelationInterface) {
-        const blockRelation = await this.blockLowService.findBlock(relation)
-        if (!blockRelation) {
-            return false
-        }
-        return true
-    }
-
     async getBlockerUsers(id: UserId) {
         return await this.blockLowService.findBlockerUsers(id)
+    }
+
+    async getBlockedUsersById(userId: UserId, limit: number, startTime: Date) {
+        return this.blockLowService.getBlockedUsersById(userId, limit, startTime);
     }
 
 }

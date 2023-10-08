@@ -7,11 +7,12 @@ import {UserLowService} from "../user/user.low.service";
 import {FollowLowService} from "../follow/follow.low.service";
 import { PostId } from "../post/model/post-id";
 import { UserId } from "../user/model/user.id";
+import { BlockLowService } from "../block/block.low.service";
 
 
 export class BookmarkService {
 
-    constructor(private bookmarkRepo: BookmarkRepository, private postLowService: PostLowService, private userLowService: UserLowService, private followLowService: FollowLowService) {
+    constructor(private bookmarkRepo: BookmarkRepository, private postLowService: PostLowService, private userLowService: UserLowService, private followLowService: FollowLowService, private blockService: BlockLowService) {
     }
 
 
@@ -23,6 +24,10 @@ export class BookmarkService {
         const author = await this.userLowService.getUserById(post.userId);
         if (!author) {
             throw new NotFoundError("User")
+        }
+        const checkBlock = await this.blockService.checkIfUsersBlockedEachOther({ userId: dto.userId, blockedUserId: author.id })
+        if (checkBlock) {
+            return { status: checkBlock }
         }
         if (author.isPrivate) {
             const follow = await this.followLowService.getFollowRelation({
