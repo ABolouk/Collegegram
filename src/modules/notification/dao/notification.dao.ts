@@ -12,17 +12,20 @@ import {
     createMyFriendsNotificationContent,
     createMyNotificationContent
 } from "../../../utility/create-notification-content";
+import {NotificationUser} from "../model/notification-user";
+import {NotificationPost} from "../model/notification-post";
+import {NotificationComment} from "../model/notification-comment";
 
 const baseZodNotificationDao = z.object({
     interactingUserId: UserId.zod,
-    interactedUser: zodUserDao,
+    interactedUser: NotificationUser.zod,
     interactedUserId: UserId.zod,
-    interactingUser: zodUserDao,
+    interactingUser: NotificationUser.zod,
     type: NotificationType.zod,
-    postId: PostId.zod.optional(),
-    post: zodPostDao.optional(),
-    commentId: CommentId.zod.optional(),
-    comment: zodCommentDao.optional(),
+    postId: z.nullable(PostId.zod.optional()),
+    post: z.nullable(NotificationPost.zod.optional()),
+    commentId: z.nullable(CommentId.zod.optional()),
+    comment: z.nullable(NotificationComment.zod.optional()),
     updatedAt: z.date(),
 })
 
@@ -33,6 +36,7 @@ export const zodMyNotificationDao =
         .transform((x): FrontEndNotificationInterface => ({
             content: createMyNotificationContent(x),
             postId: x.postId,
+            username: x.interactingUser.username,
             photo: x.type in [CommentNotification, LikeNotification] ? x.post?.photos[0] : x.interactedUser.avatar,
             type: x.type,
             updatedAt: x.updatedAt,
@@ -45,6 +49,7 @@ export const zodMyFriendsNotificationDao =
         .transform((x): FrontEndNotificationInterface => ({
             content: createMyFriendsNotificationContent(x),
             postId: x.postId,
+            username: x.interactingUser.username,
             photo: x.type in [CommentNotification, LikeNotification] ? x.post?.photos[0] : x.interactedUser.avatar,
             type: x.type,
             updatedAt: x.updatedAt,
