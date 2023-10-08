@@ -14,9 +14,10 @@ export interface CreateCommentInterface {
 }
 
 export interface CommentInterface {
+  id: CommentId;
   userId: UserId;
   postId: PostId;
-  content: Content
+  content: Content;
 }
 
 export interface Comment {
