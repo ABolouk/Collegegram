@@ -26,7 +26,28 @@ export class NotificationRepository {
 
     async getMyNotificationsByUserId(dto: GetNotificationsDto) {
         const [notifications, count] = await this.notificationRepo.findAndCount({
-            // relations: ["posts", "comments"],
+            relations: ["post", "comment", "interactingUser", "interactedUser"],
+            select: {
+                post: {
+                    id: true,
+                    photos: true,
+                },
+                comment: {
+                    content: true,
+                },
+                interactingUser: {
+                    firstName: true,
+                    lastName: true,
+                    username: true,
+                    avatar: true,
+                },
+                interactedUser: {
+                    firstName: true,
+                    lastName: true,
+                    username: true,
+                    avatar: true,
+                },
+            },
             where: {
                 interactedUserId: dto.userId,
                 createdAt: LessThan(dto.startTime),
@@ -43,6 +64,7 @@ export class NotificationRepository {
     }
 
     async getMyFriendsNotificationsByUserId(dto: GetNotificationsDto) {
+        // todo
         const [notifications, count] = await this.notificationRepo.findAndCount({
             relations: ["posts", "comments"],
             where: {
