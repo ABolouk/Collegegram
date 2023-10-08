@@ -105,7 +105,7 @@ export class UserHighService {
         if (checkReq && checkReq.status === "pending") {
             return {
                 blockStatus: checkBlock,
-                isFollowed: checkFollow,
+                isFollowed: checkReq,
                 username: user.username,
                 firstName: user.firstName,
                 lastName: user.lastName,
