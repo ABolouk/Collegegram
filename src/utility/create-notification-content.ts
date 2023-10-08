@@ -7,7 +7,7 @@ import {
     FollowRequestPendingNotification
 } from "../modules/notification/model/follow-request-notification";
 
-export const createNotificationContent = (notification: BaseZodNotificationDaoType) => {
+export const createMyNotificationContent = (notification: BaseZodNotificationDaoType) => {
     const interactingUserFullName = `${notification.interactingUser.firstName} ${notification.interactingUser.lastName}`;
     switch (notification.type) {
         case CommentNotification:
