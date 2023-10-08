@@ -3,7 +3,7 @@ import { DataSource, LessThan, Repository } from "typeorm";
 import { NotificationEntity } from "./entity/notification.entity";
 import { NotificationId } from "./model/notification-id";
 import {CreateNotificationInterface, FrontEndNotificationInterface, NotificationInterface} from "./model/notification";
-import { zodMyNotificationDao } from "./dao/notification.dao";
+import { zodMyFriendsNotificationDao, zodMyNotificationDao } from "./dao/notification.dao";
 import { GetNotificationsDto } from "./dto/get-notifications.dto";
 
 export class NotificationRepository {
@@ -37,6 +37,24 @@ export class NotificationRepository {
         const hasMore = count > dto.limit;
         return {
             notifications: notifications.map(x => zodMyNotificationDao.parse(x)),
+            nextOffset: notifications.length !== 0 ? notifications[notifications.length - 1].createdAt : new Date(),
+            hasMore: hasMore,
+        }
+    }
+
+    async getMyFriendsNotificationsByUserId(dto: GetNotificationsDto) {
+        const [notifications, count] = await this.notificationRepo.findAndCount({
+            relations: ["posts", "comments"],
+            where: {
+                interactedUserId: dto.userId,
+                createdAt: LessThan(dto.startTime),
+            },
+            order: { createdAt: 'desc' },
+            take: dto.limit,
+        })
+        const hasMore = count > dto.limit;
+        return {
+            notifications: notifications.map(x => zodMyFriendsNotificationDao.parse(x)),
             nextOffset: notifications.length !== 0 ? notifications[notifications.length - 1].createdAt : new Date(),
             hasMore: hasMore,
         }
