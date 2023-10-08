@@ -1,10 +1,13 @@
+
+178 B
+
 FROM node:slim as build
 
 WORKDIR /src
 
 COPY package*.json .
 
-COPY . .
+RUN npm install
 
 COPY . .
 
