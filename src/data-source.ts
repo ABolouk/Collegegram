@@ -15,7 +15,7 @@ import { BookmarkEntity } from "./modules/bookmark/entity/book-mark.entity";
 export const AppDataSource = new DataSource({
     url: process.env.DB_URL,
     type: "postgres",
-    port: 34561,
+    port: 31567,
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
