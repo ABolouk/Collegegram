@@ -43,6 +43,14 @@ export interface NotificationInterface {
     updatedAt: Date;
 }
 
+export interface FrontEndNotificationInterface {
+    content: string;
+    postId?: PostId;
+    photo: string | undefined;
+    type: NotificationType;
+    updatedAt: Date;
+}
+
 export interface CreateNotificationInterface {
     interactingUserId: UserId;
     interactedUserId: UserId;
