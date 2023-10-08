@@ -6,8 +6,6 @@ COPY package*.json .
 
 COPY . .
 
-COPY . .
-
 FROM node:slim
 
 WORKDIR /src 
