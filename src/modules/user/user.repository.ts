@@ -78,8 +78,10 @@ export class UserRepository {
             },
             take : limit,
         });
+        console.log(usersNotFollowedNotBlocked)
         const hasMore = count > limit
         const users = usersNotFollowedNotBlocked.map((x) => zodExploreUserDao.parse(x))
+        console.log(users)
         return {users , hasMore}
     }
 }

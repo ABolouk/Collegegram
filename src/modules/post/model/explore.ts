@@ -11,8 +11,8 @@ export interface ExplorePostsDao {
 }
 
 export interface ExploreUserDao {
-    id: UserId;
-    userName : UserName,
+    id: UserId,
+    username : UserName,
     firstName: string | null;
     lastName: string | null
     avatar: string | null,
