@@ -7,6 +7,12 @@ import { Content } from "./comment-content";
 import { CommentId } from "./comment-id";
 import {z} from "zod"
 
+export interface CreateCommentInterface {
+  userId: UserId;
+  postId: PostId;
+  content: Content;
+}
+
 export interface CommentInterface {
   userId: UserId;
   postId: PostId;
