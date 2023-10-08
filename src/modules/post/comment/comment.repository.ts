@@ -1,6 +1,6 @@
 import { Repository, DataSource, LessThan } from "typeorm";
 import { CommentEntity } from "./entity/comment.entity";
-import { CommentInterface } from "./model/comment";
+import {CommentInterface, CreateCommentInterface} from "./model/comment";
 import { zodCommentDao } from "./dao/create-comment.dao";
 import { PostEntity } from "../entity/post.entity";
 import { UserId } from "../../user/model/user.id";
@@ -15,7 +15,7 @@ export class CommentRepository {
         this.commentRepo = appDataSource.getRepository(CommentEntity);
     }
 
-    async createComment(comment: CommentInterface): Promise<CommentInterface> {
+    async createComment(comment: CreateCommentInterface): Promise<CommentInterface> {
         return this.appDataSource.manager.transaction(async (manager) => {
             const savedComment = await this.commentRepo.save(comment);
             const postRepo = manager.getRepository(PostEntity);

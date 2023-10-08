@@ -1,13 +1,12 @@
-import {MyCollegeGramUserInterface, User} from "../model/user";
-import {Email} from "../model/user.email";
-import {UserId} from "../model/user.id";
-import {UserName} from "../model/user.username";
-import {z} from "zod";
-import {HashedPassword} from "../../../utility/password-utils";
-import {isFirstName} from "../model/user.firstName";
-import {zodFirstName} from "../model/user.firstName";
-import {zodLastName} from "../model/user.lastName";
-import {WholeNumber} from "../../../data/whole-number";
+import { MyCollegeGramUserInterface, User } from "../model/user";
+import { Email } from "../model/user.email";
+import { UserId } from "../model/user.id";
+import { UserName } from "../model/user.username";
+import { z } from "zod";
+import { HashedPassword } from "../../../utility/password-utils";
+import { FirstName } from "../model/user.firstName";
+import { LastName } from "../model/user.lastName";
+import { WholeNumber } from "../../../data/whole-number";
 
 // Zod Dao:
 
@@ -21,8 +20,8 @@ export const zodUserDao = z
         followerCount: WholeNumber.zod,
         followingCount: WholeNumber.zod,
         bio: z.coerce.string(),
-        firstName: z.nullable(zodFirstName),
-        lastName: z.nullable(zodLastName),
+        firstName: z.nullable(FirstName.zod),
+        lastName: z.nullable(LastName.zod),
         avatar: z.coerce.string(),
         isPrivate: z.boolean()
 
@@ -31,7 +30,7 @@ export const zodUserDao = z
 export const zodMyCollegeGramUserDao = z.object({
         id: UserId.zod,
         userName: UserName.zod,
-        firstName: zodFirstName,
-        lastName: zodLastName,
+        firstName: FirstName.zod,
+        lastName: LastName.zod,
         avatar: z.coerce.string(),
 }).transform((user): MyCollegeGramUserInterface => user)

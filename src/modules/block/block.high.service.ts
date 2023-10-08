@@ -1,6 +1,6 @@
 import {BadRequestError, NotFoundError} from "../../utility/http-errors";
 import {UserId} from "../user/model/user.id";
-import {blockEventEmmmiter} from "../../utility/event-handling";
+import {blockEventEmitter} from "../../utility/event-handling";
 import {BlockRelationInterface, UnblockRelationInterface} from "./model/block";
 import {BlockLowService} from "./block.low.service";
 import {BlockDtoType} from "./dto/block.dto";
@@ -31,7 +31,7 @@ export class BlockHighService {
         const newBlockRelation = await this.blockLowService.createBlockRelation(blockRell)
 
 
-        blockEventEmmmiter.emit("block", newBlockRelation.userId, newBlockRelation.blockedUserId)
+        blockEventEmitter.emit("block", newBlockRelation.userId, newBlockRelation.blockedUserId)
         return {status: "blocked"}
         //NOTE: follow userid: followingid, followerid
     } 

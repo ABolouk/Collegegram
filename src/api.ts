@@ -30,8 +30,11 @@ import {PostLowService} from "./modules/post/post.low.service";
 import {LikeLowService} from "./modules/post/like/like.low.service";
 import {BookmarkService} from "./modules/bookmark/book-mark.service";
 import {BookmarkRepository} from "./modules/bookmark/book-mark.repository";
-import {ExploreService} from "./modules/post/explore.service";
+import { ExploreService } from "./modules/post/explore.service";
 import { SearchService } from "./modules/post/search.service";
+import { makeNotificationRouter } from "./routes/notification.routes";
+import { NotificationService } from "./modules/notification/notification.service";
+import { NotificationRepository } from "./modules/notification/notification.repository";
 
 
 export const makeApp = (dataSource: DataSource) => {
@@ -72,6 +75,10 @@ export const makeApp = (dataSource: DataSource) => {
     const likeHighService = new LikeHighService(likeLowService, postLowService, userLowService, followLowService, blockLowService);
     const searchService = new SearchService(postLowService, likeLowService, followLowService, blockLowService)
     app.use("/post", makePostRouter(userLowService, sessionLowService, postHighService, commentService, homePageService, likeHighService, bookmarkService, searchService,exploreService));
+
+    const notificationRepo = new NotificationRepository(dataSource);
+    const notificationService = new NotificationService(notificationRepo, postLowService);
+    app.use("/notification", makeNotificationRouter(userLowService, sessionLowService, notificationService))
 
     app.use((req, res, next) => {
         next();
