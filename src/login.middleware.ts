@@ -46,7 +46,6 @@ export const loginMiddle = (userLowService: UserLowService, sessionLowService: S
                     res.status(401).send({ message: "شما اجازه دسترسی به این صفحه را ندارید." });
                     return;
                 }
-                // TODO: payload type
                 const accessToken = jwt.sign({ id: session.userId }, accessKey, { expiresIn: '1h' });
                 res.setHeader('authorization', `Bearer ${accessToken}`);
                 const decode = jwt.verify(accessToken, accessKey);

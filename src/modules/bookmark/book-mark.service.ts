@@ -29,7 +29,7 @@ export class BookmarkService {
         if (checkBlock) {
             return { status: checkBlock }
         }
-        if (author.isPrivate) {
+        if (author.isPrivate && author.id !== dto.userId) {
             const follow = await this.followLowService.getFollowRelation({
                 followerId: dto.userId,
                 followingId: author.id
