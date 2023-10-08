@@ -9,14 +9,14 @@ import {acceptFollowReqType} from "./dto/followreq.accept.dto";
 import {rejectFollowReqType} from "./dto/followreq.reject.dto";
 import {cancellFollowReqType} from "./dto/followreq.cancel.dto";
 import {UserId} from "../user/model/user.id";
-import {blockEventEmmmiter} from "../../utility/event-handling";
+import {blockEventEmitter} from "../../utility/event-handling";
 import {FollowLowService} from "./follow.low.service";
 import {UserLowService} from "../user/user.low.service";
 import {
     acceptFollowRequestEventEmitter,
     followEventEmitter,
     followRequestEventEmitter
-} from "../../data/event-handling";
+} from "../../utility/event-handling";
 
 export class FollowHighService {
     constructor(
@@ -25,7 +25,7 @@ export class FollowHighService {
         private userLowService: UserLowService
     ) {
 
-        blockEventEmmmiter.on("block", async (blockerId: UserId, blockedId: UserId) => {
+        blockEventEmitter.on("block", async (blockerId: UserId, blockedId: UserId) => {
             await this.blockAction({blockerId, blockedId});
         })
     }

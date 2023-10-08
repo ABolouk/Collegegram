@@ -1,7 +1,7 @@
 import {LikeRepository} from "./like.repository";
 import {LikeDtoType} from "./dto/like.dto";
 import {BadRequestError, NotFoundError} from "../../../utility/http-errors";
-import {blockEventEmitter, likeEventEmitter} from "../../../data/event-handling";
+import {blockEventEmitter, likeEventEmitter} from "../../../utility/event-handling";
 import {UserId} from "../../user/model/user.id";
 import {UserLowService} from "../../user/user.low.service";
 import {FollowLowService} from "../../follow/follow.low.service";

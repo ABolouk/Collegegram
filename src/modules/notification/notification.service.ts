@@ -6,7 +6,7 @@ import {
     followEventEmitter,
     followRequestEventEmitter,
     likeEventEmitter
-} from "../../data/event-handling";
+} from "../../utility/event-handling";
 import {PostId} from "../post/model/post-id";
 import {UserId} from "../user/model/user.id";
 import {LikeNotification, LikeNotificationType} from "./model/like-notification";

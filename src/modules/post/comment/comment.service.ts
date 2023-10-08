@@ -7,7 +7,7 @@ import { GetCommentDtoType } from "./dto/get-comment.dto";
 import { UserLowService } from "../../user/user.low.service";
 import { FollowLowService } from "../../follow/follow.low.service";
 import { BlockLowService } from "../../block/block.low.service";
-import {commentEventEmitter} from "../../../data/event-handling";
+import {commentEventEmitter} from "../../../utility/event-handling";
 
 
 export class CommentService {
