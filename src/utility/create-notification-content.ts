@@ -24,3 +24,17 @@ export const createMyNotificationContent = (notification: BaseZodNotificationDao
             return 'متن دیفالت نوتیفیکیشن';
     }
 };
+
+export const createMyFriendsNotificationContent = (notification: BaseZodNotificationDaoType) => {
+    const interactingUserFullName = `${notification.interactingUser.firstName} ${notification.interactingUser.lastName}`;
+    switch (notification.type) {
+        case CommentNotification:
+            return `${notification.comment?.content}${interactingUserFullName} برای این عکس کامنت داده: `;
+        case LikeNotification:
+            return `${interactingUserFullName} این عکس رو پسندید`;
+        case FollowNotification:
+            return `متین دهقان یاسین اروسخانی رو دنبال کرد`;
+        default:
+            return 'متن دیفالت نوتیفیکیشن';
+    }
+};
