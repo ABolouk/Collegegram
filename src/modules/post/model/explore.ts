@@ -15,7 +15,7 @@ export interface ExploreUserDao {
     userName : UserName,
     firstName: string | null;
     lastName: string | null
-    avatar: string,
+    avatar: string | null,
     followerCount: WholeNumber,
     createdAt: Date
 }

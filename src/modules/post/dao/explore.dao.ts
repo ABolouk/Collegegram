@@ -22,7 +22,7 @@ export const zodExploreUserDao = z.object({
     userName: UserName.zod,
     firstName: z.nullable(zodFirstName),
     lastName: z.nullable(zodLastName),
-    avatar: z.string(),
+    avatar: z.nullable(z.string()),
     followerCount: WholeNumber.zod,
     createdAt: z.date()
 }).transform((x): ExploreUserDao => (x))
