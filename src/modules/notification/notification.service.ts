@@ -47,6 +47,10 @@ export class NotificationService {
         return await this.notificationRepository.getMyNotificationsByUserId(dto);
     }
 
+    async getMyFriendsNotifications(dto: GetNotificationsDto) {
+        return await this.notificationRepository.getMyFriendsNotificationsByUserId(dto);
+    }
+
     async makeLikeNotification(userId: UserId, postId: PostId) {
         const interactingUserId = userId;
         const interactedUserId = await this.postService.getAuthorById(postId);
