@@ -1,5 +1,4 @@
 import { BadRequestError, NotFoundError } from "../../../utility/http-errors";
-import { PostHighService } from "../post.high.service";
 import { CommentRepository } from "./comment.repository";
 import { createCommentDto } from "./dto/create-comment.dto";
 import { PostLowService } from "../post.low.service";
@@ -7,7 +6,7 @@ import { GetCommentDtoType } from "./dto/get-comment.dto";
 import { UserLowService } from "../../user/user.low.service";
 import { FollowLowService } from "../../follow/follow.low.service";
 import { BlockLowService } from "../../block/block.low.service";
-import {commentEventEmitter} from "../../../utility/event-handling";
+import { commentEventEmitter } from "../../../utility/event-handling";
 
 
 export class CommentService {
@@ -38,7 +37,7 @@ export class CommentService {
         }
 
         const newComment = await this.commentRepo.createComment(createdComment)
-        commentEventEmitter.emit("comment", newComment.userId, newComment.postId)
+        commentEventEmitter.emit("comment", newComment.userId, newComment.postId, newComment.id)
         return { status: "successful" }
     }
 
