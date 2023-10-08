@@ -1,6 +1,3 @@
-
-178 B
-
 FROM node:slim as build
 
 WORKDIR /src
