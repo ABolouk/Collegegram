@@ -9,13 +9,16 @@ import { LikeLowService } from "./like/like.low.service";
 import { BookmarkService } from "../bookmark/book-mark.service";
 import {UserName} from "../user/model/user.username";
 import {UserLowService} from "../user/user.low.service";
+import {BlockLowService} from "../block/block.low.service";
+import {BlockStatus} from "../block/model/block";
 
 export class PostHighService {
     constructor(
         private postLowService: PostLowService,
         private likeService: LikeLowService,
         private bookmarkService: BookmarkService,
-        private userLowService: UserLowService
+        private userLowService: UserLowService,
+        private blockLowService: BlockLowService,
     ) {}
 
     async createPost(dto: CreatePostDtoType, photos: Express.Multer.File[], loggedInUser: User) {
@@ -43,8 +46,13 @@ export class PostHighService {
         }
     }
 
-    async getPostsByUsername(username: UserName, limit: number, startTime: Date) {
+    //FIXME : DTO
+    async getPostsByUsername(username: UserName, limit: number, startTime: Date, userId: UserId): Promise<PostsInterface | object> {
         const user = await this.userLowService.getUserByUsername(username)
+        const checkBlock = await this.blockLowService.checkIfUsersBlockedEachOther({ userId: userId, blockedUserId: user.id })
+        if (checkBlock) {
+            return { status: checkBlock }
+        }
         const result = await this.postLowService.getPostsByUserId(user.id, limit, startTime);
         return {
             posts: result.posts,

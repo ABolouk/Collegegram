@@ -24,7 +24,14 @@ export class ExploreService {
             const posts = await this.postLowService.getPostsForExploreByUserId(user.id, 4)
             explorePage.push(
                 {
-                    user: zodExploreUserDao.parse(user),
+                    user: {
+                        userName: user.username,
+                        firstName: user.firstName,
+                        lastName: user.lastName,
+                        avatar: user.avatar,
+                        followerCount: user.followerCount,
+                        createdAt: user.createdAt
+                    },
                     posts: posts
                 }
             )

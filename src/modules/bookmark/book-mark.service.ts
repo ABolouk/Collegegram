@@ -34,7 +34,7 @@ export class BookmarkService {
                 followerId: dto.userId,
                 followingId: author.id
             });
-            if (!follow) {
+            if (!follow && author.id !== dto.userId) {
                 throw new BadRequestError('شما نمی‌توانید این پست را سیو کنید.');
             }
         }

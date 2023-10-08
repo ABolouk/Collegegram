@@ -53,4 +53,13 @@ export class followRequestRepository {
             }
         )
     }
+
+    async isRequested(followRequest: FollowRequest) {
+        return await this.followRequestRepo.findOneBy([{
+                followerId: followRequest.followerUserId,
+                followingId: followRequest.followingUserId
+            }]
+        )
+    }
+
 }

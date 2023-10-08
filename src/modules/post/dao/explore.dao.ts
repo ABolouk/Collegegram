@@ -19,10 +19,10 @@ export const zodExplorePostDao = z.object({
 
 export const zodExploreUserDao = z.object({
     id: UserId.zod,
-    userName: UserName.zod,
+    username: UserName.zod,
     firstName: z.nullable(zodFirstName),
     lastName: z.nullable(zodLastName),
-    avatar: z.string(),
+    avatar: z.nullable(z.string()),
     followerCount: WholeNumber.zod,
     createdAt: z.date()
 }).transform((x): ExploreUserDao => (x))

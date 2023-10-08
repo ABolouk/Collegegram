@@ -77,7 +77,7 @@ export const makePostRouter = (userLowService: UserLowService, sessionLowService
         const limit = req.query.limit;
         const startTime = req.query.startTime;
         const dto = getOtherUserPost.parse({username, limit, startTime});
-        handleExpresss(res, () => postHighService.getPostsByUsername(dto.username, dto.limit, dto.startTime ? dto.startTime : new Date()));
+        handleExpresss(res, () => postHighService.getPostsByUsername(dto.username, dto.limit, dto.startTime ? dto.startTime : new Date() , req.user.id));
     });
 
     app.get("/:id/comments", loginMiddle(userLowService, sessionLowService), (req, res) => {
@@ -102,16 +102,16 @@ export const makePostRouter = (userLowService: UserLowService, sessionLowService
         handleExpresss(res, () => commentService.comment(dto))
     })
 
-    app.get("/:id/like", loginMiddle(userLowService, sessionLowService), (req, res) => {
+    app.post("/like", loginMiddle(userLowService, sessionLowService), (req, res) => {
         const userId = req.user.id
-        const postId = req.params.id
+        const postId = req.body.id
         const dto = likeDto.parse({userId, postId, ...req.body})
         handleExpresss(res, () => likeHighService.like(dto))
     })
 
-    app.get("/:id/unlike", loginMiddle(userLowService, sessionLowService), (req, res) => {
+    app.post("/unlike", loginMiddle(userLowService, sessionLowService), (req, res) => {
         const userId = req.user.id
-        const postId = req.params.id
+        const postId = req.body.id
         const dto = likeDto.parse({userId, postId, ...req.body})
         handleExpresss(res, () => likeHighService.unlike(dto))
     })

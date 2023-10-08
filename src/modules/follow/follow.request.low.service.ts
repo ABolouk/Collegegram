@@ -43,4 +43,8 @@ export class FollowRequestLowService {
         return await this.followReqRepo.getFollowRequestInTwoWay(followRequest);
     }
 
+    async isRequested(followRequest: FollowRequest) {
+        return await this.followReqRepo.isRequested(followRequest);
+    }
+
 }

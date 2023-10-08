@@ -29,9 +29,10 @@ import {User} from "./model/user";
 import {UserLowService} from "./user.low.service";
 import {BlockLowService} from "../block/block.low.service";
 import {SessionLowService} from "./session.low.service";
+import {FollowLowService} from "../follow/follow.low.service";
 
 export class UserHighService {
-    constructor(private userLowService: UserLowService, private sessionLowService: SessionLowService, private emailService: EmailService, private blockService: BlockLowService) {
+    constructor(private userLowService: UserLowService, private sessionLowService: SessionLowService, private emailService: EmailService, private blockService: BlockLowService , private followLowService: FollowLowService , private followReqLowService : FollowRequestLowService) {
     }
 
     async login(loginDto: LoginDtoType) {
@@ -87,15 +88,37 @@ export class UserHighService {
         return {accessToken, refreshToken};
     }
 
-    async getUserProfile(dto: GetUserDtoType, userId: UserId) {
+    async  getUserProfile(dto: GetUserDtoType, userId: UserId) {
         const user = await this.userLowService.findByEmailOrUsername(dto.userName);
         if (!user) {
             throw new NotFoundError("User")
         }
         const checkBlock = await this.blockService.checkIfUsersBlockedEachOther({ userId: userId, blockedUserId: user.id })
+        const checkFollow = await this.followLowService.isFollwed({
+            followerId: userId,
+            followingId: user.id
+        });
+        const checkReq = await this.followReqLowService.isRequested({
+            followerUserId: userId,
+            followingUserId: user.id
+        });
+        if (checkReq && checkReq.status === "pending") {
+            return {
+                blockStatus: checkBlock,
+                isFollowed: checkReq.status,
+                username: user.username,
+                firstName: user.firstName,
+                lastName: user.lastName,
+                postCount: user.postCount,
+                followerCount: 0,
+                followingCount: 0,
+                avatar: user.avatar
+            }
+        }
         if (checkBlock) {
             return {
                 blockStatus: checkBlock,
+                isFollowed: checkFollow,
                 username: user.username,
                 firstName: user.firstName,
                 lastName: user.lastName,

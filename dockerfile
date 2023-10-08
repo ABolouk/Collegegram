@@ -1,11 +1,19 @@
-FROM node:slim
+FROM node:slim as build
 
-WORKDIR /app
+WORKDIR /src
 
-COPY package.json yarn.lock ./
+COPY package*.json .
 
 COPY . .
 
+COPY . .
+
+FROM node:slim
+
+WORKDIR /src 
+
+COPY --from=build /src .
+
 EXPOSE 3000
 
-CMD yarn start
+CMD ["npm", "start"]
