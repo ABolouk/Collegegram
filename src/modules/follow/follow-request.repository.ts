@@ -14,8 +14,8 @@ export class followRequestRepository {
         this.followRequestRepo = appDataSource.getRepository(FollowRequestEntity);
     }
 
-    async createFollowRequest(followRequest: createFollowRequest): Promise<followReqIdDao> {
-        return this.followRequestRepo.save(followRequest).then((x) => zodFollowReqIdDao.parse(x));
+    async createFollowRequest(followRequest: createFollowRequest): Promise<followReqDao> {
+        return this.followRequestRepo.save(followRequest).then((x) => zodFollowReqDao.parse(x));
     }
 
     async getFollowRequest(followRequest: FollowRequest): Promise<followReqDao | null> {

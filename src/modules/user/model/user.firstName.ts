@@ -1,11 +1,11 @@
 import { z } from "zod";
 import { Brand } from "../../../utility/brand";
 
-export type firstName = Brand<string, "FirstName">;
+export type FirstName = Brand<string, "FirstName">;
 
-const firstNameRegex = new RegExp(/^[\u0600-\u06FF]{3,64}$/);
+const firstNameRegex = new RegExp(/^[\u0600-\u06FF\s]{3,64}$/);
 
-export const isFirstName = (value: string): value is firstName =>
-    firstNameRegex.test(value);
-
-export const zodFirstName = z.coerce.string().refine(isFirstName);
+export module FirstName {
+    export const is = (value: string): value is FirstName => firstNameRegex.test(value);
+    export const zod = z.coerce.string().refine(is);
+}

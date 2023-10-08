@@ -1,7 +1,7 @@
 import {LikeRepository} from "./like.repository";
 import {LikeDtoType} from "./dto/like.dto";
 import {BadRequestError, NotFoundError} from "../../../utility/http-errors";
-import {blockEventEmmmiter, likeEventEmmmiter} from "../../../data/event-handling";
+import {blockEventEmitter, likeEventEmitter} from "../../../utility/event-handling";
 import {UserId} from "../../user/model/user.id";
 import {UserLowService} from "../../user/user.low.service";
 import {FollowLowService} from "../../follow/follow.low.service";
@@ -11,7 +11,7 @@ import { BlockLowService } from "../../block/block.low.service";
 
 export class LikeHighService {
     constructor(private likeLowService: LikeLowService, private postLowService: PostLowService, private userLowService: UserLowService, private followLowService: FollowLowService, private blocksService: BlockLowService) {
-        blockEventEmmmiter.on("block", (x, y) => this.blockAction({blockerId: x, blockedId: y}))
+        blockEventEmitter.on("block", (x, y) => this.blockAction({blockerId: x, blockedId: y}))
     }
 
     async like(dto: LikeDtoType) {
@@ -43,7 +43,7 @@ export class LikeHighService {
             throw new BadRequestError('You have already liked this post');
         }
         const newLike = await this.likeLowService.create(dto);
-        likeEventEmmmiter.emit('like', newLike.userId, newLike.postId);
+        likeEventEmitter.emit('like', newLike.userId, newLike.postId);
         return {status: "liked"};
     }
 

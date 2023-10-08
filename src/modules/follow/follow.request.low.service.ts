@@ -18,8 +18,7 @@ export class FollowRequestLowService {
         if (followReq) {
             throw new BadRequestError("Request already exists");
         }
-        await this.followReqRepo.createFollowRequest(followRequest);
-        return {status: "pending"};
+        return await this.followReqRepo.createFollowRequest(followRequest);
     }
 
     async getFollowRequest(followRequest: FollowRequest) {
