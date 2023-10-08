@@ -9,13 +9,14 @@ import { TagEntity } from "./modules/post/tag/entity/tag.entity";
 import { BlockEntity } from "./modules/block/entity/block.entity";
 import { FollowEntity } from "./modules/follow/entity/follow.entity";
 import { FollowRequestEntity } from "./modules/follow/entity/follow-request.entity";
-import {LikeEntity} from "./modules/post/like/entity/like.entity";
+import { LikeEntity } from "./modules/post/like/entity/like.entity";
 import { BookmarkEntity } from "./modules/bookmark/entity/book-mark.entity";
+import { NotificationEntity } from "./modules/notification/entity/notification.entity";
 
 export const AppDataSource = new DataSource({
     url: process.env.DB_URL,
     type: "postgres",
-    port: 31567,
+    port: 34561,
     username: process.env.DB_USERNAME,
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
@@ -30,6 +31,8 @@ export const AppDataSource = new DataSource({
         FollowRequestEntity,
         BlockEntity,
         BookmarkEntity,
+        LikeEntity,
+        NotificationEntity,
         LikeEntity,
     ],
     migrations: ["./src/migrations/*.ts"],

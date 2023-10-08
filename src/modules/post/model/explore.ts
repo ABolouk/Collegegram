@@ -1,6 +1,4 @@
 import {PostId} from "./post-id";
-import {firstName} from "../../user/model/user.firstName";
-import {lastName} from "../../user/model/user.lastName";
 import {WholeNumber} from "../../../data/whole-number";
 import {UserName} from "../../user/model/user.username";
 import {UserId} from "../../user/model/user.id";
