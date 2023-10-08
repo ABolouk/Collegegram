@@ -1,13 +1,19 @@
-FROM node:slim
+FROM node:slim as build
 
-ENV NODE_ENV development
+WORKDIR /src
 
-WORKDIR /app
-
-COPY . .
+COPY package*.json .
 
 RUN npm install
 
-EXPOSE 3000
+COPY . .
 
-CMD [ "npm", "start" ]
+FROM node:slim
+
+WORKDIR /src 
+
+COPY --from=build /src .
+
+EXPOSE 8080
+
+CMD ["npm", "start"]
