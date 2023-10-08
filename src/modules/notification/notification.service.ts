@@ -19,6 +19,7 @@ import {
     FollowRequestPendingNotification,
     FollowRequestPendingNotificationType
 } from "./model/follow-request-notification";
+import {CommentId} from "../post/comment/model/comment-id";
 
 export class NotificationService {
     constructor(
@@ -28,8 +29,8 @@ export class NotificationService {
         likeEventEmitter.on('like', async (userId: UserId, postId: PostId) => {
             await this.makeLikeNotification(userId, postId);
         })
-        commentEventEmitter.on('comment', async (userId: UserId, postId: PostId) => {
-            await this.makeCommentNotification(userId, postId);
+        commentEventEmitter.on('comment', async (userId: UserId, postId: PostId, commentId: CommentId) => {
+            await this.makeCommentNotification(userId, postId, commentId);
         })
         followEventEmitter.on('follow', async (followerId: UserId, followingId: UserId) => {
             await this.makeFollowNotification(followerId, followingId);
@@ -58,7 +59,7 @@ export class NotificationService {
         await this.notificationRepository.create(newNotification);
     }
 
-    async makeCommentNotification(userId: UserId, postId: PostId) {
+    async makeCommentNotification(userId: UserId, postId: PostId, commentId: CommentId) {
         const interactingUserId = userId;
         const interactedUserId = await this.postService.getAuthorById(postId);
         const newNotification: CreateNotificationInterface = {
@@ -66,6 +67,7 @@ export class NotificationService {
             interactedUserId: interactedUserId,
             type: CommentNotification as CommentNotificationType,
             postId: postId,
+            commentId: commentId,
         }
         await this.notificationRepository.create(newNotification);
     }
