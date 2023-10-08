@@ -7,7 +7,7 @@ import { GetCommentDtoType } from "./dto/get-comment.dto";
 import { UserLowService } from "../../user/user.low.service";
 import { FollowLowService } from "../../follow/follow.low.service";
 import { BlockLowService } from "../../block/block.low.service";
-import {commentEventEmmmiter} from "../../../data/event-handling";
+import {commentEventEmitter} from "../../../data/event-handling";
 
 
 export class CommentService {
@@ -38,7 +38,7 @@ export class CommentService {
         }
 
         const newComment = await this.commentRepo.createComment(createdComment)
-        commentEventEmmmiter.emit("comment", newComment.userId, newComment.postId)
+        commentEventEmitter.emit("comment", newComment.userId, newComment.postId)
         return { status: "successful" }
     }
 

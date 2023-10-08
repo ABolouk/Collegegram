@@ -1,11 +1,11 @@
 import {NotificationRepository} from "./notification.repository";
 import {CreateNotificationInterface} from "./model/notification";
 import {
-    acceptFollowRequestEventEmmmiter,
-    commentEventEmmmiter,
-    followEventEmmmiter,
-    followRequestEventEmmmiter,
-    likeEventEmmmiter
+    acceptFollowRequestEventEmitter,
+    commentEventEmitter,
+    followEventEmitter,
+    followRequestEventEmitter,
+    likeEventEmitter
 } from "../../data/event-handling";
 import {PostId} from "../post/model/post-id";
 import {UserId} from "../user/model/user.id";
@@ -25,19 +25,19 @@ export class NotificationService {
         private notificationRepository: NotificationRepository,
         private postService: PostLowService,
     ) {
-        likeEventEmmmiter.on('like', async (userId: UserId, postId: PostId) => {
+        likeEventEmitter.on('like', async (userId: UserId, postId: PostId) => {
             await this.makeLikeNotification(userId, postId);
         })
-        commentEventEmmmiter.on('comment', async (userId: UserId, postId: PostId) => {
+        commentEventEmitter.on('comment', async (userId: UserId, postId: PostId) => {
             await this.makeCommentNotification(userId, postId);
         })
-        followEventEmmmiter.on('follow', async (followerId: UserId, followingId: UserId) => {
+        followEventEmitter.on('follow', async (followerId: UserId, followingId: UserId) => {
             await this.makeFollowNotification(followerId, followingId);
         })
-        followRequestEventEmmmiter.on('followRequest', async (followerId: UserId, followingId: UserId) => {
+        followRequestEventEmitter.on('followRequest', async (followerId: UserId, followingId: UserId) => {
             await this.makeFollowRequstNotification(followerId, followingId);
         })
-        acceptFollowRequestEventEmmmiter.on('acceptFollowRequest', async (followerId: UserId, followingId: UserId) => {
+        acceptFollowRequestEventEmitter.on('acceptFollowRequest', async (followerId: UserId, followingId: UserId) => {
             await this.makeAcceptFollowNotification(followerId, followingId);
         })
     }

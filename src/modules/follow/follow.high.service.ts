@@ -13,9 +13,9 @@ import {blockEventEmmmiter} from "../../utility/event-handling";
 import {FollowLowService} from "./follow.low.service";
 import {UserLowService} from "../user/user.low.service";
 import {
-    acceptFollowRequestEventEmmmiter,
-    followEventEmmmiter,
-    followRequestEventEmmmiter
+    acceptFollowRequestEventEmitter,
+    followEventEmitter,
+    followRequestEventEmitter
 } from "../../data/event-handling";
 
 export class FollowHighService {
@@ -63,14 +63,14 @@ export class FollowHighService {
                 followingId: followingUser.id,
                 status: FollowReqStatus.status.pending
             })
-            followRequestEventEmmmiter.emit("followRequest", followReq.followerId, followReq.followingId)
+            followRequestEventEmitter.emit("followRequest", followReq.followerId, followReq.followingId)
             return {status: "requested"};
         }
         const newFollow = await this.followLowService.createFollowRelation({
             followerId: dto.follower,
             followingId: followingUser.id
         });
-        followEventEmmmiter.emit("follow", dto.follower, followingUser.id);
+        followEventEmitter.emit("follow", dto.follower, followingUser.id);
         return {status: "followed"};
     }
 
@@ -135,7 +135,7 @@ export class FollowHighService {
                     followerId: followReq.followerId,
                     followingId: followReq.followingId,
                 })
-                acceptFollowRequestEventEmmmiter.emit("acceptFollowRequest", followReq.followerId, followReq.followingId);
+                acceptFollowRequestEventEmitter.emit("acceptFollowRequest", followReq.followerId, followReq.followingId);
                 return {status: "accepted"};
             }
             if (followReqStatus === FollowReqStatus.status.rejected) {

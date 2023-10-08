@@ -1,13 +1,13 @@
 import {EventEmitter} from "events";
 
-export const blockEventEmmmiter = new EventEmitter()
+export const blockEventEmitter = new EventEmitter()
 
-export const likeEventEmmmiter = new EventEmitter()
+export const likeEventEmitter = new EventEmitter()
 
-export const commentEventEmmmiter = new EventEmitter()
+export const commentEventEmitter = new EventEmitter()
 
-export const followEventEmmmiter = new EventEmitter()
+export const followEventEmitter = new EventEmitter()
 
-export const followRequestEventEmmmiter = new EventEmitter()
+export const followRequestEventEmitter = new EventEmitter()
 
-export const acceptFollowRequestEventEmmmiter = new EventEmitter()
+export const acceptFollowRequestEventEmitter = new EventEmitter()
